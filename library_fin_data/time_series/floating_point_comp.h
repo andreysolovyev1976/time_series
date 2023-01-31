@@ -47,8 +47,10 @@ namespace base {
  * a beauty of this lambda is that it is a reasonable usage of IILE -
  * Immediately Invoked Lambda Expression, as well as
  * decltype(auto) that prevents loosing a lvalue reference
- * from a return statement.
+ * from a return statement, that would be really unpleasant, considering
+ * all deleted ctors - see that above.
  */
+  static
   decltype(auto) floating_comp =
 		  []() -> CompareWithPrecision<double>& {
 			return CompareWithPrecision<double>::getStaticInstance(const_values::EPSILON_BY_DEFAULT);
@@ -57,6 +59,11 @@ namespace base {
   template <typename T, typename U,
 		  requirements::IsFloatinPoint<T> = true, requirements::IsArithmetic<U> = true>
   bool operator == (T a, U b){
+	  return ((a-b) < floating_comp.epsilon) && ((b-a) < floating_comp.epsilon);
+  }
+  template <typename T, typename U,
+		  requirements::IsFloatinPoint<T> = true, requirements::IsArithmetic<U> = true>
+  bool operator == (U b, T a){
 	  return ((a-b) < floating_comp.epsilon) && ((b-a) < floating_comp.epsilon);
   }
   template <typename T,
@@ -70,6 +77,11 @@ namespace base {
   bool operator != (T a, U b){
 	  return (not (a == b));
   }
+  template <typename T, typename U,
+		  requirements::IsFloatinPoint<T> = true, requirements::IsArithmetic<U> = true>
+  bool operator != (U b, T a){
+	  return (not (a == b));
+  }
   template <typename T,
 		  requirements::IsFloatinPoint<T> = true>
   bool operator != (T a, T b){
@@ -81,6 +93,11 @@ namespace base {
   bool operator < (T a, U b) {
 	  return a<b - floating_comp.epsilon;
   }
+  template <typename T, typename U,
+		  requirements::IsFloatinPoint<T> = true, requirements::IsArithmetic<U> = true>
+  bool operator < (U b, T a) {
+	  return a<b - floating_comp.epsilon;
+  }
   template <typename T,
 		  requirements::IsFloatinPoint<T> = true>
   bool operator < (T a, T b) {
@@ -89,6 +106,11 @@ namespace base {
   template <typename T, typename U,
 		  requirements::IsFloatinPoint<T> = true, requirements::IsArithmetic<U> = true>
   bool operator > (T a, U b) {
+	  return a>b + floating_comp.epsilon;
+  }
+  template <typename T, typename U,
+		  requirements::IsFloatinPoint<T> = true, requirements::IsArithmetic<U> = true>
+  bool operator > (U b, T a) {
 	  return a>b + floating_comp.epsilon;
   }
   template <typename T,
@@ -102,6 +124,11 @@ namespace base {
   bool operator >= (T a, U b) {
 	  return a>b - floating_comp.epsilon;
   }
+  template <typename T, typename U,
+		  requirements::IsFloatinPoint<T> = true, requirements::IsArithmetic<U> = true>
+  bool operator >= (U b, T a) {
+	  return a>b - floating_comp.epsilon;
+  }
   template <typename T,
 		  requirements::IsFloatinPoint<T> = true>
   bool operator >= (T a, T b) {
@@ -110,6 +137,11 @@ namespace base {
   template <typename T, typename U,
 		  requirements::IsFloatinPoint<T> = true, requirements::IsArithmetic<U> = true>
   bool operator <= (T a, U b) {
+	  return a<b + floating_comp.epsilon;
+  }
+  template <typename T, typename U,
+		  requirements::IsFloatinPoint<T> = true, requirements::IsArithmetic<U> = true>
+  bool operator <= (U b, T a) {
 	  return a<b + floating_comp.epsilon;
   }
   template <typename T,

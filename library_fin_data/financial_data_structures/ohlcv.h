@@ -8,7 +8,8 @@
 #include "time_series//value.h"
 
 #include <iosfwd>
-#include <vector>
+#include <string>
+#include <stdexcept>
 #include <initializer_list>
 
 #ifndef FIN_OHLCV_H
@@ -29,14 +30,28 @@ namespace financial {
 	  struct Volume{};
 
 	  OHLCV () = default;
-	  explicit OHLCV (std::vector<base::Value<Duration>> &&values);
-	  explicit OHLCV (const std::vector<base::Value<Duration>> &values);
-	  explicit OHLCV (std::initializer_list<base::Value<Duration>> values);
+	  OHLCV (std::initializer_list<base::Value<Duration>> values);
 
 	  std::string toString() const;
 
 	  base::Value<Duration> open, high, low, close, volume {0.0};
   };
+
+  template <typename Duration>
+  OHLCV<Duration>::OHLCV (std::initializer_list<base::Value<Duration>> values) {
+	  using namespace std::string_literals;
+	  if (values.size() != 5u) {
+		  throw std::invalid_argument (
+				  "OHLCV ctor doesn't get correct arg count. Received "s +
+				  std::to_string(values.size()) +
+				  " instead of 5"s);
+	  }
+	  open = *(values.begin());
+	  high = *(values.begin() + 1);
+	  low = *(values.begin() + 2);
+	  close = *(values.begin() + 3);
+	  volume = *(values.begin() + 4);
+  }
 
   template <typename Duration>
   std::string OHLCV<Duration>::toString() const {
@@ -88,19 +103,21 @@ namespace financial {
 	  }
 	  return res;
   }
-
-  template <typename Duration, typename Other, typename CompareBy = typename OHLCV<Duration>::Close>
+  template <
+		  typename Duration,
+		  typename Other,
+		  requirements::Comparable<base::Value<Duration>, Other> = true,
+		  typename CompareBy = typename OHLCV<Duration>::Close
+  >
   bool operator == (const OHLCV<Duration>& lhs, const Other& rhs) {
 	  bool res {true};
 	  if constexpr (std::is_same_v<CompareBy, typename OHLCV<Duration>::AllFields>) {
-		  std::string msg;
-		  msg.reserve(const_values::EXPECTED_ERROR_MESSAGE_LENGTH);
-		  msg.append("Can't compare full OHLCV and a single value: lhs == ");
-		  msg.append(lhs.toString());
-		  msg.append("; rhs == ");
-		  msg.append(base::utils::toChars(rhs));
-
-		  throw std::runtime_error(std::move(msg));
+		  res = res &&
+				  lhs.open == rhs &&
+				  lhs.high == rhs &&
+				  lhs.low == rhs &&
+				  lhs.close == rhs &&
+				  lhs.volume == rhs;
 	  }
 	  else if constexpr (std::is_same_v<CompareBy, typename OHLCV<Duration>::Open>) {
 		  res = res &&
@@ -124,12 +141,39 @@ namespace financial {
 	  }
 	  return res;
   }
-  
-  template <typename Duration, typename CompareBy = typename OHLCV<Duration>::AllFields>
-  bool operator!=(const OHLCV<Duration>& lhs, const OHLCV<Duration>& rhs) {
-	  return !(operator == <Duration, CompareBy> (lhs,rhs));
+  template <
+		  typename Duration,
+		  typename Other,
+		  requirements::Comparable<base::Value<Duration>, Other> = true,
+		  typename CompareBy = typename OHLCV<Duration>::Close
+  >
+  bool operator == (const Other& lhs, const OHLCV<Duration>& rhs) {
+	  return rhs == lhs;
   }
-  
+
+  template <typename Duration, typename CompareBy = typename OHLCV<Duration>::AllFields>
+  bool operator != (const OHLCV<Duration>& lhs, const OHLCV<Duration>& rhs) {
+	  return !(lhs == rhs);
+  }
+  template <
+		  typename Duration,
+		  typename Other,
+		  requirements::Comparable<base::Value<Duration>, Other> = true,
+		  typename CompareBy = typename OHLCV<Duration>::Close
+  >
+  bool operator != (const OHLCV<Duration>& lhs, const Other& rhs) {
+	  return !(lhs == rhs);
+  }
+  template <
+		  typename Duration,
+		  typename Other,
+		  requirements::Comparable<base::Value<Duration>, Other> = true,
+		  typename CompareBy = typename OHLCV<Duration>::Close
+  >
+  bool operator != (const Other& lhs, const OHLCV<Duration>& rhs) {
+	  return !(rhs == lhs);
+  }
+
   template <typename Duration, typename CompareBy = typename OHLCV<Duration>::AllFields>
   bool operator < (const OHLCV<Duration>& lhs, const OHLCV<Duration>& rhs) {
 	  bool res {true};
@@ -147,7 +191,7 @@ namespace financial {
 	  }
 	  else if constexpr (std::is_same_v<CompareBy, typename OHLCV<Duration>::High>) {
 		  res = res &&
-				  lhs.high > rhs.high;
+				  lhs.high < rhs.high;
 	  }
 	  else if constexpr (std::is_same_v<CompareBy, typename OHLCV<Duration>::Low>) {
 		  res = res &&
@@ -163,33 +207,37 @@ namespace financial {
 	  }
 	  return res;
   }
-  
-  template <typename Duration, typename Other, typename CompareBy = typename OHLCV<Duration>::AllFields>
+  template <
+		  typename Duration,
+		  typename Other,
+		  requirements::Comparable<base::Value<Duration>, Other> = true,
+		  typename CompareBy = typename OHLCV<Duration>::Close
+  >
   bool operator < (const OHLCV<Duration>& lhs, const Other& rhs) {
 	  bool res {true};
 	  if constexpr (std::is_same_v<CompareBy, typename OHLCV<Duration>::AllFields>) {
 		  res = res &&
-				  lhs.open < rhs.open &&
-				  lhs.high < rhs.high &&
-				  lhs.low < rhs.low &&
-				  lhs.close < rhs.close &&
-				  lhs.volume < rhs.volume;
+				  lhs.open < rhs &&
+				  lhs.high < rhs &&
+				  lhs.low < rhs &&
+				  lhs.close < rhs &&
+				  lhs.volume < rhs;
 	  }
 	  else if constexpr (std::is_same_v<CompareBy, typename OHLCV<Duration>::Open>) {
 		  res = res &&
-				  lhs.open < rhs.open;
+				  lhs.open < rhs;
 	  }
 	  else if constexpr (std::is_same_v<CompareBy, typename OHLCV<Duration>::High>) {
 		  res = res &&
-				  lhs.high > rhs.high;
+				  lhs.high > rhs;
 	  }
 	  else if constexpr (std::is_same_v<CompareBy, typename OHLCV<Duration>::Low>) {
 		  res = res &&
-				  lhs.low < rhs.low;
+				  lhs.low < rhs;
 	  }
 	  else if constexpr (std::is_same_v<CompareBy, typename OHLCV<Duration>::Close>) {
 		  res = res &&
-				  lhs.close < rhs.close;
+				  lhs.close < rhs;
 
 	  }
 	  else if constexpr (std::is_same_v<CompareBy, typename OHLCV<Duration>::Volume>) {
@@ -198,36 +246,259 @@ namespace financial {
 	  }
 	  return res;
   }
+  template <
+		  typename Duration,
+		  typename Other,
+		  requirements::Comparable<base::Value<Duration>, Other> = true,
+		  typename CompareBy = typename OHLCV<Duration>::Close
+  >
+  bool operator < (const Other& rhs, const OHLCV<Duration>& lhs) {
+	  return (!(lhs < rhs) && !(lhs == rhs));
+  }
 
   template <typename Duration, typename CompareBy = typename OHLCV<Duration>::AllFields>
   bool operator > (const OHLCV<Duration>& lhs, const OHLCV<Duration>& rhs) {
-	  return (!(operator == <Duration, CompareBy> (rhs, lhs)) && !(operator< <Duration, CompareBy> (lhs, rhs)));
+	  return (!(rhs == lhs) && !(lhs < rhs));
   }
-  
-  template <typename Duration, typename Other, typename CompareBy = typename OHLCV<Duration>::AllFields>
+  template <
+		  typename Duration,
+		  typename Other,
+		  requirements::Comparable<base::Value<Duration>, Other> = true,
+		  typename CompareBy = typename OHLCV<Duration>::Close
+  >
   bool operator > (const OHLCV<Duration>& lhs, const Other& rhs) {
-	  return (!(operator == <Duration, CompareBy> (rhs, lhs)) && !(operator < <Duration, CompareBy> (lhs, rhs)));
+	  return (!(rhs == lhs) && !(lhs < rhs));
   }
-  
+  template <
+		  typename Duration,
+		  typename Other,
+		  requirements::Comparable<base::Value<Duration>, Other> = true,
+		  typename CompareBy = typename OHLCV<Duration>::Close
+  >
+  bool operator > (const Other& lhs, const OHLCV<Duration>& rhs) {
+	  return (!(rhs == lhs) && !(lhs < rhs));
+  }
+
   template <typename Duration, typename CompareBy = typename OHLCV<Duration>::AllFields>
   bool operator <= (const OHLCV<Duration>& lhs, const OHLCV<Duration>& rhs) {
-	  return !(operator > <Duration, CompareBy> (lhs, rhs));
+	  bool res {true};
+	  if constexpr (std::is_same_v<CompareBy, typename OHLCV<Duration>::AllFields>) {
+		  res = res &&
+				  lhs.open <= rhs.open &&
+				  lhs.high <= rhs.high &&
+				  lhs.low <= rhs.low &&
+				  lhs.close <= rhs.close &&
+				  lhs.volume <= rhs.volume;
+	  }
+	  else if constexpr (std::is_same_v<CompareBy, typename OHLCV<Duration>::Open>) {
+		  res = res &&
+				  lhs.open <= rhs.open;
+	  }
+	  else if constexpr (std::is_same_v<CompareBy, typename OHLCV<Duration>::High>) {
+		  res = res &&
+				  lhs.high <= rhs.high;
+	  }
+	  else if constexpr (std::is_same_v<CompareBy, typename OHLCV<Duration>::Low>) {
+		  res = res &&
+				  lhs.low <= rhs.low;
+	  }
+	  else if constexpr (std::is_same_v<CompareBy, typename OHLCV<Duration>::Close>) {
+		  res = res &&
+				  lhs.close <= rhs.close;
+	  }
+	  else if constexpr (std::is_same_v<CompareBy, typename OHLCV<Duration>::Volume>) {
+		  res = res &&
+				  lhs.volume <= rhs.volume;
+	  }
+	  return res;
   }
-  
-  template <typename Duration, typename Other, typename CompareBy = typename OHLCV<Duration>::AllFields>
+  template <
+		  typename Duration,
+		  typename Other,
+		  requirements::Comparable<base::Value<Duration>, Other> = true,
+		  typename CompareBy = typename OHLCV<Duration>::Close
+  >
   bool operator <= (const OHLCV<Duration>& lhs, const Other& rhs) {
-	  return !(operator > <Duration, CompareBy> (lhs, rhs));
+	  bool res {true};
+	  if constexpr (std::is_same_v<CompareBy, typename OHLCV<Duration>::AllFields>) {
+		  res = res &&
+				  lhs.open <= rhs &&
+				  lhs.high <= rhs &&
+				  lhs.low <= rhs &&
+				  lhs.close <= rhs &&
+				  lhs.volume <= rhs;
+	  }
+	  else if constexpr (std::is_same_v<CompareBy, typename OHLCV<Duration>::Open>) {
+		  res = res &&
+				  lhs.open <= rhs;
+	  }
+	  else if constexpr (std::is_same_v<CompareBy, typename OHLCV<Duration>::High>) {
+		  res = res &&
+				  lhs.high <= rhs;
+	  }
+	  else if constexpr (std::is_same_v<CompareBy, typename OHLCV<Duration>::Low>) {
+		  res = res &&
+				  lhs.low <= rhs;
+	  }
+	  else if constexpr (std::is_same_v<CompareBy, typename OHLCV<Duration>::Close>) {
+		  res = res &&
+				  lhs.close <= rhs;
+	  }
+	  else if constexpr (std::is_same_v<CompareBy, typename OHLCV<Duration>::Volume>) {
+		  res = res &&
+				  lhs.volume <= rhs;
+	  }
+	  return res;
   }
-  
+  template <
+		  typename Duration,
+		  typename Other,
+		  requirements::Comparable<base::Value<Duration>, Other> = true,
+		  typename CompareBy = typename OHLCV<Duration>::Close
+  >
+  bool operator <= (const Other& lhs, const OHLCV<Duration>& rhs) {
+	  bool res {true};
+	  if constexpr (std::is_same_v<CompareBy, typename OHLCV<Duration>::AllFields>) {
+		  res = res &&
+				  lhs <= rhs.open &&
+				  lhs <= rhs.high &&
+				  lhs <= rhs.low &&
+				  lhs <= rhs.close &&
+				  lhs <= rhs.volume;
+	  }
+	  else if constexpr (std::is_same_v<CompareBy, typename OHLCV<Duration>::Open>) {
+		  res = res &&
+				  lhs <= rhs.open;
+	  }
+	  else if constexpr (std::is_same_v<CompareBy, typename OHLCV<Duration>::High>) {
+		  res = res &&
+				  lhs <= rhs.high;
+	  }
+	  else if constexpr (std::is_same_v<CompareBy, typename OHLCV<Duration>::Low>) {
+		  res = res &&
+				  lhs <= rhs.low;
+	  }
+	  else if constexpr (std::is_same_v<CompareBy, typename OHLCV<Duration>::Close>) {
+		  res = res &&
+				  lhs <= rhs.close;
+	  }
+	  else if constexpr (std::is_same_v<CompareBy, typename OHLCV<Duration>::Volume>) {
+		  res = res &&
+				  lhs <= rhs.volume;
+	  }
+	  return res;
+  }
+
   template <typename Duration, typename CompareBy = typename OHLCV<Duration>::AllFields>
   bool operator >= (const OHLCV<Duration>& lhs, const OHLCV<Duration>& rhs){
-	  return !(operator < <Duration, CompareBy> (lhs, rhs));
+	  bool res {true};
+	  if constexpr (std::is_same_v<CompareBy, typename OHLCV<Duration>::AllFields>) {
+		  res = res &&
+				  lhs.open >= rhs.open &&
+				  lhs.high >= rhs.high &&
+				  lhs.low >= rhs.low &&
+				  lhs.close >= rhs.close &&
+				  lhs.volume >= rhs.volume;
+	  }
+	  else if constexpr (std::is_same_v<CompareBy, typename OHLCV<Duration>::Open>) {
+		  res = res &&
+				  lhs.open >= rhs.open;
+	  }
+	  else if constexpr (std::is_same_v<CompareBy, typename OHLCV<Duration>::High>) {
+		  res = res &&
+				  lhs.high >= rhs.high;
+	  }
+	  else if constexpr (std::is_same_v<CompareBy, typename OHLCV<Duration>::Low>) {
+		  res = res &&
+				  lhs.low >= rhs.low;
+	  }
+	  else if constexpr (std::is_same_v<CompareBy, typename OHLCV<Duration>::Close>) {
+		  res = res &&
+				  lhs.close >= rhs.close;
+	  }
+	  else if constexpr (std::is_same_v<CompareBy, typename OHLCV<Duration>::Volume>) {
+		  res = res &&
+				  lhs.volume >= rhs.volume;
+	  }
+	  return res;
   }
-  
-  template <typename Duration, typename Other, typename CompareBy = typename OHLCV<Duration>::AllFields>
+  template <
+		  typename Duration,
+		  typename Other,
+		  requirements::Comparable<base::Value<Duration>, Other> = true,
+		  typename CompareBy = typename OHLCV<Duration>::Close
+  >
   bool operator >= (const OHLCV<Duration>& lhs, const Other& rhs){
-	  return !(operator < <Duration, CompareBy> (lhs, rhs));
+	  bool res {true};
+	  if constexpr (std::is_same_v<CompareBy, typename OHLCV<Duration>::AllFields>) {
+		  res = res &&
+				  lhs.open >= rhs &&
+				  lhs.high >= rhs &&
+				  lhs.low >= rhs &&
+				  lhs.close >= rhs &&
+				  lhs.volume >= rhs;
+	  }
+	  else if constexpr (std::is_same_v<CompareBy, typename OHLCV<Duration>::Open>) {
+		  res = res &&
+				  lhs.open >= rhs;
+	  }
+	  else if constexpr (std::is_same_v<CompareBy, typename OHLCV<Duration>::High>) {
+		  res = res &&
+				  lhs.high >= rhs;
+	  }
+	  else if constexpr (std::is_same_v<CompareBy, typename OHLCV<Duration>::Low>) {
+		  res = res &&
+				  lhs.low >= rhs;
+	  }
+	  else if constexpr (std::is_same_v<CompareBy, typename OHLCV<Duration>::Close>) {
+		  res = res &&
+				  lhs.close >= rhs;
+	  }
+	  else if constexpr (std::is_same_v<CompareBy, typename OHLCV<Duration>::Volume>) {
+		  res = res &&
+				  lhs.volume >= rhs;
+	  }
+	  return res;
   }
+  template <
+		  typename Duration,
+		  typename Other,
+		  requirements::Comparable<base::Value<Duration>, Other> = true,
+		  typename CompareBy = typename OHLCV<Duration>::Close
+  >
+  bool operator >= (const Other& lhs, const OHLCV<Duration>& rhs){
+	  bool res {true};
+	  if constexpr (std::is_same_v<CompareBy, typename OHLCV<Duration>::AllFields>) {
+		  res = res &&
+				  lhs >= rhs.open &&
+				  lhs >= rhs.high &&
+				  lhs >= rhs.low &&
+				  lhs >= rhs.close &&
+				  lhs >= rhs.volume;
+	  }
+	  else if constexpr (std::is_same_v<CompareBy, typename OHLCV<Duration>::Open>) {
+		  res = res &&
+				  lhs >= rhs.open;
+	  }
+	  else if constexpr (std::is_same_v<CompareBy, typename OHLCV<Duration>::High>) {
+		  res = res &&
+				  lhs >= rhs.high;
+	  }
+	  else if constexpr (std::is_same_v<CompareBy, typename OHLCV<Duration>::Low>) {
+		  res = res &&
+				  lhs >= rhs.low;
+	  }
+	  else if constexpr (std::is_same_v<CompareBy, typename OHLCV<Duration>::Close>) {
+		  res = res &&
+				  lhs >= rhs.close;
+	  }
+	  else if constexpr (std::is_same_v<CompareBy, typename OHLCV<Duration>::Volume>) {
+		  res = res &&
+				  lhs >= rhs.volume;
+	  }
+	  return res;
+  }
+
 
   template <typename Duration>
   OHLCV<Duration> operator*(const OHLCV<Duration>& lhs, const OHLCV<Duration>& rhs) {
@@ -412,6 +683,8 @@ namespace financial {
 	  return lhs;
   }
 
+
+
   template <typename Duration>
   std::ostream& operator<<(std::ostream& os, const OHLCV<Duration>& ohlcv) {
 	  return os
@@ -421,7 +694,6 @@ namespace financial {
 			  << ohlcv.close << ", "
 			  << ohlcv.volume;
   }//!operator
-
   template <typename Duration>
   std::istream& operator>>(std::istream& is, OHLCV<Duration>& ohlcv) {
 	  base::Timestamp<Duration> timestamp;

@@ -5,13 +5,18 @@
 #pragma once
 
 #include "element.h"
+#include <vector>
 
 #ifndef TS_SERIE_H
 #define TS_SERIE_H
 
 namespace time_series {
 
-  template <typename Elem, template <typename = Elem> typename Container>
+  template <
+          typename Duration = base::Seconds,
+		  typename Elem = base::Value<Duration>,
+		  template <typename = Elem> typename Container = std::vector
+				  >
   class Serie {
   public:
 	  Serie () = default;

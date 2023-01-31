@@ -16,7 +16,7 @@ namespace base {
 	   * See separate project.
 	   */
 
-	  using ValueType = double;
+	  using ValueTypeDefault = double;
 
   }//!namespace
 

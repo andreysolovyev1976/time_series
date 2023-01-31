@@ -4,8 +4,6 @@
 
 #pragma once
 
-#include "value_type.h"
-
 #include <type_traits>
 #include <functional>
 
@@ -26,13 +24,16 @@ namespace requirements {
   using IsNotArithmetic = std::enable_if_t<not std::is_arithmetic_v<Number>, bool>;
 
 
-  template <typename Number>
-  using MayBecomeValue = std::enable_if_t<
+  template <typename Input, typename Result>
+  using ConveribleOrConstructibleFromTo = std::enable_if_t<
 		  std::disjunction_v<
-				  std::is_convertible<Number, base::traits::ValueType>,
-				  std::is_constructible<base::traits::ValueType, Number>
+				  std::is_convertible<Input, Result>,
+				  std::is_constructible<Result, Input>
 		  >
 		  , bool>;
+
+  template <typename Input, typename Result, ConveribleOrConstructibleFromTo<Input, Result> = true>
+  constexpr bool isConveribleOrConstructible () {return true;}
 
 
   template <typename Function, typename Type>
@@ -135,8 +136,10 @@ namespace requirements {
   template <typename L, typename R,
 		  typename = Comparable<L,R>,
 		  typename = ArithmeticOperationsDefined<L, R>>
-  using IsSuitable = bool;
+  using BinOperatorsExist = bool;
 
+  template <typename DataStructure, BinOperatorsExist<DataStructure, double> = true>
+  using CanBeElemType = bool;
 
 }//!namespace
 #endif //TYPE_REQUIREMENTS_H

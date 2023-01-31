@@ -14,5 +14,4 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char **argv) {
 //todo:
 // test overflow
 // test double < int , int < double, double < string, string < double
-// test OHLCV <==> OHLCV, OHLCV <==> int, OHLCV <==> double
 // test change of epsilon

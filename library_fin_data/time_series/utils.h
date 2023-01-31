@@ -34,6 +34,24 @@ namespace base {
 #endif
 	}
 
+	inline
+	auto fromChars(const std::string &str) {
+		double local_result;
+#ifdef __APPLE__
+		local_result = std::stod(str);
+#else
+
+		auto [ptr, ec]{std::from_chars(str_int.data(), str_int.data() + str_int.size(), local_result)};
+		if (ec == std::errc::invalid_argument) {
+			throw std::invalid_argument("Attempt to convert not a number; ");
+		} else if (ec == std::errc::result_out_of_range) {
+			throw std::invalid_argument("Out of bound for an int64_t; ");
+		}
+#endif
+		return local_result;
+	}
+
+
   }//!namespace
 }//!namespace
 #endif //BASE_UTILS_H

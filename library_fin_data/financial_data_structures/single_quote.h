@@ -9,10 +9,10 @@
 #define FIN_SINGLE_QOUTE_H
 
 
-namespace finacial {
+namespace financial {
 
   template <typename Duration>
-  using SingleQuote = base::Value<Duration>;
+  using SingleQuote = base::Value<Duration, base::traits::ValueTypeDefault>;
 
 }
 
