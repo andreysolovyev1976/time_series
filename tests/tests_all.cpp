@@ -1,0 +1,18 @@
+//
+// Created by Andrey Solovyev on 24/01/2023.
+//
+
+#include <gtest/gtest.h>
+
+int main([[maybe_unused]] int argc, [[maybe_unused]] char **argv) {
+	testing::InitGoogleTest(&argc, argv);
+	testing::GTEST_FLAG(color) = "yes";
+//	testing::GTEST_FLAG(filter) = "Ctors*:Assignments*:Constructible*:Compare*:Arithmetics*";
+	return RUN_ALL_TESTS();
+}
+
+//todo:
+// test overflow
+// test double < int , int < double, double < string, string < double
+// test OHLCV <==> OHLCV, OHLCV <==> int, OHLCV <==> double
+// test change of epsilon
