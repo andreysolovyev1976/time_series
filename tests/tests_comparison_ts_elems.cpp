@@ -3,21 +3,7 @@
 //
 
 
-#include <gtest/gtest.h>
-#include "time_series/value.h"
-#include "financial_data_structures/single_quote.h"
-#include "financial_data_structures/ohlcv.h"
-#include "financial_data_structures/bid_ask.h"
-#include "time_series/element.h"
-
-using test_types_comparison_singletons = testing::Types<
-		base::Value<base::Seconds>,
-		financial::SingleQuote<base::Seconds>
->;
-template<typename T>
-class CompareSingletons : public testing::Test {};
-TYPED_TEST_SUITE(CompareSingletons, test_types_comparison_singletons);
-
+#include "typed_tests_list.h"
 
 
 TYPED_TEST(CompareSingletons, Equal) {
@@ -108,15 +94,6 @@ TYPED_TEST(CompareSingletons, GreaterOrEqual) {
 	ASSERT_TRUE(!(v2 <= v4));
 	ASSERT_TRUE(v4 <= v2);
 }
-
-
-using test_types_comparison_multifield = testing::Types<
-		financial::OHLCV<base::Seconds>,
-		financial::BidAsk<base::Seconds>
->;
-template<typename T>
-class CompareMultiField : public testing::Test {};
-TYPED_TEST_SUITE(CompareMultiField, test_types_comparison_multifield);
 
 /**
  * @details

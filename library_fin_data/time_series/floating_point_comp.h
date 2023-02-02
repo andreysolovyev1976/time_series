@@ -57,12 +57,16 @@ namespace base {
 		  }();
 
   template <typename T, typename U,
-		  requirements::IsFloatinPoint<T> = true, requirements::IsArithmetic<U> = true>
+		  requirements::NotSame<T, U>,
+		  requirements::IsFloatinPoint<T> = true,
+		  requirements::IsArithmetic<U> = true>
   bool operator == (T a, U b){
 	  return ((a-b) < floating_comp.epsilon) && ((b-a) < floating_comp.epsilon);
   }
   template <typename T, typename U,
-		  requirements::IsFloatinPoint<T> = true, requirements::IsArithmetic<U> = true>
+		  requirements::NotSame<T, U>,
+		  requirements::IsFloatinPoint<T> = true,
+		  requirements::IsArithmetic<U> = true>
   bool operator == (U b, T a){
 	  return ((a-b) < floating_comp.epsilon) && ((b-a) < floating_comp.epsilon);
   }
@@ -73,12 +77,16 @@ namespace base {
   }
 
   template <typename T, typename U,
-		  requirements::IsFloatinPoint<T> = true, requirements::IsArithmetic<U> = true>
+		  requirements::NotSame<T, U>,
+		  requirements::IsFloatinPoint<T> = true,
+		  requirements::IsArithmetic<U> = true>
   bool operator != (T a, U b){
 	  return (not (a == b));
   }
   template <typename T, typename U,
-		  requirements::IsFloatinPoint<T> = true, requirements::IsArithmetic<U> = true>
+		  requirements::NotSame<T, U>,
+		  requirements::IsFloatinPoint<T> = true,
+		  requirements::IsArithmetic<U> = true>
   bool operator != (U b, T a){
 	  return (not (a == b));
   }
@@ -89,12 +97,16 @@ namespace base {
   }
 
   template <typename T, typename U,
-		  requirements::IsFloatinPoint<T> = true, requirements::IsArithmetic<U> = true>
+		  requirements::NotSame<T, U>,
+		  requirements::IsFloatinPoint<T> = true,
+		  requirements::IsArithmetic<U> = true>
   bool operator < (T a, U b) {
 	  return a<b - floating_comp.epsilon;
   }
   template <typename T, typename U,
-		  requirements::IsFloatinPoint<T> = true, requirements::IsArithmetic<U> = true>
+		  requirements::NotSame<T, U>,
+		  requirements::IsFloatinPoint<T> = true,
+		  requirements::IsArithmetic<U> = true>
   bool operator < (U b, T a) {
 	  return a<b - floating_comp.epsilon;
   }
@@ -104,12 +116,16 @@ namespace base {
 	  return a<b - floating_comp.epsilon;
   }
   template <typename T, typename U,
-		  requirements::IsFloatinPoint<T> = true, requirements::IsArithmetic<U> = true>
+		  requirements::NotSame<T, U>,
+		  requirements::IsFloatinPoint<T> = true,
+		  requirements::IsArithmetic<U> = true>
   bool operator > (T a, U b) {
 	  return a>b + floating_comp.epsilon;
   }
   template <typename T, typename U,
-		  requirements::IsFloatinPoint<T> = true, requirements::IsArithmetic<U> = true>
+		  requirements::NotSame<T, U>,
+		  requirements::IsFloatinPoint<T> = true,
+		  requirements::IsArithmetic<U> = true>
   bool operator > (U b, T a) {
 	  return a>b + floating_comp.epsilon;
   }
@@ -120,12 +136,16 @@ namespace base {
   }
 
   template <typename T, typename U,
-		  requirements::IsFloatinPoint<T> = true, requirements::IsArithmetic<U> = true>
+		  requirements::NotSame<T, U>,
+		  requirements::IsFloatinPoint<T> = true,
+		  requirements::IsArithmetic<U> = true>
   bool operator >= (T a, U b) {
 	  return a>b - floating_comp.epsilon;
   }
   template <typename T, typename U,
-		  requirements::IsFloatinPoint<T> = true, requirements::IsArithmetic<U> = true>
+		  requirements::NotSame<T, U>,
+		  requirements::IsFloatinPoint<T> = true,
+		  requirements::IsArithmetic<U> = true>
   bool operator >= (U b, T a) {
 	  return a>b - floating_comp.epsilon;
   }
@@ -135,12 +155,16 @@ namespace base {
 	  return a>b - floating_comp.epsilon;
   }
   template <typename T, typename U,
-		  requirements::IsFloatinPoint<T> = true, requirements::IsArithmetic<U> = true>
+		  requirements::NotSame<T, U>,
+		  requirements::IsFloatinPoint<T> = true,
+		  requirements::IsArithmetic<U> = true>
   bool operator <= (T a, U b) {
 	  return a<b + floating_comp.epsilon;
   }
   template <typename T, typename U,
-		  requirements::IsFloatinPoint<T> = true, requirements::IsArithmetic<U> = true>
+		  requirements::NotSame<T, U>,
+		  requirements::IsFloatinPoint<T> = true,
+		  requirements::IsArithmetic<U> = true>
   bool operator <= (U b, T a) {
 	  return a<b + floating_comp.epsilon;
   }

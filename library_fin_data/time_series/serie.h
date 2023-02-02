@@ -24,8 +24,14 @@ namespace time_series {
 	  explicit Serie (const std::vector<Elem> &values);
 	  explicit Serie (std::initializer_list<Elem> values);
 
-	  template <typename Fn>
-	  Serie& applyFunction (Fn &&fn);
+	  template <typename Fn, typename Iter>
+	  Serie& applyFunction (Fn &&fn /* should be applicable using iterators */);
+
+	  template <typename Iter>
+	  Iter begin();
+	  void end();
+	  void begin() const;
+	  void end() const;
   private:
 	  Container<Elem> data;
   };

@@ -70,7 +70,7 @@ namespace financial {
   }
 
   template <typename Duration, typename CompareBy = typename OHLCV<Duration>::AllFields>
-  bool operator==(const OHLCV<Duration>& lhs, const OHLCV<Duration>& rhs) {
+  bool operator == (const OHLCV<Duration>& lhs, const OHLCV<Duration>& rhs) {
 	  bool res {true};
 	  if constexpr (std::is_same_v<CompareBy, typename OHLCV<Duration>::AllFields>) {
 		  res = res &&
@@ -106,7 +106,8 @@ namespace financial {
   template <
 		  typename Duration,
 		  typename Other,
-		  requirements::Comparable<base::Value<Duration>, Other> = true,
+		  requirements::NotSame<base::Value<Duration>, Other> = true,
+		  requirements::ComparisonOperationsDefined<base::Value<Duration>, Other> = true,
 		  typename CompareBy = typename OHLCV<Duration>::Close
   >
   bool operator == (const OHLCV<Duration>& lhs, const Other& rhs) {
@@ -144,7 +145,8 @@ namespace financial {
   template <
 		  typename Duration,
 		  typename Other,
-		  requirements::Comparable<base::Value<Duration>, Other> = true,
+		  requirements::NotSame<base::Value<Duration>, Other> = true,
+		  requirements::ComparisonOperationsDefined<base::Value<Duration>, Other> = true,
 		  typename CompareBy = typename OHLCV<Duration>::Close
   >
   bool operator == (const Other& lhs, const OHLCV<Duration>& rhs) {
@@ -158,7 +160,8 @@ namespace financial {
   template <
 		  typename Duration,
 		  typename Other,
-		  requirements::Comparable<base::Value<Duration>, Other> = true,
+		  requirements::NotSame<base::Value<Duration>, Other> = true,
+		  requirements::ComparisonOperationsDefined<base::Value<Duration>, Other> = true,
 		  typename CompareBy = typename OHLCV<Duration>::Close
   >
   bool operator != (const OHLCV<Duration>& lhs, const Other& rhs) {
@@ -167,7 +170,8 @@ namespace financial {
   template <
 		  typename Duration,
 		  typename Other,
-		  requirements::Comparable<base::Value<Duration>, Other> = true,
+		  requirements::NotSame<base::Value<Duration>, Other> = true,
+		  requirements::ComparisonOperationsDefined<base::Value<Duration>, Other> = true,
 		  typename CompareBy = typename OHLCV<Duration>::Close
   >
   bool operator != (const Other& lhs, const OHLCV<Duration>& rhs) {
@@ -210,7 +214,8 @@ namespace financial {
   template <
 		  typename Duration,
 		  typename Other,
-		  requirements::Comparable<base::Value<Duration>, Other> = true,
+		  requirements::NotSame<base::Value<Duration>, Other> = true,
+		  requirements::ComparisonOperationsDefined<base::Value<Duration>, Other> = true,
 		  typename CompareBy = typename OHLCV<Duration>::Close
   >
   bool operator < (const OHLCV<Duration>& lhs, const Other& rhs) {
@@ -249,7 +254,8 @@ namespace financial {
   template <
 		  typename Duration,
 		  typename Other,
-		  requirements::Comparable<base::Value<Duration>, Other> = true,
+		  requirements::NotSame<base::Value<Duration>, Other> = true,
+		  requirements::ComparisonOperationsDefined<base::Value<Duration>, Other> = true,
 		  typename CompareBy = typename OHLCV<Duration>::Close
   >
   bool operator < (const Other& rhs, const OHLCV<Duration>& lhs) {
@@ -263,7 +269,8 @@ namespace financial {
   template <
 		  typename Duration,
 		  typename Other,
-		  requirements::Comparable<base::Value<Duration>, Other> = true,
+		  requirements::NotSame<base::Value<Duration>, Other> = true,
+		  requirements::ComparisonOperationsDefined<base::Value<Duration>, Other> = true,
 		  typename CompareBy = typename OHLCV<Duration>::Close
   >
   bool operator > (const OHLCV<Duration>& lhs, const Other& rhs) {
@@ -272,7 +279,8 @@ namespace financial {
   template <
 		  typename Duration,
 		  typename Other,
-		  requirements::Comparable<base::Value<Duration>, Other> = true,
+		  requirements::NotSame<base::Value<Duration>, Other> = true,
+		  requirements::ComparisonOperationsDefined<base::Value<Duration>, Other> = true,
 		  typename CompareBy = typename OHLCV<Duration>::Close
   >
   bool operator > (const Other& lhs, const OHLCV<Duration>& rhs) {
@@ -315,7 +323,8 @@ namespace financial {
   template <
 		  typename Duration,
 		  typename Other,
-		  requirements::Comparable<base::Value<Duration>, Other> = true,
+		  requirements::NotSame<base::Value<Duration>, Other> = true,
+		  requirements::ComparisonOperationsDefined<base::Value<Duration>, Other> = true,
 		  typename CompareBy = typename OHLCV<Duration>::Close
   >
   bool operator <= (const OHLCV<Duration>& lhs, const Other& rhs) {
@@ -353,7 +362,8 @@ namespace financial {
   template <
 		  typename Duration,
 		  typename Other,
-		  requirements::Comparable<base::Value<Duration>, Other> = true,
+		  requirements::NotSame<base::Value<Duration>, Other> = true,
+		  requirements::ComparisonOperationsDefined<base::Value<Duration>, Other> = true,
 		  typename CompareBy = typename OHLCV<Duration>::Close
   >
   bool operator <= (const Other& lhs, const OHLCV<Duration>& rhs) {
@@ -425,7 +435,8 @@ namespace financial {
   template <
 		  typename Duration,
 		  typename Other,
-		  requirements::Comparable<base::Value<Duration>, Other> = true,
+		  requirements::NotSame<base::Value<Duration>, Other> = true,
+		  requirements::ComparisonOperationsDefined<base::Value<Duration>, Other> = true,
 		  typename CompareBy = typename OHLCV<Duration>::Close
   >
   bool operator >= (const OHLCV<Duration>& lhs, const Other& rhs){
@@ -463,7 +474,8 @@ namespace financial {
   template <
 		  typename Duration,
 		  typename Other,
-		  requirements::Comparable<base::Value<Duration>, Other> = true,
+		  requirements::NotSame<base::Value<Duration>, Other> = true,
+		  requirements::ComparisonOperationsDefined<base::Value<Duration>, Other> = true,
 		  typename CompareBy = typename OHLCV<Duration>::Close
   >
   bool operator >= (const Other& lhs, const OHLCV<Duration>& rhs){
@@ -501,7 +513,7 @@ namespace financial {
 
 
   template <typename Duration>
-  OHLCV<Duration> operator*(const OHLCV<Duration>& lhs, const OHLCV<Duration>& rhs) {
+  OHLCV<Duration> operator * (const OHLCV<Duration>& lhs, const OHLCV<Duration>& rhs) {
 	  return OHLCV<Duration> {
 			  .open= lhs.open * rhs.open,
 			  .high= lhs.high * rhs.high,
@@ -512,7 +524,7 @@ namespace financial {
   }
 //todo: concept on Other?
   template <typename Duration, typename Other, bool VolumeToo = false>
-  OHLCV<Duration> operator*(const OHLCV<Duration>& lhs, Other rhs) {
+  OHLCV<Duration> operator * (const OHLCV<Duration>& lhs, Other rhs) {
 	  OHLCV<Duration> res;
 	  res.open = lhs.open * rhs;
 	  res.high = lhs.high * rhs;
@@ -536,7 +548,7 @@ namespace financial {
   }
 //todo: concept on Other?
   template <typename Duration, typename Other, bool VolumeToo = false>
-  OHLCV<Duration> operator/(const OHLCV<Duration>& lhs, Other rhs) {
+  OHLCV<Duration> operator / (const OHLCV<Duration>& lhs, Other rhs) {
 	  OHLCV<Duration> res;
 	  res.open = lhs.open / rhs;
 	  res.high = lhs.high / rhs;
@@ -571,7 +583,7 @@ namespace financial {
 	  return res;
   }
   template <typename Duration>
-  OHLCV<Duration> operator-(const OHLCV<Duration>& lhs, const OHLCV<Duration>& rhs) {
+  OHLCV<Duration> operator - (const OHLCV<Duration>& lhs, const OHLCV<Duration>& rhs) {
 	  return OHLCV<Duration> {
 			  .open= lhs.open - rhs.open,
 			  .high= lhs.high - rhs.high,
@@ -686,7 +698,7 @@ namespace financial {
 
 
   template <typename Duration>
-  std::ostream& operator<<(std::ostream& os, const OHLCV<Duration>& ohlcv) {
+  std::ostream& operator << (std::ostream& os, const OHLCV<Duration>& ohlcv) {
 	  return os
 			  << ohlcv.open << ", "
 			  << ohlcv.high << ", "
@@ -695,7 +707,7 @@ namespace financial {
 			  << ohlcv.volume;
   }//!operator
   template <typename Duration>
-  std::istream& operator>>(std::istream& is, OHLCV<Duration>& ohlcv) {
+  std::istream& operator >> (std::istream& is, OHLCV<Duration>& ohlcv) {
 	  base::Timestamp<Duration> timestamp;
 	  typename OHLCV<Duration>::Type open, high, low, close, volume {0.0};
 	  bool ohlc_read_ok {false}, volume_read_ok {false};

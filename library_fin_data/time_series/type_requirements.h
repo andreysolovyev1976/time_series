@@ -110,33 +110,43 @@ namespace requirements {
 
 
   template <typename L, typename R>
-  using Comparable = std::enable_if_t<
+  using ComparisonOperationsDefined = std::enable_if_t<
 		  std::conjunction_v<
-				  has_equality<L, R>,
-				  has_equality<R, L>,
-				  has_less_than<L, R>,
-				  has_less_than<R, L>
+				  has_equality<std::decay_t<L>, std::decay_t<R>>
+				  , has_equality<std::decay_t<R>, std::decay_t<L>>
+				  , has_less_than<std::decay_t<L>, std::decay_t<R>>
+				  , has_less_than<std::decay_t<R>, std::decay_t<L>>
 		  >
 		  , bool>;
 
   template <typename L, typename R>
   using ArithmeticOperationsDefined = std::enable_if_t<
 		  std::conjunction_v<
-				  has_plus<L,R>,
-				  has_plus<R,L>,
-				  has_minus<L,R>,
-				  has_minus<R,L>,
-				  has_divides<L,R>,
-				  has_divides<R,L>,
-				  has_multiply<L,R>,
-				  has_multiply<R,L>
+				  has_plus<std::decay_t<L>, std::decay_t<R>>
+				  , has_plus<std::decay_t<R>, std::decay_t<L>>
+				  , has_minus<std::decay_t<L>, std::decay_t<R>>
+				  , has_minus<std::decay_t<R>, std::decay_t<L>>
+				  , has_divides<std::decay_t<L>, std::decay_t<R>>
+				  , has_divides<std::decay_t<R>, std::decay_t<L>>
+				  , has_multiply<std::decay_t<L>, std::decay_t<R>>
+				  , has_multiply<std::decay_t<R>, std::decay_t<L>>
 		  >
 		  , bool>;
 
-  template <typename L, typename R,
-		  typename = Comparable<L,R>,
-		  typename = ArithmeticOperationsDefined<L, R>>
+  template <typename L, typename R
+		  , ComparisonOperationsDefined<L, R> = true
+		  , ArithmeticOperationsDefined<L, R> = true
+		  >
   using BinOperatorsExist = bool;
+
+
+
+
+  template <typename L, typename R>
+  using NotSame = std::enable_if_t<not std::is_same_v<std::decay_t<L>, std::decay_t<R>>, bool>;
+
+
+
 
   template <typename DataStructure, BinOperatorsExist<DataStructure, double> = true>
   using CanBeElemType = bool;

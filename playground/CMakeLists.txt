@@ -11,7 +11,6 @@ set(CMAKE_CXX_FLAGS_RELEASE " -O3")
 
 add_executable(${PROJECT_NAME_PLAYGROUND} playground.cpp)
 target_link_libraries(${PROJECT_NAME_PLAYGROUND}
-        Boost::boost
         pthread
 #        fin_quote
         )

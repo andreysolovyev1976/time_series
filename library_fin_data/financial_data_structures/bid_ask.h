@@ -69,11 +69,12 @@ namespace financial {
 
 
   template <
-          typename Duration,
+		  typename Duration,
 		  typename Other,
-		  requirements::Comparable<base::Value<Duration>, Other> = true,
-		          typename CompareBy = typename BidAsk<Duration>::Price
-						  >
+		  requirements::NotSame<base::Value<Duration>, Other> = true,
+		  requirements::ComparisonOperationsDefined<base::Value<Duration>, Other> = true,
+		  typename CompareBy = typename BidAsk<Duration>::Price
+  >
   bool operator == (const Other& lhs, const BidAsk<Duration>& rhs) {
 	  return (rhs == lhs);
   }
@@ -114,7 +115,8 @@ namespace financial {
   template <
 		  typename Duration,
 		  typename Other,
-		  requirements::Comparable<base::Value<Duration>, Other> = true,
+		  requirements::NotSame<base::Value<Duration>, Other> = true,
+		  requirements::ComparisonOperationsDefined<base::Value<Duration>, Other> = true,
 		  typename CompareBy = typename BidAsk<Duration>::Price
   >
   bool operator == (const BidAsk<Duration>& lhs, const Other& rhs) {
@@ -151,13 +153,14 @@ namespace financial {
   }
 
   template <typename Duration, typename CompareBy = typename BidAsk<Duration>::AllFields>
-  bool operator!=(const BidAsk<Duration>& lhs, const BidAsk<Duration>& rhs) {
+  bool operator != (const BidAsk<Duration>& lhs, const BidAsk<Duration>& rhs) {
 	  return !(lhs == rhs);
   }
   template <
 		  typename Duration,
 		  typename Other,
-		  requirements::Comparable<base::Value<Duration>, Other> = true,
+		  requirements::NotSame<base::Value<Duration>, Other> = true,
+		  requirements::ComparisonOperationsDefined<base::Value<Duration>, Other> = true,
 		  typename CompareBy = typename BidAsk<Duration>::Price
   >
   bool operator != (const BidAsk<Duration>& lhs, const Other& rhs) {
@@ -166,7 +169,8 @@ namespace financial {
   template <
 		  typename Duration,
 		  typename Other,
-		  requirements::Comparable<base::Value<Duration>, Other> = true,
+		  requirements::NotSame<base::Value<Duration>, Other> = true,
+		  requirements::ComparisonOperationsDefined<base::Value<Duration>, Other> = true,
 		  typename CompareBy = typename BidAsk<Duration>::Price
   >
   bool operator != (const Other& lhs, const BidAsk<Duration>& rhs) {
@@ -209,7 +213,8 @@ namespace financial {
   template <
 		  typename Duration,
 		  typename Other,
-		  requirements::Comparable<base::Value<Duration>, Other> = true,
+		  requirements::NotSame<base::Value<Duration>, Other> = true,
+		  requirements::ComparisonOperationsDefined<base::Value<Duration>, Other> = true,
 		  typename CompareBy = typename BidAsk<Duration>::Price
   >
   bool operator < (const BidAsk<Duration>& lhs, const Other& rhs) {
@@ -248,7 +253,8 @@ namespace financial {
   template <
 		  typename Duration,
 		  typename Other,
-		  requirements::Comparable<base::Value<Duration>, Other> = true,
+		  requirements::NotSame<base::Value<Duration>, Other> = true,
+		  requirements::ComparisonOperationsDefined<base::Value<Duration>, Other> = true,
 		  typename CompareBy = typename BidAsk<Duration>::Price
   >
   bool operator < (const Other& lhs, const BidAsk<Duration>& rhs) {
@@ -262,7 +268,8 @@ namespace financial {
   template <
 		  typename Duration,
 		  typename Other,
-		  requirements::Comparable<base::Value<Duration>, Other> = true,
+		  requirements::NotSame<base::Value<Duration>, Other> = true,
+		  requirements::ComparisonOperationsDefined<base::Value<Duration>, Other> = true,
 		  typename CompareBy = typename BidAsk<Duration>::Price
   >
   bool operator > (const BidAsk<Duration>& lhs, const Other& rhs) {
@@ -271,7 +278,8 @@ namespace financial {
   template <
 		  typename Duration,
 		  typename Other,
-		  requirements::Comparable<base::Value<Duration>, Other> = true,
+		  requirements::NotSame<base::Value<Duration>, Other> = true,
+		  requirements::ComparisonOperationsDefined<base::Value<Duration>, Other> = true,
 		  typename CompareBy = typename BidAsk<Duration>::Price
   >
   bool operator > (const Other& lhs, const BidAsk<Duration>& rhs) {
@@ -314,7 +322,8 @@ namespace financial {
   template <
 		  typename Duration,
 		  typename Other,
-		  requirements::Comparable<base::Value<Duration>, Other> = true,
+		  requirements::NotSame<base::Value<Duration>, Other> = true,
+		  requirements::ComparisonOperationsDefined<base::Value<Duration>, Other> = true,
 		  typename CompareBy = typename BidAsk<Duration>::Price
   >
   bool operator <= (const BidAsk<Duration>& lhs, const Other& rhs) {
@@ -352,7 +361,8 @@ namespace financial {
   template <
 		  typename Duration,
 		  typename Other,
-		  requirements::Comparable<base::Value<Duration>, Other> = true,
+		  requirements::NotSame<base::Value<Duration>, Other> = true,
+		  requirements::ComparisonOperationsDefined<base::Value<Duration>, Other> = true,
 		  typename CompareBy = typename BidAsk<Duration>::Price
   >
   bool operator <= (const Other& lhs, const BidAsk<Duration>& rhs) {
@@ -424,7 +434,8 @@ namespace financial {
   template <
 		  typename Duration,
 		  typename Other,
-		  requirements::Comparable<base::Value<Duration>, Other> = true,
+		  requirements::NotSame<base::Value<Duration>, Other> = true,
+		  requirements::ComparisonOperationsDefined<base::Value<Duration>, Other> = true,
 		  typename CompareBy = typename BidAsk<Duration>::Price
   >
   bool operator >= (const BidAsk<Duration>& lhs, const Other& rhs){
@@ -462,7 +473,8 @@ namespace financial {
   template <
 		  typename Duration,
 		  typename Other,
-		  requirements::Comparable<base::Value<Duration>, Other> = true,
+		  requirements::NotSame<base::Value<Duration>, Other> = true,
+		  requirements::ComparisonOperationsDefined<base::Value<Duration>, Other> = true,
 		  typename CompareBy = typename BidAsk<Duration>::Price
   >
   bool operator >= (const Other& lhs, const BidAsk<Duration>& rhs){
@@ -500,7 +512,7 @@ namespace financial {
 
   //todo: concept on Other?
   template <typename Duration>
-  BidAsk<Duration> operator*(const BidAsk<Duration>& lhs, const BidAsk<Duration>& rhs) {
+  BidAsk<Duration> operator * (const BidAsk<Duration>& lhs, const BidAsk<Duration>& rhs) {
 	  return BidAsk<Duration> {
 			  .bid = lhs.bid * rhs.bid,
 			  .ask = lhs.ask * rhs.ask,
@@ -510,7 +522,7 @@ namespace financial {
 	  };
   }
   template <typename Duration, typename Other, bool VolumeToo = false>
-  BidAsk<Duration> operator*(const BidAsk<Duration>& lhs, Other rhs) {
+  BidAsk<Duration> operator * (const BidAsk<Duration>& lhs, Other rhs) {
 	  BidAsk<Duration> res;
 	  res.bid = lhs.bid * rhs;
 	  res.ask = lhs.ask * rhs;
@@ -533,7 +545,7 @@ namespace financial {
 	  };
   }
   template <typename Duration, typename Other, bool VolumeToo = false>
-  BidAsk<Duration> operator/(const BidAsk<Duration>& lhs, Other rhs) {
+  BidAsk<Duration> operator / (const BidAsk<Duration>& lhs, Other rhs) {
 	  BidAsk<Duration> res;
 	  res.bid = lhs.bid / rhs;
 	  res.ask = lhs.ask / rhs;
@@ -567,7 +579,7 @@ namespace financial {
 	  return res;
   }
   template <typename Duration>
-  BidAsk<Duration> operator-(const BidAsk<Duration>& lhs, const BidAsk<Duration>& rhs) {
+  BidAsk<Duration> operator - (const BidAsk<Duration>& lhs, const BidAsk<Duration>& rhs) {
 	  return BidAsk<Duration> {
 			  .bid = lhs.bid - rhs.bid,
 			  .ask = lhs.ask - rhs.ask,
@@ -677,7 +689,7 @@ namespace financial {
 
 
   template <typename Duration>
-  std::ostream& operator<<(std::ostream& os, const BidAsk<Duration>& ohlcv) {
+  std::ostream& operator << (std::ostream& os, const BidAsk<Duration>& ohlcv) {
 	  return os
 			  << ohlcv.bid << ", "
 			  << ohlcv.ask << ", "
@@ -686,7 +698,7 @@ namespace financial {
 			  << ohlcv.volume;
   }//!operator
   template <typename Duration>
-  std::istream& operator>>(std::istream& is, BidAsk<Duration>& ohlcv) {
+  std::istream& operator >> (std::istream& is, BidAsk<Duration>& ohlcv) {
 	  typename BidAsk<Duration>::Type open, high, low, close, volume {0.0};
 	  bool ohlc_read_ok {false}, volume_read_ok {false};
 	  if (is && !is.eof()) {

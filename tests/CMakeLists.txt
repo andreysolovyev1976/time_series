@@ -23,14 +23,13 @@ add_executable(${PROJECT_NAME_TEST}
         tests_ctors.cpp
         tests_comparison_basics.cpp
         tests_comparison_ts_elems.cpp
-#        tests_arithmetics.cpp
+        tests_arithmetics.cpp
 #        tests_precision.cpp
         )
 
 message(STATUS "Linking test in Debug mode...")
 target_link_libraries(${PROJECT_NAME_TEST}
         ${GTEST_LIBRARIES}
-        Boost::boost
         pthread
         fin_data_time_series
         )

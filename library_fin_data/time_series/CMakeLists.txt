@@ -8,7 +8,6 @@ include_directories(third_part/cds)
 
 add_library(${PROJECT_NAME_TIME_SERIES} quote.cpp)
 target_link_libraries(${PROJECT_NAME_TIME_SERIES}
-        Boost::boost
         pthread
         )
 target_include_directories (${PROJECT_NAME_TIME_SERIES} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})

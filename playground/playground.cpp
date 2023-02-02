@@ -92,6 +92,8 @@ int main () {
 
 #endif
 
+
+#if 0
 #include "financial_data_structures/ohlcv.h"
 #include "financial_data_structures/bid_ask.h"
 #include "time_series/element.h"
@@ -177,4 +179,42 @@ int main () {
 
 	time_series::Element<base::Seconds, int> element_int (42);
 	std::cout << element_int << '\n';
+}
+
+#endif
+
+#include <iostream>
+#include "time_series/type_requirements.h"
+#include "time_series/value.h"
+
+template <typename L, typename R, requirements::BinOperatorsExist<L, R> = true>
+constexpr bool opsExists () {return true;}
+
+int main () {
+	using namespace std;
+	cout << boolalpha;
+	cout << opsExists<char, int>() << '\n';
+
+	base::Value<base::Seconds> value (42.2);
+	bool b = value < 12.2;
+	b = 12.2 < value;
+	b = value == 42.2;
+	b = 42.2 == value;
+
+	cout << opsExists<decltype(value), int>() << '\n';
+	cout << opsExists<int, decltype(value)>() << '\n';
+	cout << opsExists<decltype(value), double>() << '\n';
+	cout << opsExists<double, decltype(value)>() << '\n';
+
+	base::Value<base::Seconds> t;
+	cout << t << '\n';
+	t = value - 12.2;
+	t = 52.2 - t;
+	cout << t << '\n';
+
+	cout << (t < 25.5) << '\n';
+	cout << (25.5 < t) << '\n';
+
+	auto r = value + t;
+	cout << r << '\n';
 }

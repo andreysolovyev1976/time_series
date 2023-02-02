@@ -39,6 +39,12 @@ namespace base {
 	  Value& operator = (Input input);
 	  Value (std::string input);
 	  std::string toString () const;
+
+
+//	  bool operator==(const Value& rhs);
+//	  template <typename Other>
+//	  bool operator==(const Other& rhs);
+
   };
 
   template <typename Duration, typename ValueType>
@@ -66,17 +72,20 @@ namespace base {
 	  return utils::toChars(value);
   }
 
+
   template <typename Duration, typename ValueType>
   bool operator==(const Value<Duration, ValueType>& lhs, const Value<Duration, ValueType>& rhs) {
 	  return lhs.value == rhs.value;
   }
   template <typename Duration, typename ValueType, typename Other,
-          requirements::BinOperatorsExist<Value<Duration, ValueType>, Other> = true>
+		  requirements::NotSame<Value<Duration, ValueType>, Other> = true,
+		  requirements::BinOperatorsExist<Value<Duration, ValueType>, Other> = true>
   bool operator==(const Value<Duration, ValueType>& lhs, const Other& rhs) {
 	  return lhs.value == rhs;
   }
   template <typename Duration, typename ValueType, typename Other,
-          requirements::BinOperatorsExist<Value<Duration, ValueType>, Other> = true>
+		  requirements::NotSame<Value<Duration, ValueType>, Other> = true,
+		  requirements::BinOperatorsExist<Value<Duration, ValueType>, Other> = true>
   bool operator==(const Other& lhs, const Value<Duration, ValueType>& rhs) {
 	  return lhs == rhs.value;
   }
@@ -84,12 +93,14 @@ namespace base {
   bool operator!=(const Value<Duration, ValueType>& lhs, const Value<Duration, ValueType>& rhs) {
 	  return !(lhs==rhs);
   }
-  template <typename Duration, typename ValueType, typename Other, 
-          requirements::BinOperatorsExist<Value<Duration, ValueType>, Other> = true>
+  template <typename Duration, typename ValueType, typename Other,
+		  requirements::NotSame<Value<Duration, ValueType>, Other> = true,
+		  requirements::BinOperatorsExist<Value<Duration, ValueType>, Other> = true>
   bool operator!=(const Value<Duration, ValueType>& lhs, const Other& rhs) {
 	  return !(lhs==rhs);
   }
   template <typename Duration, typename ValueType, typename Other,
+		  requirements::NotSame<Value<Duration, ValueType>, Other> = true,
 		  requirements::BinOperatorsExist<Value<Duration, ValueType>, Other> = true>
   bool operator!=(const Other& lhs, const Value<Duration, ValueType>& rhs) {
 	  return !(lhs==rhs);
@@ -98,12 +109,14 @@ namespace base {
   bool operator < (const Value<Duration, ValueType>& lhs, const Value<Duration, ValueType>& rhs) {
 	  return lhs.value < rhs.value;
   }
-  template <typename Duration, typename ValueType, typename Other, 
-          requirements::BinOperatorsExist<Value<Duration, ValueType>, Other> = true>
+  template <typename Duration, typename ValueType, typename Other,
+		  requirements::NotSame<Value<Duration, ValueType>, Other> = true,
+		  requirements::BinOperatorsExist<Value<Duration, ValueType>, Other> = true>
   bool operator < (const Value<Duration, ValueType>& lhs, const Other& rhs) {
 	  return lhs.value < rhs;
   }
   template <typename Duration, typename ValueType, typename Other,
+		  requirements::NotSame<Value<Duration, ValueType>, Other> = true,
 		  requirements::BinOperatorsExist<Value<Duration, ValueType>, Other> = true>
   bool operator < (const Other& lhs, const Value<Duration, ValueType>& rhs) {
 	  return lhs < rhs.value;
@@ -112,12 +125,14 @@ namespace base {
   bool operator > (const Value<Duration, ValueType>& lhs, const Value<Duration, ValueType>& rhs) {
 	  return (!(rhs == lhs) && !(lhs < rhs));
   }
-  template <typename Duration, typename ValueType, typename Other, 
-          requirements::BinOperatorsExist<Value<Duration, ValueType>, Other> = true>
+  template <typename Duration, typename ValueType, typename Other,
+		  requirements::NotSame<Value<Duration, ValueType>, Other> = true,
+		  requirements::BinOperatorsExist<Value<Duration, ValueType>, Other> = true>
   bool operator > (const Value<Duration, ValueType>& lhs, const Other& rhs) {
 	  return (!(rhs == lhs) && !(lhs < rhs));
   }
   template <typename Duration, typename ValueType, typename Other,
+		  requirements::NotSame<Value<Duration, ValueType>, Other> = true,
 		  requirements::BinOperatorsExist<Value<Duration, ValueType>, Other> = true>
   bool operator > (const Other& lhs, const Value<Duration, ValueType>& rhs) {
 	  return (!(rhs == lhs) && !(lhs < rhs));
@@ -126,12 +141,14 @@ namespace base {
   bool operator <= (const Value<Duration, ValueType>& lhs, const Value<Duration, ValueType>& rhs) {
 	  return ((rhs == lhs) || (lhs < rhs));
   }
-  template <typename Duration, typename ValueType, typename Other, 
-          requirements::BinOperatorsExist<Value<Duration, ValueType>, Other> = true>
+  template <typename Duration, typename ValueType, typename Other,
+		  requirements::NotSame<Value<Duration, ValueType>, Other> = true,
+		  requirements::BinOperatorsExist<Value<Duration, ValueType>, Other> = true>
   bool operator <= (const Value<Duration, ValueType>& lhs, const Other& rhs) {
 	  return ((rhs == lhs) || (lhs < rhs));
   }
   template <typename Duration, typename ValueType, typename Other,
+		  requirements::NotSame<Value<Duration, ValueType>, Other> = true,
 		  requirements::BinOperatorsExist<Value<Duration, ValueType>, Other> = true>
   bool operator <= (const Other& lhs, const Value<Duration, ValueType>& rhs) {
 	  return ((rhs == lhs) || (lhs < rhs));
@@ -140,12 +157,14 @@ namespace base {
   bool operator >= (const Value<Duration, ValueType>& lhs, const Value<Duration, ValueType>& rhs){
 	  return ((rhs == lhs) || (lhs > rhs));
   }
-  template <typename Duration, typename ValueType, typename Other, 
-          requirements::BinOperatorsExist<Value<Duration, ValueType>, Other> = true>
+  template <typename Duration, typename ValueType, typename Other,
+		  requirements::NotSame<Value<Duration, ValueType>, Other> = true,
+		  requirements::BinOperatorsExist<Value<Duration, ValueType>, Other> = true>
   bool operator >= (const Value<Duration, ValueType>& lhs, const Other& rhs){
 	  return ((rhs == lhs) || (lhs > rhs));
   }
   template <typename Duration, typename ValueType, typename Other,
+		  requirements::NotSame<Value<Duration, ValueType>, Other> = true,
 		  requirements::BinOperatorsExist<Value<Duration, ValueType>, Other> = true>
   bool operator >= (const Other& lhs, const Value<Duration, ValueType>& rhs){
 	  return ((rhs == lhs) || (lhs > rhs));
@@ -154,59 +173,93 @@ namespace base {
 
   template <typename Duration, typename ValueType>
   Value<Duration, ValueType> operator*(const Value<Duration, ValueType>& lhs, const Value<Duration, ValueType>& rhs) {
-	  return Value<Duration, ValueType> {.value = lhs.value * rhs.value};
+	  Value<Duration, ValueType> res;
+	  res.value = lhs.value * rhs.value;
+	  return res;
   }
   template <typename Duration, typename ValueType, typename Other,
+		  requirements::NotSame<Value<Duration, ValueType>, Other> = true,
 		  requirements::BinOperatorsExist<Value<Duration, ValueType>, Other> = true>
   Value<Duration, ValueType> operator*(const Value<Duration, ValueType>& lhs, Other &&rhs) {
-	  return Value<Duration, ValueType> {.value = lhs.value * rhs};
+	  Value<Duration, ValueType> res;
+	  res.value = lhs.value * rhs;
+	  return res;
   }
   template <typename Duration, typename ValueType, typename Other,
+		  requirements::NotSame<Value<Duration, ValueType>, Other> = true,
 		  requirements::BinOperatorsExist<Value<Duration, ValueType>, Other> = true>
   Value<Duration, ValueType> operator*(Other &&lhs, const Value<Duration, ValueType>& rhs) {
-	  return Value<Duration, ValueType> {.value = lhs * rhs.value};
+	  Value<Duration, ValueType> res;
+	  res.value = lhs * rhs.value;
+	  return res;
   }
   template <typename Duration, typename ValueType>
   Value<Duration, ValueType> operator / (const Value<Duration, ValueType>& lhs, const Value<Duration, ValueType>& rhs) {
-	  return Value<Duration, ValueType> {.value = lhs.value / rhs.value};
+	  Value<Duration, ValueType> res;
+	  res.value = lhs.value / rhs.value;
+	  return res;
   }
   template <typename Duration, typename ValueType, typename Other,
+		  requirements::NotSame<Value<Duration, ValueType>, Other> = true,
 		  requirements::BinOperatorsExist<Value<Duration, ValueType>, Other> = true>
   Value<Duration, ValueType> operator / (const Value<Duration, ValueType>& lhs, Other &&rhs) {
-	  return Value<Duration, ValueType> {.value = lhs.value / rhs};
+	  Value<Duration, ValueType> res;
+	  res.value = lhs.value / rhs;
+	  return res;
   }
   template <typename Duration, typename ValueType, typename Other,
+		  requirements::NotSame<Value<Duration, ValueType>, Other> = true,
 		  requirements::BinOperatorsExist<Value<Duration, ValueType>, Other> = true>
   Value<Duration, ValueType> operator / (Other &&lhs, const Value<Duration, ValueType>& rhs) {
-	  return Value<Duration, ValueType> {.value = lhs / rhs.value};
+	  Value<Duration, ValueType> res;
+	  res.value = lhs / rhs.value;
+	  return res;
   }
   template <typename Duration, typename ValueType>
   Value<Duration, ValueType> operator + (const Value<Duration, ValueType>& lhs, const Value<Duration, ValueType>& rhs) {
-	  return Value<Duration, ValueType> {.value = lhs.value + rhs.value};
+	  Value<Duration, ValueType> res;
+	  res.value = lhs.value + rhs.value;
+	  return res;
   }
   template <typename Duration, typename ValueType, typename Other,
+		  typename = std::enable_if_t<not std::is_same_v<std::decay_t<Value<Duration, ValueType>>, std::decay_t<Other>>>,
+		  requirements::NotSame<Value<Duration, ValueType>, Other> = true,
 		  requirements::BinOperatorsExist<Value<Duration, ValueType>, Other> = true>
   Value<Duration, ValueType> operator + (const Value<Duration, ValueType>& lhs, Other &&rhs) {
-	  return Value<Duration, ValueType> {.value = lhs.value + rhs};
+	  Value<Duration, ValueType> res;
+	  res.value = lhs.value + rhs;
+	  return res;
   }
   template <typename Duration, typename ValueType, typename Other,
+		  typename = std::enable_if_t<not std::is_same_v<std::decay_t<Value<Duration, ValueType>>, std::decay_t<Other>>>,
+		  requirements::NotSame<Value<Duration, ValueType>, Other> = true,
 		  requirements::BinOperatorsExist<Value<Duration, ValueType>, Other> = true>
   Value<Duration, ValueType> operator + (Other &&lhs, const Value<Duration, ValueType>& rhs) {
-	  return Value<Duration, ValueType> {.value = lhs + rhs.value};
+	  Value<Duration, ValueType> res;
+	  res.value = lhs + rhs.value;
+	  return res;
   }
   template <typename Duration, typename ValueType>
-  Value<Duration, ValueType> operator-(const Value<Duration, ValueType>& lhs, const Value<Duration, ValueType>& rhs) {
-	  return Value<Duration, ValueType> {.value = lhs.value - rhs.value};
+  Value<Duration, ValueType> operator - (const Value<Duration, ValueType>& lhs, const Value<Duration, ValueType>& rhs) {
+	  Value<Duration, ValueType> res;
+	  res.value = lhs.value - rhs.value;
+	  return res;
   }
   template <typename Duration, typename ValueType, typename Other,
+		  requirements::NotSame<Value<Duration, ValueType>, Other> = true,
 		  requirements::BinOperatorsExist<Value<Duration, ValueType>, Other> = true>
-  Value<Duration, ValueType> operator-(const Value<Duration, ValueType>& lhs, Other &&rhs) {
-	  return Value<Duration, ValueType> {.value = lhs.value - rhs};
+  Value<Duration, ValueType> operator - (const Value<Duration, ValueType>& lhs, Other &&rhs) {
+	  Value<Duration, ValueType> res;
+	  res.value = lhs.value - rhs;
+	  return res;
   }
   template <typename Duration, typename ValueType, typename Other,
+		  requirements::NotSame<Value<Duration, ValueType>, Other> = true,
 		  requirements::BinOperatorsExist<Value<Duration, ValueType>, Other> = true>
-  Value<Duration, ValueType> operator-(Other &&lhs, const Value<Duration, ValueType>& rhs) {
-	  return Value<Duration, ValueType> {.value = lhs - rhs.value};
+  Value<Duration, ValueType> operator - (Other &&lhs, const Value<Duration, ValueType>& rhs) {
+	  Value<Duration, ValueType> res;
+	  res.value = lhs - rhs.value;
+	  return res;
   }
 
 
@@ -216,6 +269,7 @@ namespace base {
 	  return lhs;
   }
   template <typename Duration, typename ValueType, typename Other,
+		  requirements::NotSame<Value<Duration, ValueType>, Other> = true,
 		  requirements::BinOperatorsExist<Value<Duration, ValueType>, Other> = true>
   Value<Duration, ValueType>& operator += (Value<Duration, ValueType>& lhs, Other &&rhs) {
 	  lhs.value += rhs;
@@ -227,6 +281,7 @@ namespace base {
 	  return lhs;
   }
   template <typename Duration, typename ValueType, typename Other,
+		  requirements::NotSame<Value<Duration, ValueType>, Other> = true,
 		  requirements::BinOperatorsExist<Value<Duration, ValueType>, Other> = true>
   Value<Duration, ValueType>& operator -= (Value<Duration, ValueType>& lhs, Other &&rhs) {
 	  lhs.value -= rhs;
@@ -238,6 +293,7 @@ namespace base {
 	  return lhs;
   }
   template <typename Duration, typename ValueType, typename Other,
+		  requirements::NotSame<Value<Duration, ValueType>, Other> = true,
 		  requirements::BinOperatorsExist<Value<Duration, ValueType>, Other> = true>
   Value<Duration, ValueType>& operator *= (Value<Duration, ValueType>& lhs, Other &&rhs) {
 	  lhs.value *= rhs;
@@ -249,6 +305,7 @@ namespace base {
 	  return lhs;
   }
   template <typename Duration, typename ValueType, typename Other,
+		  requirements::NotSame<Value<Duration, ValueType>, Other> = true,
 		  requirements::BinOperatorsExist<Value<Duration, ValueType>, Other> = true>
   Value<Duration, ValueType>& operator /= (Value<Duration, ValueType>& lhs, Other &&rhs) {
 	  lhs.value /= rhs;

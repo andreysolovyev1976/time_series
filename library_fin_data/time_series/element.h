@@ -81,7 +81,7 @@ namespace time_series {
   }
 
   template <typename Duration, typename ElemType>
-  bool operator!=(const Element<Duration, ElemType>& lhs, const Element<Duration, ElemType>& rhs) {
+  bool operator != (const Element<Duration, ElemType>& lhs, const Element<Duration, ElemType>& rhs) {
 	  return !(lhs == rhs);
   }
   template <typename Duration, typename ElemType, typename Other, 
@@ -294,11 +294,11 @@ namespace time_series {
   
   
   template <typename Duration, typename ElemType>
-  std::ostream& operator<<(std::ostream& os, const Element<Duration, ElemType>& element) {
+  std::ostream& operator << (std::ostream& os, const Element<Duration, ElemType>& element) {
 	  return os << element.timestamp << ' ' << element.value;
   }//!operator
   template <typename Duration, typename ElemType>
-  std::istream& operator>>(std::istream& is, Element<Duration, ElemType>& element) {
+  std::istream& operator >> (std::istream& is, Element<Duration, ElemType>& element) {
 	  base::Timestamp<Duration> timestamp;
 	  ElemType elem_type_value;
 	  if (is) {

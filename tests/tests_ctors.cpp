@@ -2,20 +2,7 @@
 // Created by Andrey Solovyev on 24/01/2023.
 //
 
-#include <gtest/gtest.h>
-#include "time_series/value.h"
-#include "financial_data_structures/single_quote.h"
-#include "financial_data_structures/ohlcv.h"
-#include "financial_data_structures/bid_ask.h"
-#include "time_series/element.h"
-
-using test_types_ctors_singletons = testing::Types<
-		base::Value<base::Seconds>,
-		financial::SingleQuote<base::Seconds>
->;
-template<typename T>
-class CtorsSingletons : public testing::Test {};
-TYPED_TEST_SUITE(CtorsSingletons, test_types_ctors_singletons);
+#include "typed_tests_list.h"
 
 TYPED_TEST(CtorsSingletons, DefaultCtor) {
 	ASSERT_NO_THROW(TypeParam ());
@@ -84,19 +71,16 @@ TYPED_TEST(CtorsSingletons, CompileError) {
 }
 
 
+/**
+ * @details
+ * Tests for OHLCV and BidAsk
+ *
+ * */
 
-using test_types_ctors_multifield = testing::Types<
-		financial::OHLCV<base::Seconds>,
-		financial::BidAsk<base::Seconds>
->;
-template<typename T>
-class CtorsSingletonsMultiField : public testing::Test {};
-TYPED_TEST_SUITE(CtorsSingletonsMultiField, test_types_ctors_multifield);
-
-TYPED_TEST(CtorsSingletonsMultiField, ValueDefault) {
+TYPED_TEST(CtorsMultiField, ValueDefault) {
 	ASSERT_NO_THROW(TypeParam ());
 }
-TYPED_TEST(CtorsSingletonsMultiField, CtorInitializerList) {
+TYPED_TEST(CtorsMultiField, CtorInitializerList) {
 	base::Value<base::Seconds> one (42.5);
 	base::Value<base::Seconds> two (42.5);
 	ASSERT_ANY_THROW([[maybe_unused]] TypeParam d ({one, two}));
@@ -106,40 +90,30 @@ TYPED_TEST(CtorsSingletonsMultiField, CtorInitializerList) {
 	ASSERT_NO_THROW([[maybe_unused]] TypeParam d ({one, two, three, four, five}));
 }
 
-TYPED_TEST(CtorsSingletonsMultiField, ValueCopyCtor) {
+TYPED_TEST(CtorsMultiField, ValueCopyCtor) {
 	TypeParam d ({12.2, 12.3, 12.4, 12.5, 12.7});
 	auto copy = d;
 	ASSERT_EQ(copy, d);
 }
-TYPED_TEST(CtorsSingletonsMultiField, ValueMoveCtor) {
+TYPED_TEST(CtorsMultiField, ValueMoveCtor) {
 	TypeParam d ({12.2, 12.3, 12.4, 12.5, 12.7});
 	TypeParam copy ({12.2, 12.3, 12.4, 12.5, 12.7});
 	auto move__ = std::move(d);
 	ASSERT_EQ(move__, copy);
 }
-TYPED_TEST(CtorsSingletonsMultiField, CompileError) {
+TYPED_TEST(CtorsMultiField, CompileError) {
 	struct S {};
 	[[maybe_unused]] S s;
 	// base::Value<base::Seconds> d (s); //todo: make a compile time test
-
 }
 
 
+/**
+ * @details
+ * Element
+ *
+ * */
 
-using test_element_ok = testing::Types<
-		double,
-		int,
-		base::Value<base::Seconds>,
-		financial::SingleQuote<base::Seconds>,
-		financial::OHLCV<base::Seconds>,
-		financial::BidAsk<base::Seconds>
->;
-
-struct S{};
-using test_element_throw = testing::Types<
-		std::string,
-		S
->;
 
 template<typename T>
 class CtorsOfElementOk : public testing::Test {};
