@@ -217,4 +217,10 @@ int main () {
 
 	auto r = value + t;
 	cout << r << '\n';
+
+
+	base::Value<base::Seconds, int> i1 (-1.5);
+	base::Value<base::Seconds, int> i2 (2.5);
+	cout << i1 + i2 << '\n';
+	cout << i2 - 1.5 << '\n';
 }

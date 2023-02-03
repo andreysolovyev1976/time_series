@@ -29,7 +29,7 @@ namespace base {
   template <typename Duration = base::Nanoseconds, typename ValueType = traits::ValueTypeDefault>
   struct Value : public std::__1::error_code {
 	  using type = ValueType;
-	  ValueType value {0.0};
+	  ValueType value = 0.0;
 	  Value() = default;
 	  template <typename Input,
 			  requirements::ConveribleOrConstructibleFromTo<Input, ValueType> = true>
@@ -39,12 +39,6 @@ namespace base {
 	  Value& operator = (Input input);
 	  Value (std::string input);
 	  std::string toString () const;
-
-
-//	  bool operator==(const Value& rhs);
-//	  template <typename Other>
-//	  bool operator==(const Other& rhs);
-
   };
 
   template <typename Duration, typename ValueType>
@@ -182,7 +176,7 @@ namespace base {
 		  requirements::BinOperatorsExist<Value<Duration, ValueType>, Other> = true>
   Value<Duration, ValueType> operator*(const Value<Duration, ValueType>& lhs, Other &&rhs) {
 	  Value<Duration, ValueType> res;
-	  res.value = lhs.value * rhs;
+	  res.value = lhs.value * std::forward<Other>(rhs);
 	  return res;
   }
   template <typename Duration, typename ValueType, typename Other,
@@ -190,7 +184,7 @@ namespace base {
 		  requirements::BinOperatorsExist<Value<Duration, ValueType>, Other> = true>
   Value<Duration, ValueType> operator*(Other &&lhs, const Value<Duration, ValueType>& rhs) {
 	  Value<Duration, ValueType> res;
-	  res.value = lhs * rhs.value;
+	  res.value = std::forward<Other>(lhs) * rhs.value;
 	  return res;
   }
   template <typename Duration, typename ValueType>
@@ -204,7 +198,7 @@ namespace base {
 		  requirements::BinOperatorsExist<Value<Duration, ValueType>, Other> = true>
   Value<Duration, ValueType> operator / (const Value<Duration, ValueType>& lhs, Other &&rhs) {
 	  Value<Duration, ValueType> res;
-	  res.value = lhs.value / rhs;
+	  res.value = lhs.value / std::forward<Other>(rhs);
 	  return res;
   }
   template <typename Duration, typename ValueType, typename Other,
@@ -212,7 +206,7 @@ namespace base {
 		  requirements::BinOperatorsExist<Value<Duration, ValueType>, Other> = true>
   Value<Duration, ValueType> operator / (Other &&lhs, const Value<Duration, ValueType>& rhs) {
 	  Value<Duration, ValueType> res;
-	  res.value = lhs / rhs.value;
+	  res.value = std::forward<Other>(lhs) / rhs.value;
 	  return res;
   }
   template <typename Duration, typename ValueType>
@@ -222,12 +216,11 @@ namespace base {
 	  return res;
   }
   template <typename Duration, typename ValueType, typename Other,
-		  typename = std::enable_if_t<not std::is_same_v<std::decay_t<Value<Duration, ValueType>>, std::decay_t<Other>>>,
 		  requirements::NotSame<Value<Duration, ValueType>, Other> = true,
 		  requirements::BinOperatorsExist<Value<Duration, ValueType>, Other> = true>
   Value<Duration, ValueType> operator + (const Value<Duration, ValueType>& lhs, Other &&rhs) {
 	  Value<Duration, ValueType> res;
-	  res.value = lhs.value + rhs;
+	  res.value = lhs.value + std::forward<Other>(rhs);
 	  return res;
   }
   template <typename Duration, typename ValueType, typename Other,
@@ -236,7 +229,7 @@ namespace base {
 		  requirements::BinOperatorsExist<Value<Duration, ValueType>, Other> = true>
   Value<Duration, ValueType> operator + (Other &&lhs, const Value<Duration, ValueType>& rhs) {
 	  Value<Duration, ValueType> res;
-	  res.value = lhs + rhs.value;
+	  res.value = std::forward<Other>(lhs) + rhs.value;
 	  return res;
   }
   template <typename Duration, typename ValueType>
@@ -250,7 +243,7 @@ namespace base {
 		  requirements::BinOperatorsExist<Value<Duration, ValueType>, Other> = true>
   Value<Duration, ValueType> operator - (const Value<Duration, ValueType>& lhs, Other &&rhs) {
 	  Value<Duration, ValueType> res;
-	  res.value = lhs.value - rhs;
+	  res.value = lhs.value - std::forward<Other>(rhs);
 	  return res;
   }
   template <typename Duration, typename ValueType, typename Other,
@@ -258,7 +251,7 @@ namespace base {
 		  requirements::BinOperatorsExist<Value<Duration, ValueType>, Other> = true>
   Value<Duration, ValueType> operator - (Other &&lhs, const Value<Duration, ValueType>& rhs) {
 	  Value<Duration, ValueType> res;
-	  res.value = lhs - rhs.value;
+	  res.value = std::forward<Other>(lhs) - rhs.value;
 	  return res;
   }
 
@@ -272,7 +265,7 @@ namespace base {
 		  requirements::NotSame<Value<Duration, ValueType>, Other> = true,
 		  requirements::BinOperatorsExist<Value<Duration, ValueType>, Other> = true>
   Value<Duration, ValueType>& operator += (Value<Duration, ValueType>& lhs, Other &&rhs) {
-	  lhs.value += rhs;
+	  lhs.value += std::forward<Other>(rhs);
 	  return lhs;
   }
   template <typename Duration, typename ValueType>
@@ -284,7 +277,7 @@ namespace base {
 		  requirements::NotSame<Value<Duration, ValueType>, Other> = true,
 		  requirements::BinOperatorsExist<Value<Duration, ValueType>, Other> = true>
   Value<Duration, ValueType>& operator -= (Value<Duration, ValueType>& lhs, Other &&rhs) {
-	  lhs.value -= rhs;
+	  lhs.value -= std::forward<Other>(rhs);
 	  return lhs;
   }
   template <typename Duration, typename ValueType>
@@ -296,7 +289,7 @@ namespace base {
 		  requirements::NotSame<Value<Duration, ValueType>, Other> = true,
 		  requirements::BinOperatorsExist<Value<Duration, ValueType>, Other> = true>
   Value<Duration, ValueType>& operator *= (Value<Duration, ValueType>& lhs, Other &&rhs) {
-	  lhs.value *= rhs;
+	  lhs.value *= std::forward<Other>(rhs);
 	  return lhs;
   }
   template <typename Duration, typename ValueType>
@@ -308,7 +301,7 @@ namespace base {
 		  requirements::NotSame<Value<Duration, ValueType>, Other> = true,
 		  requirements::BinOperatorsExist<Value<Duration, ValueType>, Other> = true>
   Value<Duration, ValueType>& operator /= (Value<Duration, ValueType>& lhs, Other &&rhs) {
-	  lhs.value /= rhs;
+	  lhs.value /= std::forward<Other>(rhs);
 	  return lhs;
   }
 

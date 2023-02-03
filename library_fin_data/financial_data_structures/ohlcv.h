@@ -17,8 +17,6 @@
 
 namespace financial {
 
-  //todo: add requirement for Other - should be an Arithmetic or better - operator is defined?
-
   template <typename Duration>
   struct OHLCV final {
 
@@ -514,17 +512,22 @@ namespace financial {
 
   template <typename Duration>
   OHLCV<Duration> operator * (const OHLCV<Duration>& lhs, const OHLCV<Duration>& rhs) {
-	  return OHLCV<Duration> {
-			  .open= lhs.open * rhs.open,
-			  .high= lhs.high * rhs.high,
-			  .low= lhs.low * rhs.low,
-			  .close= lhs.close * rhs.close,
-			  .volume= lhs.volume * rhs.volume
-	  };
+	  OHLCV<Duration> res;
+	  res.open= lhs.open * rhs.open;
+	  res.high= lhs.high * rhs.high;
+	  res.low= lhs.low * rhs.low;
+	  res.close= lhs.close * rhs.close;
+	  res.volume= lhs.volume * rhs.volume;
+	  return res;
   }
-//todo: concept on Other?
-  template <typename Duration, typename Other, bool VolumeToo = false>
-  OHLCV<Duration> operator * (const OHLCV<Duration>& lhs, Other rhs) {
+  template <
+          typename Duration, 
+		  typename Other, 
+		  bool VolumeToo = false,
+		  requirements::NotSame<base::Value<Duration>, Other> = true,
+		  requirements::BinOperatorsExist<base::Value<Duration>, Other> = true
+  >
+  OHLCV<Duration> operator * (const OHLCV<Duration>& lhs, const Other &rhs) {
 	  OHLCV<Duration> res;
 	  res.open = lhs.open * rhs;
 	  res.high = lhs.high * rhs;
@@ -535,20 +538,43 @@ namespace financial {
 	  }
 	  return res;
   }
+  template <
+		  typename Duration,
+		  typename Other,
+		  bool VolumeToo = false,
+		  requirements::NotSame<base::Value<Duration>, Other> = true,
+		  requirements::BinOperatorsExist<base::Value<Duration>, Other> = true
+  >
+  OHLCV<Duration> operator * (const Other &lhs, const OHLCV<Duration>& rhs) {
+	  OHLCV<Duration> res;
+	  res.open = lhs * rhs.open;
+	  res.high = lhs * rhs.high;
+	  res.low = lhs * rhs.low;
+	  res.close = lhs * rhs.close;
+	  if constexpr (VolumeToo) {
+		  res.volume = lhs * rhs.volume;
+	  }
+	  return res;
+  }
 
   template <typename Duration>
   OHLCV<Duration> operator / (const OHLCV<Duration>& lhs, const OHLCV<Duration>& rhs) {
-	  return OHLCV<Duration> {
-			  .open= lhs.open / rhs.open,
-			  .high= lhs.high / rhs.high,
-			  .low= lhs.low / rhs.low,
-			  .close= lhs.close / rhs.close,
-			  .volume= lhs.volume / rhs.volume
-	  };
+	  OHLCV<Duration> res;
+	  res.open= lhs.open / rhs.open;
+	  res.high= lhs.high / rhs.high;
+	  res.low= lhs.low / rhs.low;
+	  res.close= lhs.close / rhs.close;
+	  res.volume= lhs.volume / rhs.volume;
+	  return res;
   }
-//todo: concept on Other?
-  template <typename Duration, typename Other, bool VolumeToo = false>
-  OHLCV<Duration> operator / (const OHLCV<Duration>& lhs, Other rhs) {
+  template <
+		  typename Duration,
+		  typename Other,
+		  bool VolumeToo = false,
+		  requirements::NotSame<base::Value<Duration>, Other> = true,
+		  requirements::BinOperatorsExist<base::Value<Duration>, Other> = true
+  >
+  OHLCV<Duration> operator / (const OHLCV<Duration>& lhs, const Other &rhs) {
 	  OHLCV<Duration> res;
 	  res.open = lhs.open / rhs;
 	  res.high = lhs.high / rhs;
@@ -559,19 +585,42 @@ namespace financial {
 	  }
 	  return res;
   }
+  template <
+		  typename Duration,
+		  typename Other,
+		  bool VolumeToo = false,
+		  requirements::NotSame<base::Value<Duration>, Other> = true,
+		  requirements::BinOperatorsExist<base::Value<Duration>, Other> = true
+  >
+  OHLCV<Duration> operator / (const Other &lhs, const OHLCV<Duration>& rhs) {
+	  OHLCV<Duration> res;
+	  res.open = lhs / rhs.open;
+	  res.high = lhs / rhs.high;
+	  res.low = lhs / rhs.low;
+	  res.close = lhs / rhs.close;
+	  if constexpr (VolumeToo) {
+		  res.volume = lhs / rhs.volume;
+	  }
+	  return res;
+  }
   template <typename Duration>
   OHLCV<Duration> operator + (const OHLCV<Duration>& lhs, const OHLCV<Duration>& rhs) {
-	  return OHLCV<Duration> {
-			  .open= lhs.open + rhs.open,
-			  .high= lhs.high + rhs.high,
-			  .low= lhs.low + rhs.low,
-			  .close= lhs.close + rhs.close,
-			  .volume= lhs.volume + rhs.volume
-	  };
+	  OHLCV<Duration> res;
+	  res.open= lhs.open + rhs.open;
+	  res.high= lhs.high + rhs.high;
+	  res.low= lhs.low + rhs.low;
+	  res.close= lhs.close + rhs.close;
+	  res.volume= lhs.volume + rhs.volume;
+	  return res;
   }
-//todo: concept on Other?
-  template <typename Duration, typename Other, bool VolumeToo = false>
-  OHLCV<Duration> operator + (const OHLCV<Duration>& lhs, Other rhs) {
+  template <
+		  typename Duration,
+		  typename Other,
+		  bool VolumeToo = false,
+		  requirements::NotSame<base::Value<Duration>, Other> = true,
+		  requirements::BinOperatorsExist<base::Value<Duration>, Other> = true
+  >
+  OHLCV<Duration> operator + (const OHLCV<Duration>& lhs, const Other &rhs) {
 	  OHLCV<Duration> res;
 	  res.open = lhs.open + rhs;
 	  res.high = lhs.high + rhs;
@@ -582,19 +631,42 @@ namespace financial {
 	  }
 	  return res;
   }
+  template <
+		  typename Duration,
+		  typename Other,
+		  bool VolumeToo = false,
+		  requirements::NotSame<base::Value<Duration>, Other> = true,
+		  requirements::BinOperatorsExist<base::Value<Duration>, Other> = true
+  >
+  OHLCV<Duration> operator + (const Other &lhs, const OHLCV<Duration>& rhs) {
+	  OHLCV<Duration> res;
+	  res.open = lhs + rhs.open;
+	  res.high = lhs + rhs.high;
+	  res.low = lhs + rhs.low;
+	  res.close = lhs + rhs.close;
+	  if constexpr (VolumeToo) {
+		  res.volume = lhs + rhs.volume;
+	  }
+	  return res;
+  }
   template <typename Duration>
   OHLCV<Duration> operator - (const OHLCV<Duration>& lhs, const OHLCV<Duration>& rhs) {
-	  return OHLCV<Duration> {
-			  .open= lhs.open - rhs.open,
-			  .high= lhs.high - rhs.high,
-			  .low= lhs.low - rhs.low,
-			  .close= lhs.close - rhs.close,
-			  .volume= lhs.volume - rhs.volume
-	  };
+	  OHLCV<Duration> res;
+	  res.open= lhs.open - rhs.open;
+	  res.high= lhs.high - rhs.high;
+	  res.low= lhs.low - rhs.low;
+	  res.close= lhs.close - rhs.close;
+	  res.volume= lhs.volume - rhs.volume;
+	  return res;
   }
-//todo: concept on Other?
-  template <typename Duration, typename Other, bool VolumeToo = false>
-  OHLCV<Duration> operator - (const OHLCV<Duration>& lhs, Other rhs) {
+  template <
+		  typename Duration,
+		  typename Other,
+		  bool VolumeToo = false,
+		  requirements::NotSame<base::Value<Duration>, Other> = true,
+		  requirements::BinOperatorsExist<base::Value<Duration>, Other> = true
+  >
+  OHLCV<Duration> operator - (const OHLCV<Duration>& lhs, const Other &rhs) {
 	  OHLCV<Duration> res;
 	  res.open = lhs.open - rhs;
 	  res.high = lhs.high - rhs;
@@ -602,6 +674,24 @@ namespace financial {
 	  res.close = lhs.close - rhs;
 	  if constexpr (VolumeToo) {
 		  res.volume = lhs.volume - rhs;
+	  }
+	  return res;
+  }
+  template <
+		  typename Duration,
+		  typename Other,
+		  bool VolumeToo = false,
+		  requirements::NotSame<base::Value<Duration>, Other> = true,
+		  requirements::BinOperatorsExist<base::Value<Duration>, Other> = true
+  >
+  OHLCV<Duration> operator - (const Other &lhs, const OHLCV<Duration>& rhs) {
+	  OHLCV<Duration> res;
+	  res.open = lhs - rhs.open;
+	  res.high = lhs - rhs.high;
+	  res.low = lhs - rhs.low;
+	  res.close = lhs - rhs.close;
+	  if constexpr (VolumeToo) {
+		  res.volume = lhs - rhs.volume;
 	  }
 	  return res;
   }
@@ -616,9 +706,14 @@ namespace financial {
 	  lhs.volume += rhs.volume;
 	  return lhs;
   }
-//todo: concept on Other?
-  template <typename Duration, typename Other, bool VolumeToo = false>
-  OHLCV<Duration>& operator += (OHLCV<Duration>& lhs, Other rhs) {
+  template <
+		  typename Duration,
+		  typename Other,
+		  bool VolumeToo = false,
+		  requirements::NotSame<base::Value<Duration>, Other> = true,
+		  requirements::BinOperatorsExist<base::Value<Duration>, Other> = true
+  >
+  OHLCV<Duration>& operator += (OHLCV<Duration>& lhs, const Other &rhs) {
 	  lhs.open += rhs;
 	  lhs.high += rhs;
 	  lhs.low += rhs;
@@ -638,9 +733,14 @@ namespace financial {
 	  lhs.volume -= rhs.volume;
 	  return lhs;
   }
-//todo: concept on Other?
-  template <typename Duration, typename Other, bool VolumeToo = false>
-  OHLCV<Duration>& operator -= (OHLCV<Duration>& lhs, Other rhs) {
+  template <
+		  typename Duration,
+		  typename Other,
+		  bool VolumeToo = false,
+		  requirements::NotSame<base::Value<Duration>, Other> = true,
+		  requirements::BinOperatorsExist<base::Value<Duration>, Other> = true
+  >
+  OHLCV<Duration>& operator -= (OHLCV<Duration>& lhs, const Other &rhs) {
 	  lhs.open -= rhs;
 	  lhs.high -= rhs;
 	  lhs.low -= rhs;
@@ -660,9 +760,14 @@ namespace financial {
 	  lhs.volume *= rhs.volume;
 	  return lhs;
   }
-//todo: concept on Other?
-  template <typename Duration, typename Other, bool VolumeToo = false>
-  OHLCV<Duration>& operator *= (OHLCV<Duration>& lhs, Other rhs) {
+  template <
+		  typename Duration,
+		  typename Other,
+		  bool VolumeToo = false,
+		  requirements::NotSame<base::Value<Duration>, Other> = true,
+		  requirements::BinOperatorsExist<base::Value<Duration>, Other> = true
+  >
+  OHLCV<Duration>& operator *= (OHLCV<Duration>& lhs, const Other &rhs) {
 	  lhs.open *= rhs;
 	  lhs.high *= rhs;
 	  lhs.low *= rhs;
@@ -682,9 +787,14 @@ namespace financial {
 	  lhs.volume /= rhs.volume;
 	  return lhs;
   }
-//todo: concept on Other?
-  template <typename Duration, typename Other, bool VolumeToo = false>
-  OHLCV<Duration>& operator /= (OHLCV<Duration>& lhs, Other rhs) {
+  template <
+		  typename Duration,
+		  typename Other,
+		  bool VolumeToo = false,
+		  requirements::NotSame<base::Value<Duration>, Other> = true,
+		  requirements::BinOperatorsExist<base::Value<Duration>, Other> = true
+  >
+  OHLCV<Duration>& operator /= (OHLCV<Duration>& lhs, const Other &rhs) {
 	  lhs.open /= rhs;
 	  lhs.high /= rhs;
 	  lhs.low /= rhs;

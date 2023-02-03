@@ -22,13 +22,14 @@
 
 using test_types_singletons = testing::Types<
 		base::Value<base::Seconds>,
+		base::Value<base::Seconds, int64_t>,
+		base::Value<base::Milliseconds, long double>,
 		financial::SingleQuote<base::Seconds>
 >;
 using test_types_multifield = testing::Types<
 		financial::OHLCV<base::Seconds>,
 		financial::BidAsk<base::Seconds>
 >;
-
 
 /**
  * @brief

@@ -15,3 +15,4 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char **argv) {
 // test overflow
 // test double < int , int < double, double < string, string < double
 // test change of epsilon
+// test arithmetics and comparison with other field, than default

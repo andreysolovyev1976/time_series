@@ -510,19 +510,25 @@ namespace financial {
 	  return res;
   }
 
-  //todo: concept on Other?
+
   template <typename Duration>
   BidAsk<Duration> operator * (const BidAsk<Duration>& lhs, const BidAsk<Duration>& rhs) {
-	  return BidAsk<Duration> {
-			  .bid = lhs.bid * rhs.bid,
-			  .ask = lhs.ask * rhs.ask,
-			  .middle = lhs.middle * rhs.middle,
-			  .price = lhs.price * rhs.price,
-			  .volume = lhs.volume * rhs.volume
-	  };
+	  BidAsk<Duration> res;
+	  res.bid = lhs.bid * rhs.bid;
+	  res.ask = lhs.ask * rhs.ask;
+	  res.middle = lhs.middle * rhs.middle;
+	  res.price = lhs.price * rhs.price;
+	  res.volume = lhs.volume * rhs.volume;
+	  return res;
   }
-  template <typename Duration, typename Other, bool VolumeToo = false>
-  BidAsk<Duration> operator * (const BidAsk<Duration>& lhs, Other rhs) {
+  template <
+		  typename Duration,
+		  typename Other,
+		  bool VolumeToo = false,
+		  requirements::NotSame<base::Value<Duration>, Other> = true,
+		  requirements::BinOperatorsExist<base::Value<Duration>, Other> = true
+  >
+  BidAsk<Duration> operator * (const BidAsk<Duration>& lhs, const Other &rhs) {
 	  BidAsk<Duration> res;
 	  res.bid = lhs.bid * rhs;
 	  res.ask = lhs.ask * rhs;
@@ -533,19 +539,43 @@ namespace financial {
 	  }
 	  return res;
   }
+  template <
+		  typename Duration,
+		  typename Other,
+		  bool VolumeToo = false,
+		  requirements::NotSame<base::Value<Duration>, Other> = true,
+		  requirements::BinOperatorsExist<base::Value<Duration>, Other> = true
+  >
+  BidAsk<Duration> operator * (const Other &lhs, const BidAsk<Duration>& rhs) {
+	  BidAsk<Duration> res;
+	  res.bid = lhs * rhs.bid;
+	  res.ask = lhs * rhs.ask;
+	  res.middle = lhs * rhs.middle;
+	  res.price = lhs * rhs.price;
+	  if constexpr (VolumeToo) {
+		  res.volume = lhs * rhs.volume;
+	  }
+	  return res;
+  }
 
   template <typename Duration>
   BidAsk<Duration> operator / (const BidAsk<Duration>& lhs, const BidAsk<Duration>& rhs) {
-	  return BidAsk<Duration> {
-			  .bid = lhs.bid / rhs.bid,
-			  .ask = lhs.ask / rhs.ask,
-			  .middle = lhs.middle / rhs.middle,
-			  .price = lhs.price / rhs.price,
-			  .volume = lhs.volume / rhs.volume
-	  };
+	  BidAsk<Duration> res;
+	  res.bid = lhs.bid / rhs.bid;
+	  res.ask = lhs.ask / rhs.ask;
+	  res.middle = lhs.middle / rhs.middle;
+	  res.price = lhs.price / rhs.price;
+	  res.volume = lhs.volume / rhs.volume;
+	  return res;
   }
-  template <typename Duration, typename Other, bool VolumeToo = false>
-  BidAsk<Duration> operator / (const BidAsk<Duration>& lhs, Other rhs) {
+  template <
+		  typename Duration,
+		  typename Other,
+		  bool VolumeToo = false,
+		  requirements::NotSame<base::Value<Duration>, Other> = true,
+		  requirements::BinOperatorsExist<base::Value<Duration>, Other> = true
+  >
+  BidAsk<Duration> operator / (const BidAsk<Duration>& lhs, const Other &rhs) {
 	  BidAsk<Duration> res;
 	  res.bid = lhs.bid / rhs;
 	  res.ask = lhs.ask / rhs;
@@ -556,18 +586,43 @@ namespace financial {
 	  }
 	  return res;
   }
+  template <
+		  typename Duration,
+		  typename Other,
+		  bool VolumeToo = false,
+		  requirements::NotSame<base::Value<Duration>, Other> = true,
+		  requirements::BinOperatorsExist<base::Value<Duration>, Other> = true
+  >
+  BidAsk<Duration> operator / (const Other &lhs, const BidAsk<Duration>& rhs) {
+	  BidAsk<Duration> res;
+	  res.bid = lhs / rhs.bid;
+	  res.ask = lhs / rhs.ask;
+	  res.middle = lhs / rhs.middle;
+	  res.price = lhs / rhs.price;
+	  if constexpr (VolumeToo) {
+		  res.volume = lhs / rhs.volume;
+	  }
+	  return res;
+  }
+
   template <typename Duration>
   BidAsk<Duration> operator + (const BidAsk<Duration>& lhs, const BidAsk<Duration>& rhs) {
-	  return BidAsk<Duration> {
-			  .bid = lhs.bid + rhs.bid,
-			  .ask = lhs.ask + rhs.ask,
-			  .middle = lhs.middle + rhs.middle,
-			  .price = lhs.price + rhs.price,
-			  .volume = lhs.volume + rhs.volume
-	  };
+	  BidAsk<Duration> res;
+	  res.bid = lhs.bid + rhs.bid;
+	  res.ask = lhs.ask + rhs.ask;
+	  res.middle = lhs.middle + rhs.middle;
+	  res.price = lhs.price + rhs.price;
+	  res.volume = lhs.volume + rhs.volume;
+	  return res;
   }
-  template <typename Duration, typename Other, bool VolumeToo = false>
-  BidAsk<Duration> operator + (const BidAsk<Duration>& lhs, Other rhs) {
+  template <
+		  typename Duration,
+		  typename Other,
+		  bool VolumeToo = false,
+		  requirements::NotSame<base::Value<Duration>, Other> = true,
+		  requirements::BinOperatorsExist<base::Value<Duration>, Other> = true
+  >
+  BidAsk<Duration> operator + (const BidAsk<Duration>& lhs, const Other &rhs) {
 	  BidAsk<Duration> res;
 	  res.bid = lhs.bid + rhs;
 	  res.ask = lhs.ask + rhs;
@@ -578,18 +633,43 @@ namespace financial {
 	  }
 	  return res;
   }
+  template <
+		  typename Duration,
+		  typename Other,
+		  bool VolumeToo = false,
+		  requirements::NotSame<base::Value<Duration>, Other> = true,
+		  requirements::BinOperatorsExist<base::Value<Duration>, Other> = true
+  >
+  BidAsk<Duration> operator + (const Other &lhs, const BidAsk<Duration>& rhs) {
+	  BidAsk<Duration> res;
+	  res.bid = lhs + rhs.bid;
+	  res.ask = lhs + rhs.ask;
+	  res.middle = lhs + rhs.middle;
+	  res.price = lhs + rhs.price;
+	  if constexpr (VolumeToo) {
+		  res.volume = lhs + rhs.volume;
+	  }
+	  return res;
+  }
+
   template <typename Duration>
   BidAsk<Duration> operator - (const BidAsk<Duration>& lhs, const BidAsk<Duration>& rhs) {
-	  return BidAsk<Duration> {
-			  .bid = lhs.bid - rhs.bid,
-			  .ask = lhs.ask - rhs.ask,
-			  .middle = lhs.middle - rhs.middle,
-			  .price = lhs.price - rhs.price,
-			  .volume = lhs.volume - rhs.volume
-	  };
+	  BidAsk<Duration> res;
+	  res.bid = lhs.bid - rhs.bid;
+	  res.ask = lhs.ask - rhs.ask;
+	  res.middle = lhs.middle - rhs.middle;
+	  res.price = lhs.price - rhs.price;
+	  res.volume = lhs.volume - rhs.volume;
+	  return res;
   }
-  template <typename Duration, typename Other, bool VolumeToo = false>
-  BidAsk<Duration> operator - (const BidAsk<Duration>& lhs, Other rhs) {
+  template <
+		  typename Duration,
+		  typename Other,
+		  bool VolumeToo = false,
+		  requirements::NotSame<base::Value<Duration>, Other> = true,
+		  requirements::BinOperatorsExist<base::Value<Duration>, Other> = true
+  >
+  BidAsk<Duration> operator - (const BidAsk<Duration>& lhs, const Other &rhs) {
 	  BidAsk<Duration> res;
 	  res.bid = lhs.bid - rhs;
 	  res.ask = lhs.ask - rhs;
@@ -600,7 +680,24 @@ namespace financial {
 	  }
 	  return res;
   }
-
+  template <
+		  typename Duration,
+		  typename Other,
+		  bool VolumeToo = false,
+		  requirements::NotSame<base::Value<Duration>, Other> = true,
+		  requirements::BinOperatorsExist<base::Value<Duration>, Other> = true
+  >
+  BidAsk<Duration> operator - (const Other &lhs, const BidAsk<Duration>& rhs) {
+	  BidAsk<Duration> res;
+	  res.bid = lhs - rhs.bid;
+	  res.ask = lhs - rhs.ask;
+	  res.middle = lhs - rhs.middle;
+	  res.price = lhs - rhs.price;
+	  if constexpr (VolumeToo) {
+		  res.volume = lhs - rhs.volume;
+	  }
+	  return res;
+  }
 
 
   template <typename Duration>
@@ -612,8 +709,14 @@ namespace financial {
 	  lhs.volume += rhs.volume;
 	  return lhs;
   }
-  template <typename Duration, typename Other, bool VolumeToo = false>
-  BidAsk<Duration>& operator += (BidAsk<Duration>& lhs, Other rhs) {
+  template <
+		  typename Duration,
+		  typename Other,
+		  bool VolumeToo = false,
+		  requirements::NotSame<base::Value<Duration>, Other> = true,
+		  requirements::BinOperatorsExist<base::Value<Duration>, Other> = true
+  >
+  BidAsk<Duration>& operator += (BidAsk<Duration>& lhs, const Other &rhs) {
 	  lhs.bid += rhs;
 	  lhs.ask += rhs;
 	  lhs.middle += rhs;
@@ -633,8 +736,14 @@ namespace financial {
 	  lhs.volume -= rhs.volume;
 	  return lhs;
   }
-  template <typename Duration, typename Other, bool VolumeToo = false>
-  BidAsk<Duration>& operator -= (BidAsk<Duration>& lhs, Other rhs) {
+  template <
+		  typename Duration,
+		  typename Other,
+		  bool VolumeToo = false,
+		  requirements::NotSame<base::Value<Duration>, Other> = true,
+		  requirements::BinOperatorsExist<base::Value<Duration>, Other> = true
+  >
+  BidAsk<Duration>& operator -= (BidAsk<Duration>& lhs, const Other &rhs) {
 	  lhs.bid -= rhs;
 	  lhs.ask -= rhs;
 	  lhs.middle -= rhs;
@@ -654,8 +763,14 @@ namespace financial {
 	  lhs.volume *= rhs.volume;
 	  return lhs;
   }
-  template <typename Duration, typename Other, bool VolumeToo = false>
-  BidAsk<Duration>& operator *= (BidAsk<Duration>& lhs, Other rhs) {
+  template <
+		  typename Duration,
+		  typename Other,
+		  bool VolumeToo = false,
+		  requirements::NotSame<base::Value<Duration>, Other> = true,
+		  requirements::BinOperatorsExist<base::Value<Duration>, Other> = true
+  >
+  BidAsk<Duration>& operator *= (BidAsk<Duration>& lhs, const Other &rhs) {
 	  lhs.bid *= rhs;
 	  lhs.ask *= rhs;
 	  lhs.middle *= rhs;
@@ -675,8 +790,14 @@ namespace financial {
 	  lhs.volume /= rhs.volume;
 	  return lhs;
   }
-  template <typename Duration, typename Other, bool VolumeToo = false>
-  BidAsk<Duration>& operator /= (BidAsk<Duration>& lhs, Other rhs) {
+  template <
+		  typename Duration,
+		  typename Other,
+		  bool VolumeToo = false,
+		  requirements::NotSame<base::Value<Duration>, Other> = true,
+		  requirements::BinOperatorsExist<base::Value<Duration>, Other> = true
+  >
+  BidAsk<Duration>& operator /= (BidAsk<Duration>& lhs, const Other &rhs) {
 	  lhs.bid /= rhs;
 	  lhs.ask /= rhs;
 	  lhs.middle /= rhs;
