@@ -11,6 +11,7 @@
 #include "financial_data_structures/bid_ask.h"
 #include "time_series/element.h"
 
+#include <cstdint>
 
 #ifndef FIN_VALUE_TYPED_TESTS_LIST_H
 #define FIN_VALUE_TYPED_TESTS_LIST_H
@@ -20,15 +21,18 @@
  * Commonly used types lists
  */
 
-using test_types_singletons = testing::Types<
-		base::Value<base::Seconds>,
-		base::Value<base::Seconds, int64_t>,
-		base::Value<base::Milliseconds, long double>,
-		financial::SingleQuote<base::Seconds>
+using value_single_field = testing::Types<
+		base::Value<base::traits::ValueTypeDefault>,
+		base::Value<int64_t>,
+		base::Value<long double>,
+		financial::SingleQuote
 >;
-using test_types_multifield = testing::Types<
-		financial::OHLCV<base::Seconds>,
-		financial::BidAsk<base::Seconds>
+//todo: add here ValueType
+using value_multifield = testing::Types<
+		financial::OHLCV<base::traits::ValueTypeDefault>,
+		financial::BidAsk<base::traits::ValueTypeDefault>,
+		financial::OHLCV<std::int64_t>,
+		financial::BidAsk<std::int64_t>
 >;
 
 /**
@@ -38,19 +42,22 @@ using test_types_multifield = testing::Types<
 
 template<typename T>
 class CtorsSingletons : public testing::Test {};
-TYPED_TEST_SUITE(CtorsSingletons, test_types_singletons);
+TYPED_TEST_SUITE(CtorsSingletons, value_single_field);
 
 template<typename T>
 class CtorsMultiField : public testing::Test {};
-TYPED_TEST_SUITE(CtorsMultiField, test_types_multifield);
+TYPED_TEST_SUITE(CtorsMultiField, value_multifield);
 
-using test_element_ok = testing::Types<
+
+
+using test_element_value = testing::Types<
 		double,
 		int,
-		base::Value<base::Seconds>,
-		financial::SingleQuote<base::Seconds>,
-		financial::OHLCV<base::Seconds>,
-		financial::BidAsk<base::Seconds>
+		base::Value<base::traits::ValueTypeDefault>,
+		base::Value<std::int64_t>,
+		financial::SingleQuote,
+		financial::OHLCV<base::traits::ValueTypeDefault>,
+		financial::BidAsk<base::traits::ValueTypeDefault>
 >;
 
 struct S{};
@@ -67,11 +74,11 @@ using test_element_throw = testing::Types<
 
 template<typename T>
 class CompareSingletons : public testing::Test {};
-TYPED_TEST_SUITE(CompareSingletons, test_types_singletons);
+TYPED_TEST_SUITE(CompareSingletons, value_single_field);
 
 template<typename T>
 class CompareMultiField : public testing::Test {};
-TYPED_TEST_SUITE(CompareMultiField, test_types_multifield);
+TYPED_TEST_SUITE(CompareMultiField, value_multifield);
 
 
 /**
@@ -81,11 +88,25 @@ TYPED_TEST_SUITE(CompareMultiField, test_types_multifield);
 
 template<typename T>
 class ArithmeticsSingletons : public testing::Test {};
-TYPED_TEST_SUITE(ArithmeticsSingletons, test_types_singletons);
+TYPED_TEST_SUITE(ArithmeticsSingletons, value_single_field);
 
 template<typename T>
 class ArithmeticsMultiField : public testing::Test {};
-TYPED_TEST_SUITE(ArithmeticsMultiField, test_types_multifield);
+TYPED_TEST_SUITE(ArithmeticsMultiField, value_multifield);
+
+
+/**
+ * @brief
+ * Element Comparison
+ */
+
+template<typename T>
+class ElementComparison : public testing::Test {};
+TYPED_TEST_SUITE(ElementComparison, test_element_value);
+
+template<typename T>
+class ElementFnApplication : public testing::Test {};
+TYPED_TEST_SUITE(ElementFnApplication, test_element_value);
 
 
 #if 0

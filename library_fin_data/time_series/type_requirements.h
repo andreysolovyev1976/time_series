@@ -18,10 +18,10 @@ namespace requirements {
   using IsNotFloatinPoint = std::enable_if_t<not std::is_floating_point_v<Number>, bool>;
 
   template <typename Number>
-  using IsArithmetic = std::enable_if_t<std::is_arithmetic_v<Number>, bool>;
+  using IsIntegral = std::enable_if_t<std::is_integral_v<Number>, bool>;
 
   template <typename Number>
-  using IsNotArithmetic = std::enable_if_t<not std::is_arithmetic_v<Number>, bool>;
+  using IsNotIntegral = std::enable_if_t<not std::is_integral_v<Number>, bool>;
 
 
   template <typename Input, typename Result>
@@ -34,10 +34,6 @@ namespace requirements {
 
   template <typename Input, typename Result, ConveribleOrConstructibleFromTo<Input, Result> = true>
   constexpr bool isConveribleOrConstructible () {return true;}
-
-
-  template <typename Function, typename Type>
-  using Unary = std::enable_if_t<std::is_invocable_r<Type, Function, Type>::value, bool>;
 
 
   /**
@@ -150,6 +146,14 @@ namespace requirements {
 
   template <typename DataStructure, BinOperatorsExist<DataStructure, double> = true>
   using CanBeElemType = bool;
+
+
+  template <typename Fn, typename Elem>
+  using ModifiesElemInPlace = std::enable_if_t<
+          std::is_invocable_v<Fn, std::add_lvalue_reference<std::decay_t<Elem>>>, bool>;
+  template <typename Fn, typename Elem>
+  using CreatesNewElem = std::enable_if_t<std::is_invocable_r_v<Elem, Fn, Elem>, bool>;
+
 
 }//!namespace
 #endif //TYPE_REQUIREMENTS_H

@@ -183,6 +183,8 @@ int main () {
 
 #endif
 
+
+#if 0
 #include <iostream>
 #include "time_series/type_requirements.h"
 #include "time_series/value.h"
@@ -224,3 +226,18 @@ int main () {
 	cout << i1 + i2 << '\n';
 	cout << i2 - 1.5 << '\n';
 }
+
+#endif
+
+#if 0
+
+#include <iostream>
+#include "cpp_version.h"
+
+int main () {
+	std::cout << (int)cpp_standard::get_version<cpp_standard::version>() << '\n';
+	std::cout << cpp_standard::get_version<std::string_view>() << '\n';
+	cpp_standard::get_version<double>();
+}
+
+#endif

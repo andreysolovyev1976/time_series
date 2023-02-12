@@ -10,8 +10,7 @@
 #ifndef BASE_VALUE_COMP_H
 #define BASE_VALUE_COMP_H
 
-namespace base {
-
+namespace comp {
 /**
  * @details
  * overloads the operators to compare double and floats (floating_point)
@@ -19,25 +18,28 @@ namespace base {
  * Implementation provides strong protection for keeping just one instance of a
  * kValue that is used in comparison - see all deleted ctors.
  */
-  template <typename T, requirements::IsFloatinPoint<T> = true>
+  template<typename T, requirements::IsFloatinPoint<T> = true>
   struct CompareWithPrecision final {
   public:
 	  CompareWithPrecision() = delete;
 	  CompareWithPrecision(CompareWithPrecision const&) = delete;
 	  CompareWithPrecision& operator=(CompareWithPrecision const&) = delete;
-	  CompareWithPrecision(CompareWithPrecision &&) = delete;
-	  CompareWithPrecision& operator=(CompareWithPrecision &&) = delete;
+	  CompareWithPrecision(CompareWithPrecision&&) = delete;
+	  CompareWithPrecision& operator=(CompareWithPrecision&&) = delete;
 
 	  static
-	  CompareWithPrecision& getStaticInstance (T precision) {
-		  static CompareWithPrecision cmp (precision);
+	  CompareWithPrecision& getStaticInstance(T precision)
+	  {
+		  static CompareWithPrecision cmp(precision);
 		  return cmp;
 	  }
-	  void setEpsilon (T e) {
+	  void setEpsilon(T e)
+	  {
 		  epsilon = e;
 	  }
   private:
-	  explicit CompareWithPrecision(T precision) :epsilon(precision) {}
+	  explicit CompareWithPrecision(T precision)
+			  :epsilon(precision) { }
   public:
 	  T epsilon;
   };
@@ -45,134 +47,154 @@ namespace base {
 /**
  * @details
  * a beauty of this lambda is that it is a reasonable usage of IILE -
- * Immediately Invoked Lambda Expression, as well as
- * decltype(auto) that prevents loosing a lvalue reference
- * from a return statement, that would be really unpleasant, considering
+ * Immediately Invoked Lambda Expression, for returning a ref to static,
+ * as well as decltype(auto) that prevents loosing a lvalue reference
+ * from a return statement, that would be really unpleasant considering
  * all deleted ctors - see that above.
  */
   static
   decltype(auto) floating_comp =
 		  []() -> CompareWithPrecision<double>& {
-			return CompareWithPrecision<double>::getStaticInstance(const_values::EPSILON_BY_DEFAULT);
+			return CompareWithPrecision<double>::getStaticInstance(base::const_values::EPSILON_BY_DEFAULT);
 		  }();
 
-  template <typename T, typename U,
-		  requirements::NotSame<T, U>,
+/**
+ * @details
+ * operators for basic types can't be overloaded
+ * */
+
+
+  template<typename T, typename U,
 		  requirements::IsFloatinPoint<T> = true,
-		  requirements::IsArithmetic<U> = true>
-  bool operator == (T a, U b){
-	  return ((a-b) < floating_comp.epsilon) && ((b-a) < floating_comp.epsilon);
+		  requirements::IsIntegral<U> = true>
+  bool eq(T a, U b) noexcept
+  {
+	  return (((a - b) < floating_comp.epsilon) &&
+			  ((b - a) < floating_comp.epsilon));
+  }
+  template<typename T, typename U,
+		  requirements::IsFloatinPoint<T> = true,
+		  requirements::IsIntegral<U> = true>
+  bool eq(U b, T a) noexcept
+  {
+	  return eq(a, b);
+  }
+  template<typename T,
+		  requirements::IsFloatinPoint<T> = true>
+  bool eq(T a, T b) noexcept
+  {
+	  return (((a - b) < floating_comp.epsilon) &&
+			  ((b - a) < floating_comp.epsilon));
+  }
+
+
+  template <typename T, typename U,
+		  requirements::IsFloatinPoint<T> = true,
+		  requirements::IsIntegral<U> = true>
+  static bool ne (T a, U b) noexcept
+  {
+	  return not eq(a, b);
   }
   template <typename T, typename U,
-		  requirements::NotSame<T, U>,
 		  requirements::IsFloatinPoint<T> = true,
-		  requirements::IsArithmetic<U> = true>
-  bool operator == (U b, T a){
-	  return ((a-b) < floating_comp.epsilon) && ((b-a) < floating_comp.epsilon);
+		  requirements::IsIntegral<U> = true>
+  static bool ne (U b, T a) noexcept 
+  {
+	  return not eq(a, b);
   }
   template <typename T,
 		  requirements::IsFloatinPoint<T> = true>
-  bool operator == (T a, T b){
-	  return ((a-b) < floating_comp.epsilon) && ((b-a) < floating_comp.epsilon);
+  static bool ne (T a, T b) noexcept
+  {
+	  return not eq(a, b);
   }
 
   template <typename T, typename U,
-		  requirements::NotSame<T, U>,
 		  requirements::IsFloatinPoint<T> = true,
-		  requirements::IsArithmetic<U> = true>
-  bool operator != (T a, U b){
-	  return (not (a == b));
+		  requirements::IsIntegral<U> = true>
+  static bool lt (T a, U b) noexcept 
+  {
+	  return a < b - floating_comp.epsilon;
   }
   template <typename T, typename U,
-		  requirements::NotSame<T, U>,
 		  requirements::IsFloatinPoint<T> = true,
-		  requirements::IsArithmetic<U> = true>
-  bool operator != (U b, T a){
-	  return (not (a == b));
+		  requirements::IsIntegral<U> = true>
+  static bool lt (U b, T a) noexcept
+  {
+	  return b < a - floating_comp.epsilon;;
   }
   template <typename T,
 		  requirements::IsFloatinPoint<T> = true>
-  bool operator != (T a, T b){
-	  return (not (a == b));
+  static bool lt (T a, T b) noexcept
+  {
+	  return a < b - floating_comp.epsilon;
   }
 
-  template <typename T, typename U,
-		  requirements::NotSame<T, U>,
-		  requirements::IsFloatinPoint<T> = true,
-		  requirements::IsArithmetic<U> = true>
-  bool operator < (T a, U b) {
-	  return a<b - floating_comp.epsilon;
-  }
-  template <typename T, typename U,
-		  requirements::NotSame<T, U>,
-		  requirements::IsFloatinPoint<T> = true,
-		  requirements::IsArithmetic<U> = true>
-  bool operator < (U b, T a) {
-	  return a<b - floating_comp.epsilon;
-  }
-  template <typename T,
-		  requirements::IsFloatinPoint<T> = true>
-  bool operator < (T a, T b) {
-	  return a<b - floating_comp.epsilon;
-  }
-  template <typename T, typename U,
-		  requirements::NotSame<T, U>,
-		  requirements::IsFloatinPoint<T> = true,
-		  requirements::IsArithmetic<U> = true>
-  bool operator > (T a, U b) {
-	  return a>b + floating_comp.epsilon;
-  }
-  template <typename T, typename U,
-		  requirements::NotSame<T, U>,
-		  requirements::IsFloatinPoint<T> = true,
-		  requirements::IsArithmetic<U> = true>
-  bool operator > (U b, T a) {
-	  return a>b + floating_comp.epsilon;
-  }
-  template <typename T,
-		  requirements::IsFloatinPoint<T> = true>
-  bool operator > (T a, T b) {
-	  return a>b + floating_comp.epsilon;
-  }
 
   template <typename T, typename U,
-		  requirements::NotSame<T, U>,
 		  requirements::IsFloatinPoint<T> = true,
-		  requirements::IsArithmetic<U> = true>
-  bool operator >= (T a, U b) {
-	  return a>b - floating_comp.epsilon;
+		  requirements::IsIntegral<U> = true>
+  static bool gt (T a, U b) noexcept 
+  {
+	  return a > b + floating_comp.epsilon;
   }
   template <typename T, typename U,
-		  requirements::NotSame<T, U>,
 		  requirements::IsFloatinPoint<T> = true,
-		  requirements::IsArithmetic<U> = true>
-  bool operator >= (U b, T a) {
-	  return a>b - floating_comp.epsilon;
+		  requirements::IsIntegral<U> = true>
+  static bool gt (U b, T a) noexcept
+  {
+	  return b > a + floating_comp.epsilon;
   }
   template <typename T,
 		  requirements::IsFloatinPoint<T> = true>
-  bool operator >= (T a, T b) {
-	  return a>b - floating_comp.epsilon;
-  }
-  template <typename T, typename U,
-		  requirements::NotSame<T, U>,
-		  requirements::IsFloatinPoint<T> = true,
-		  requirements::IsArithmetic<U> = true>
-  bool operator <= (T a, U b) {
-	  return a<b + floating_comp.epsilon;
-  }
-  template <typename T, typename U,
-		  requirements::NotSame<T, U>,
-		  requirements::IsFloatinPoint<T> = true,
-		  requirements::IsArithmetic<U> = true>
-  bool operator <= (U b, T a) {
-	  return a<b + floating_comp.epsilon;
-  }
-  template <typename T,
-		  requirements::IsFloatinPoint<T> = true>
-  bool operator <= (T a, T b) {
-	  return a<b + floating_comp.epsilon;
+  static bool gt (T a, T b) noexcept
+  {
+	  return a > b + floating_comp.epsilon;
   }
 
+  
+  template <typename T, typename U,
+		  requirements::IsFloatinPoint<T> = true,
+		  requirements::IsIntegral<U> = true>
+  static bool ge (T a, U b) noexcept
+  {
+	  return a > b - floating_comp.epsilon;
+  }
+  template <typename T, typename U,
+		  requirements::IsFloatinPoint<T> = true,
+		  requirements::IsIntegral<U> = true>
+  static bool ge (U b, T a) noexcept
+  {
+	  return b > a - floating_comp.epsilon;
+  }
+  template <typename T,
+		  requirements::IsFloatinPoint<T> = true>
+  static bool ge (T a, T b) noexcept
+  {
+	  return a > b - floating_comp.epsilon;
+  }
+
+
+  template <typename T, typename U,
+		  requirements::IsFloatinPoint<T> = true,
+		  requirements::IsIntegral<U> = true>
+  static bool le (T a, U b) noexcept
+  {
+	  return a < b + floating_comp.epsilon;
+  }
+  template <typename T, typename U,
+		  requirements::IsFloatinPoint<T> = true,
+		  requirements::IsIntegral<U> = true>
+  static bool le (U b, T a) noexcept
+  {
+	  return b < a + floating_comp.epsilon;
+  }
+  template <typename T,
+		  requirements::IsFloatinPoint<T> = true>
+  static bool le (T a, T b) noexcept
+  {
+	  return a < b + floating_comp.epsilon;
+  }
 }//!namespace
+
 #endif //BASE_VALUE_COMP_H

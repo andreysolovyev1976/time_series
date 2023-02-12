@@ -20,10 +20,13 @@ endif (APPLE)
 
 add_executable(${PROJECT_NAME_TEST}
         tests_all.cpp
-        tests_ctors.cpp
-        tests_comparison_basics.cpp
-        tests_comparison_ts_elems.cpp
-        tests_arithmetics.cpp
+        tests_basics_floating_point_comparison.cpp
+        tests_element_ctors.cpp
+        tests_element_comparison.cpp
+        tests_element_fun_apply.cpp
+        tests_value_ctors.cpp
+        tests_value_comparison.cpp
+        tests_value_arithmetics.cpp
 #        tests_precision.cpp
         )
 

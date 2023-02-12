@@ -20,23 +20,36 @@ namespace time_series {
 
   //todo: add requirements on ElemType
   //todo: add requirements for Other - should be an Arithmetic or better - operator is defined?
-  //todo: add requirements for Function - should be callable over ElemType
 
 
   template <typename Duration, typename ElemType = base::Value<Duration>>
   struct Element final {
+	  using elem_type = ElemType;
+	  using key_type = Duration;
+
+	  /**
+	   * @brief
+	   * for map-alike collections
+	   * */
+	  using value_type = std::pair<Duration, ElemType>;
 
 	  Element() = default;
-	  explicit Element (const ElemType &e);
-	  explicit Element (ElemType &&e);
+	  Element (const ElemType &e);
+	  Element (ElemType &&e);
+	  Element (value_type &&p);
+	  Element (const value_type &p);
+
+	  const value_type& operator () () const;
 
 	  std::string toString () const;
 
+	  template <typename Fn, requirements::ModifiesElemInPlace<Fn, ElemType> = true>
+	  Element& applyFunction (Fn &&fn);
+	  template <typename Fn, requirements::CreatesNewElem<Fn, ElemType> = true>
+	  Element& applyFunction (Fn &&fn);
+
 	  base::Timestamp<Duration> timestamp;
 	  ElemType value;
-
-	  template <typename Fn, requirements::Unary<Fn, ElemType> = true>
-	  Element& applyFunction (Fn &&fn);
   };
 
   template <typename Duration, typename ElemType>
@@ -45,6 +58,23 @@ namespace time_series {
   template <typename Duration, typename ElemType>
   Element<Duration, ElemType>::Element (ElemType &&e) : value (std::move(e))
   {}
+
+  template <typename Duration, typename ElemType>
+  Element<Duration, ElemType>::Element (Element<Duration, ElemType>::value_type &&p)
+  : timestamp (std::move(p.first))
+  , value (std::move(p.second))
+  {}
+  template <typename Duration, typename ElemType>
+  Element<Duration, ElemType>::Element (const Element<Duration, ElemType>::value_type &p)
+		  : timestamp (p.first)
+		  , value (p.second)
+  {}
+
+  template <typename Duration, typename ElemType>
+  const typename Element<Duration, ElemType>::value_type& Element<Duration, ElemType>::operator () () const {
+	  return {timestamp, value}; //todo: check what is a subject for reference - a pair itself or two referencies of the respective fields
+  }
+
 
   template <typename Duration, typename ElemType>
   std::string Element<Duration, ElemType>::toString () const {
@@ -58,10 +88,15 @@ namespace time_series {
   }
 
   template <typename Duration, typename ElemType>
-  template <typename Fn, requirements::Unary<Fn, ElemType>>
+  template <typename Fn, requirements::ModifiesElemInPlace<Fn, ElemType>>
   Element<Duration, ElemType>& Element<Duration, ElemType>::applyFunction (Fn &&fn) {
 	  std::invoke(fn, value);
 	  return *this;
+  }
+  template <typename Duration, typename ElemType>
+  template <typename Fn, requirements::CreatesNewElem<Fn, ElemType>>
+  Element<Duration, ElemType>& Element<Duration, ElemType>::applyFunction (Fn &&fn) {
+	  return std::invoke(fn, value);
   }
 
 
@@ -156,7 +191,7 @@ namespace time_series {
   }
 
 
-
+#if 0
   template <typename Duration, typename ElemType>
   Element<Duration, ElemType> operator * (const Element<Duration, ElemType>& lhs, const Element<Duration, ElemType>& rhs) {
 	  return Element<Duration, ElemType> {
@@ -291,7 +326,7 @@ namespace time_series {
 	  return lhs;
   }
 
-  
+#endif
   
   template <typename Duration, typename ElemType>
   std::ostream& operator << (std::ostream& os, const Element<Duration, ElemType>& element) {

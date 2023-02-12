@@ -11,8 +11,7 @@
 
 namespace financial {
 
-  template <typename Duration>
-  using SingleQuote = base::Value<Duration, base::traits::ValueTypeDefault>;
+  using SingleQuote = base::Value<base::traits::ValueTypeDefault>;
 
 }
 

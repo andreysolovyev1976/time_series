@@ -16,9 +16,11 @@
 namespace financial {
 
   //todo: add requirement for Other - should be an Arithmetic or better - operator is defined?
+  // it is part of an Element, therfore ValueType should be removed
 
-  template <typename Duration = base::Nanoseconds>
+  template <typename ValueType = base::traits::ValueTypeDefault>
   struct BidAsk final {
+	  using value_type = ValueType;
 
 	  struct AllFields{};
 	  struct Bid{};
@@ -28,15 +30,15 @@ namespace financial {
 	  struct Volume{};
 
 	  BidAsk () = default;
-	  BidAsk (std::initializer_list<base::Value<Duration>> values);
+	  BidAsk (std::initializer_list<base::Value<ValueType>> values);
 
 	  std::string toString() const;
 
-	  base::Value<Duration> bid, ask, middle, price, volume {0.0};
+	  base::Value<ValueType> bid, ask, middle, price, volume {0.0};
   };
 
-  template <typename Duration>
-  BidAsk<Duration>::BidAsk (std::initializer_list<base::Value<Duration>> values) {
+  template <typename ValueType>
+  BidAsk<ValueType>::BidAsk (std::initializer_list<base::Value<ValueType>> values) {
 	  using namespace std::string_literals;
 	  if (values.size() != 5u) {
 		  throw std::invalid_argument (
@@ -51,8 +53,8 @@ namespace financial {
 	  volume = *(values.begin() + 4);
   }
 
-  template <typename Duration>
-  std::string BidAsk<Duration>::toString() const {
+  template <typename ValueType>
+  std::string BidAsk< ValueType>::toString() const {
 	  std::string msg;
 	  msg.reserve(const_values::EXPECTED_BidAsk_LENGTH);
 	  msg.append(bid.toString());
@@ -69,19 +71,19 @@ namespace financial {
 
 
   template <
-		  typename Duration,
+		  typename ValueType,
 		  typename Other,
-		  requirements::NotSame<base::Value<Duration>, Other> = true,
-		  requirements::ComparisonOperationsDefined<base::Value<Duration>, Other> = true,
-		  typename CompareBy = typename BidAsk<Duration>::Price
+		  requirements::NotSame<base::Value<ValueType>, Other> = true,
+		  requirements::ComparisonOperationsDefined<base::Value<ValueType>, Other> = true,
+		  typename CompareBy = typename BidAsk<ValueType>::Price
   >
-  bool operator == (const Other& lhs, const BidAsk<Duration>& rhs) {
+  bool operator == (const Other& lhs, const BidAsk<ValueType>& rhs) {
 	  return (rhs == lhs);
   }
-  template <typename Duration, typename CompareBy = typename BidAsk<Duration>::AllFields>
-  bool operator == (const BidAsk<Duration>& lhs, const BidAsk<Duration>& rhs) {
+  template <typename ValueType, typename CompareBy = typename BidAsk<ValueType>::AllFields>
+  bool operator == (const BidAsk<ValueType>& lhs, const BidAsk<ValueType>& rhs) {
 	  bool res {true};
-	  if constexpr (std::is_same_v<CompareBy, typename BidAsk<Duration>::AllFields>) {
+	  if constexpr (std::is_same_v<CompareBy, typename BidAsk<ValueType>::AllFields>) {
 		  res = res &&
 				  lhs.bid == rhs.bid &&
 				  lhs.ask == rhs.ask &&
@@ -89,39 +91,39 @@ namespace financial {
 				  lhs.price == rhs.price &&
 				  lhs.volume == rhs.volume;
 	  }
-	  else if constexpr (std::is_same_v<CompareBy, typename BidAsk<Duration>::Bid>) {
+	  else if constexpr (std::is_same_v<CompareBy, typename BidAsk<ValueType>::Bid>) {
 		  res = res &&
 				  lhs.bid == rhs.bid;
 	  }
-	  else if constexpr (std::is_same_v<CompareBy, typename BidAsk<Duration>::Ask>) {
+	  else if constexpr (std::is_same_v<CompareBy, typename BidAsk<ValueType>::Ask>) {
 		  res = res &&
 				  lhs.ask == rhs.ask;
 	  }
-	  else if constexpr (std::is_same_v<CompareBy, typename BidAsk<Duration>::Middle>) {
+	  else if constexpr (std::is_same_v<CompareBy, typename BidAsk<ValueType>::Middle>) {
 		  res = res &&
 				  lhs.middle == rhs.middle;
 	  }
-	  else if constexpr (std::is_same_v<CompareBy, typename BidAsk<Duration>::Price>) {
+	  else if constexpr (std::is_same_v<CompareBy, typename BidAsk<ValueType>::Price>) {
 		  res = res &&
 				  lhs.price == rhs.price;
 
 	  }
-	  else if constexpr (std::is_same_v<CompareBy, typename BidAsk<Duration>::Volume>) {
+	  else if constexpr (std::is_same_v<CompareBy, typename BidAsk<ValueType>::Volume>) {
 		  res = res &&
 				  lhs.volume == rhs.volume;
 	  }
 	  return res;
   }
   template <
-		  typename Duration,
+		  typename ValueType,
 		  typename Other,
-		  requirements::NotSame<base::Value<Duration>, Other> = true,
-		  requirements::ComparisonOperationsDefined<base::Value<Duration>, Other> = true,
-		  typename CompareBy = typename BidAsk<Duration>::Price
+		  requirements::NotSame<base::Value<ValueType>, Other> = true,
+		  requirements::ComparisonOperationsDefined<base::Value<ValueType>, Other> = true,
+		  typename CompareBy = typename BidAsk<ValueType>::Price
   >
-  bool operator == (const BidAsk<Duration>& lhs, const Other& rhs) {
+  bool operator == (const BidAsk<ValueType>& lhs, const Other& rhs) {
 	  bool res {true};
-	  if constexpr (std::is_same_v<CompareBy, typename BidAsk<Duration>::AllFields>) {
+	  if constexpr (std::is_same_v<CompareBy, typename BidAsk<ValueType>::AllFields>) {
 		  res = res &&
 				  lhs.bid == rhs &&
 				  lhs.ask == rhs &&
@@ -129,58 +131,58 @@ namespace financial {
 				  lhs.price == rhs &&
 				  lhs.volume == rhs;
 	  }
-	  else if constexpr (std::is_same_v<CompareBy, typename BidAsk<Duration>::Bid>) {
+	  else if constexpr (std::is_same_v<CompareBy, typename BidAsk<ValueType>::Bid>) {
 		  res = res &&
 				  lhs.bid == rhs;
 	  }
-	  else if constexpr (std::is_same_v<CompareBy, typename BidAsk<Duration>::Ask>) {
+	  else if constexpr (std::is_same_v<CompareBy, typename BidAsk<ValueType>::Ask>) {
 		  res = res &&
 				  lhs.ask == rhs;
 	  }
-	  else if constexpr (std::is_same_v<CompareBy, typename BidAsk<Duration>::Middle>) {
+	  else if constexpr (std::is_same_v<CompareBy, typename BidAsk<ValueType>::Middle>) {
 		  res = res &&
 				  lhs.middle == rhs;
 	  }
-	  else if constexpr (std::is_same_v<CompareBy, typename BidAsk<Duration>::Price>) {
+	  else if constexpr (std::is_same_v<CompareBy, typename BidAsk<ValueType>::Price>) {
 		  res = res &&
 				  lhs.price == rhs;
 	  }
-	  else if constexpr (std::is_same_v<CompareBy, typename BidAsk<Duration>::Volume>) {
+	  else if constexpr (std::is_same_v<CompareBy, typename BidAsk<ValueType>::Volume>) {
 		  res = res &&
 				  lhs.volume == rhs;
 	  }
 	  return res;
   }
 
-  template <typename Duration, typename CompareBy = typename BidAsk<Duration>::AllFields>
-  bool operator != (const BidAsk<Duration>& lhs, const BidAsk<Duration>& rhs) {
+  template <typename ValueType, typename CompareBy = typename BidAsk<ValueType>::AllFields>
+  bool operator != (const BidAsk<ValueType>& lhs, const BidAsk<ValueType>& rhs) {
 	  return !(lhs == rhs);
   }
   template <
-		  typename Duration,
+		  typename ValueType,
 		  typename Other,
-		  requirements::NotSame<base::Value<Duration>, Other> = true,
-		  requirements::ComparisonOperationsDefined<base::Value<Duration>, Other> = true,
-		  typename CompareBy = typename BidAsk<Duration>::Price
+		  requirements::NotSame<base::Value<ValueType>, Other> = true,
+		  requirements::ComparisonOperationsDefined<base::Value<ValueType>, Other> = true,
+		  typename CompareBy = typename BidAsk<ValueType>::Price
   >
-  bool operator != (const BidAsk<Duration>& lhs, const Other& rhs) {
+  bool operator != (const BidAsk<ValueType>& lhs, const Other& rhs) {
 	  return !(lhs == rhs);
   }
   template <
-		  typename Duration,
+		  typename ValueType,
 		  typename Other,
-		  requirements::NotSame<base::Value<Duration>, Other> = true,
-		  requirements::ComparisonOperationsDefined<base::Value<Duration>, Other> = true,
-		  typename CompareBy = typename BidAsk<Duration>::Price
+		  requirements::NotSame<base::Value<ValueType>, Other> = true,
+		  requirements::ComparisonOperationsDefined<base::Value<ValueType>, Other> = true,
+		  typename CompareBy = typename BidAsk<ValueType>::Price
   >
-  bool operator != (const Other& lhs, const BidAsk<Duration>& rhs) {
+  bool operator != (const Other& lhs, const BidAsk<ValueType>& rhs) {
 	  return !(rhs == lhs);
   }
 
-  template <typename Duration, typename CompareBy = typename BidAsk<Duration>::AllFields>
-  bool operator < (const BidAsk<Duration>& lhs, const BidAsk<Duration>& rhs) {
+  template <typename ValueType, typename CompareBy = typename BidAsk<ValueType>::AllFields>
+  bool operator < (const BidAsk<ValueType>& lhs, const BidAsk<ValueType>& rhs) {
 	  bool res {true};
-	  if constexpr (std::is_same_v<CompareBy, typename BidAsk<Duration>::AllFields>) {
+	  if constexpr (std::is_same_v<CompareBy, typename BidAsk<ValueType>::AllFields>) {
 		  res = res &&
 				  lhs.bid < rhs.bid &&
 				  lhs.ask < rhs.ask &&
@@ -188,38 +190,38 @@ namespace financial {
 				  lhs.price < rhs.price &&
 				  lhs.volume < rhs.volume;
 	  }
-	  else if constexpr (std::is_same_v<CompareBy, typename BidAsk<Duration>::Bid>) {
+	  else if constexpr (std::is_same_v<CompareBy, typename BidAsk<ValueType>::Bid>) {
 		  res = res &&
 				  lhs.bid < rhs.bid;
 	  }
-	  else if constexpr (std::is_same_v<CompareBy, typename BidAsk<Duration>::Ask>) {
+	  else if constexpr (std::is_same_v<CompareBy, typename BidAsk<ValueType>::Ask>) {
 		  res = res &&
 				  lhs.ask < rhs.ask;
 	  }
-	  else if constexpr (std::is_same_v<CompareBy, typename BidAsk<Duration>::Middle>) {
+	  else if constexpr (std::is_same_v<CompareBy, typename BidAsk<ValueType>::Middle>) {
 		  res = res &&
 				  lhs.middle < rhs.middle;
 	  }
-	  else if constexpr (std::is_same_v<CompareBy, typename BidAsk<Duration>::Price>) {
+	  else if constexpr (std::is_same_v<CompareBy, typename BidAsk<ValueType>::Price>) {
 		  res = res &&
 				  lhs.price < rhs.price;
 	  }
-	  else if constexpr (std::is_same_v<CompareBy, typename BidAsk<Duration>::Volume>) {
+	  else if constexpr (std::is_same_v<CompareBy, typename BidAsk<ValueType>::Volume>) {
 		  res = res &&
 				  lhs.volume < rhs.volume;
 	  }
 	  return res;
   }
   template <
-		  typename Duration,
+		  typename ValueType,
 		  typename Other,
-		  requirements::NotSame<base::Value<Duration>, Other> = true,
-		  requirements::ComparisonOperationsDefined<base::Value<Duration>, Other> = true,
-		  typename CompareBy = typename BidAsk<Duration>::Price
+		  requirements::NotSame<base::Value<ValueType>, Other> = true,
+		  requirements::ComparisonOperationsDefined<base::Value<ValueType>, Other> = true,
+		  typename CompareBy = typename BidAsk<ValueType>::Price
   >
-  bool operator < (const BidAsk<Duration>& lhs, const Other& rhs) {
+  bool operator < (const BidAsk<ValueType>& lhs, const Other& rhs) {
 	  bool res {true};
-	  if constexpr (std::is_same_v<CompareBy, typename BidAsk<Duration>::AllFields>) {
+	  if constexpr (std::is_same_v<CompareBy, typename BidAsk<ValueType>::AllFields>) {
 		  res = res &&
 				  lhs.bid < rhs &&
 				  lhs.ask < rhs &&
@@ -227,69 +229,69 @@ namespace financial {
 				  lhs.price < rhs &&
 				  lhs.volume < rhs;
 	  }
-	  else if constexpr (std::is_same_v<CompareBy, typename BidAsk<Duration>::Bid>) {
+	  else if constexpr (std::is_same_v<CompareBy, typename BidAsk<ValueType>::Bid>) {
 		  res = res &&
 				  lhs.bid < rhs;
 	  }
-	  else if constexpr (std::is_same_v<CompareBy, typename BidAsk<Duration>::Ask>) {
+	  else if constexpr (std::is_same_v<CompareBy, typename BidAsk<ValueType>::Ask>) {
 		  res = res &&
 				  lhs.ask > rhs;
 	  }
-	  else if constexpr (std::is_same_v<CompareBy, typename BidAsk<Duration>::Middle>) {
+	  else if constexpr (std::is_same_v<CompareBy, typename BidAsk<ValueType>::Middle>) {
 		  res = res &&
 				  lhs.middle < rhs;
 	  }
-	  else if constexpr (std::is_same_v<CompareBy, typename BidAsk<Duration>::Price>) {
+	  else if constexpr (std::is_same_v<CompareBy, typename BidAsk<ValueType>::Price>) {
 		  res = res &&
 				  lhs.price < rhs;
 
 	  }
-	  else if constexpr (std::is_same_v<CompareBy, typename BidAsk<Duration>::Volume>) {
+	  else if constexpr (std::is_same_v<CompareBy, typename BidAsk<ValueType>::Volume>) {
 		  res = res &&
 				  lhs.volume < rhs;
 	  }
 	  return res;
   }
   template <
-		  typename Duration,
+		  typename ValueType,
 		  typename Other,
-		  requirements::NotSame<base::Value<Duration>, Other> = true,
-		  requirements::ComparisonOperationsDefined<base::Value<Duration>, Other> = true,
-		  typename CompareBy = typename BidAsk<Duration>::Price
+		  requirements::NotSame<base::Value<ValueType>, Other> = true,
+		  requirements::ComparisonOperationsDefined<base::Value<ValueType>, Other> = true,
+		  typename CompareBy = typename BidAsk<ValueType>::Price
   >
-  bool operator < (const Other& lhs, const BidAsk<Duration>& rhs) {
+  bool operator < (const Other& lhs, const BidAsk<ValueType>& rhs) {
 	  return (!(rhs < lhs) && !(rhs == lhs));
   }
 
-  template <typename Duration, typename CompareBy = typename BidAsk<Duration>::AllFields>
-  bool operator > (const BidAsk<Duration>& lhs, const BidAsk<Duration>& rhs) {
+  template <typename ValueType, typename CompareBy = typename BidAsk<ValueType>::AllFields>
+  bool operator > (const BidAsk<ValueType>& lhs, const BidAsk<ValueType>& rhs) {
 	  return (!(rhs == lhs) && !(lhs < rhs));
   }
   template <
-		  typename Duration,
+		  typename ValueType,
 		  typename Other,
-		  requirements::NotSame<base::Value<Duration>, Other> = true,
-		  requirements::ComparisonOperationsDefined<base::Value<Duration>, Other> = true,
-		  typename CompareBy = typename BidAsk<Duration>::Price
+		  requirements::NotSame<base::Value<ValueType>, Other> = true,
+		  requirements::ComparisonOperationsDefined<base::Value<ValueType>, Other> = true,
+		  typename CompareBy = typename BidAsk<ValueType>::Price
   >
-  bool operator > (const BidAsk<Duration>& lhs, const Other& rhs) {
+  bool operator > (const BidAsk<ValueType>& lhs, const Other& rhs) {
 	  return (!(rhs == lhs) && !(lhs < rhs));
   }
   template <
-		  typename Duration,
+		  typename ValueType,
 		  typename Other,
-		  requirements::NotSame<base::Value<Duration>, Other> = true,
-		  requirements::ComparisonOperationsDefined<base::Value<Duration>, Other> = true,
-		  typename CompareBy = typename BidAsk<Duration>::Price
+		  requirements::NotSame<base::Value<ValueType>, Other> = true,
+		  requirements::ComparisonOperationsDefined<base::Value<ValueType>, Other> = true,
+		  typename CompareBy = typename BidAsk<ValueType>::Price
   >
-  bool operator > (const Other& lhs, const BidAsk<Duration>& rhs) {
+  bool operator > (const Other& lhs, const BidAsk<ValueType>& rhs) {
 	  return (!(rhs == lhs) && !(lhs < rhs));
   }
 
-  template <typename Duration, typename CompareBy = typename BidAsk<Duration>::AllFields>
-  bool operator <= (const BidAsk<Duration>& lhs, const BidAsk<Duration>& rhs) {
+  template <typename ValueType, typename CompareBy = typename BidAsk<ValueType>::AllFields>
+  bool operator <= (const BidAsk<ValueType>& lhs, const BidAsk<ValueType>& rhs) {
 	  bool res {true};
-	  if constexpr (std::is_same_v<CompareBy, typename BidAsk<Duration>::AllFields>) {
+	  if constexpr (std::is_same_v<CompareBy, typename BidAsk<ValueType>::AllFields>) {
 		  res = res &&
 				  lhs.bid <= rhs.bid &&
 				  lhs.ask <= rhs.ask &&
@@ -297,38 +299,38 @@ namespace financial {
 				  lhs.price <= rhs.price &&
 				  lhs.volume <= rhs.volume;
 	  }
-	  else if constexpr (std::is_same_v<CompareBy, typename BidAsk<Duration>::Bid>) {
+	  else if constexpr (std::is_same_v<CompareBy, typename BidAsk<ValueType>::Bid>) {
 		  res = res &&
 				  lhs.bid <= rhs.bid;
 	  }
-	  else if constexpr (std::is_same_v<CompareBy, typename BidAsk<Duration>::Ask>) {
+	  else if constexpr (std::is_same_v<CompareBy, typename BidAsk<ValueType>::Ask>) {
 		  res = res &&
 				  lhs.ask <= rhs.ask;
 	  }
-	  else if constexpr (std::is_same_v<CompareBy, typename BidAsk<Duration>::Middle>) {
+	  else if constexpr (std::is_same_v<CompareBy, typename BidAsk<ValueType>::Middle>) {
 		  res = res &&
 				  lhs.middle <= rhs.middle;
 	  }
-	  else if constexpr (std::is_same_v<CompareBy, typename BidAsk<Duration>::Price>) {
+	  else if constexpr (std::is_same_v<CompareBy, typename BidAsk<ValueType>::Price>) {
 		  res = res &&
 				  lhs.price <= rhs.price;
 	  }
-	  else if constexpr (std::is_same_v<CompareBy, typename BidAsk<Duration>::Volume>) {
+	  else if constexpr (std::is_same_v<CompareBy, typename BidAsk<ValueType>::Volume>) {
 		  res = res &&
 				  lhs.volume <= rhs.volume;
 	  }
 	  return res;
   }
   template <
-		  typename Duration,
+		  typename ValueType,
 		  typename Other,
-		  requirements::NotSame<base::Value<Duration>, Other> = true,
-		  requirements::ComparisonOperationsDefined<base::Value<Duration>, Other> = true,
-		  typename CompareBy = typename BidAsk<Duration>::Price
+		  requirements::NotSame<base::Value<ValueType>, Other> = true,
+		  requirements::ComparisonOperationsDefined<base::Value<ValueType>, Other> = true,
+		  typename CompareBy = typename BidAsk<ValueType>::Price
   >
-  bool operator <= (const BidAsk<Duration>& lhs, const Other& rhs) {
+  bool operator <= (const BidAsk<ValueType>& lhs, const Other& rhs) {
 	  bool res {true};
-	  if constexpr (std::is_same_v<CompareBy, typename BidAsk<Duration>::AllFields>) {
+	  if constexpr (std::is_same_v<CompareBy, typename BidAsk<ValueType>::AllFields>) {
 		  res = res &&
 				  lhs.bid <= rhs &&
 				  lhs.ask <= rhs &&
@@ -336,38 +338,38 @@ namespace financial {
 				  lhs.price <= rhs &&
 				  lhs.volume <= rhs;
 	  }
-	  else if constexpr (std::is_same_v<CompareBy, typename BidAsk<Duration>::Bid>) {
+	  else if constexpr (std::is_same_v<CompareBy, typename BidAsk<ValueType>::Bid>) {
 		  res = res &&
 				  lhs.bid <= rhs;
 	  }
-	  else if constexpr (std::is_same_v<CompareBy, typename BidAsk<Duration>::Ask>) {
+	  else if constexpr (std::is_same_v<CompareBy, typename BidAsk<ValueType>::Ask>) {
 		  res = res &&
 				  lhs.ask <= rhs;
 	  }
-	  else if constexpr (std::is_same_v<CompareBy, typename BidAsk<Duration>::Middle>) {
+	  else if constexpr (std::is_same_v<CompareBy, typename BidAsk<ValueType>::Middle>) {
 		  res = res &&
 				  lhs.middle <= rhs;
 	  }
-	  else if constexpr (std::is_same_v<CompareBy, typename BidAsk<Duration>::Price>) {
+	  else if constexpr (std::is_same_v<CompareBy, typename BidAsk<ValueType>::Price>) {
 		  res = res &&
 				  lhs.price <= rhs;
 	  }
-	  else if constexpr (std::is_same_v<CompareBy, typename BidAsk<Duration>::Volume>) {
+	  else if constexpr (std::is_same_v<CompareBy, typename BidAsk<ValueType>::Volume>) {
 		  res = res &&
 				  lhs.volume <= rhs;
 	  }
 	  return res;
   }
   template <
-		  typename Duration,
+		  typename ValueType,
 		  typename Other,
-		  requirements::NotSame<base::Value<Duration>, Other> = true,
-		  requirements::ComparisonOperationsDefined<base::Value<Duration>, Other> = true,
-		  typename CompareBy = typename BidAsk<Duration>::Price
+		  requirements::NotSame<base::Value<ValueType>, Other> = true,
+		  requirements::ComparisonOperationsDefined<base::Value<ValueType>, Other> = true,
+		  typename CompareBy = typename BidAsk<ValueType>::Price
   >
-  bool operator <= (const Other& lhs, const BidAsk<Duration>& rhs) {
+  bool operator <= (const Other& lhs, const BidAsk<ValueType>& rhs) {
 	  bool res {true};
-	  if constexpr (std::is_same_v<CompareBy, typename BidAsk<Duration>::AllFields>) {
+	  if constexpr (std::is_same_v<CompareBy, typename BidAsk<ValueType>::AllFields>) {
 		  res = res &&
 				  lhs <= rhs.bid &&
 				  lhs <= rhs.ask &&
@@ -375,33 +377,33 @@ namespace financial {
 				  lhs <= rhs.price &&
 				  lhs <= rhs.volume;
 	  }
-	  else if constexpr (std::is_same_v<CompareBy, typename BidAsk<Duration>::Bid>) {
+	  else if constexpr (std::is_same_v<CompareBy, typename BidAsk<ValueType>::Bid>) {
 		  res = res &&
 				  lhs <= rhs.bid;
 	  }
-	  else if constexpr (std::is_same_v<CompareBy, typename BidAsk<Duration>::Ask>) {
+	  else if constexpr (std::is_same_v<CompareBy, typename BidAsk<ValueType>::Ask>) {
 		  res = res &&
 				  lhs <= rhs.ask;
 	  }
-	  else if constexpr (std::is_same_v<CompareBy, typename BidAsk<Duration>::Middle>) {
+	  else if constexpr (std::is_same_v<CompareBy, typename BidAsk<ValueType>::Middle>) {
 		  res = res &&
 				  lhs <= rhs.middle;
 	  }
-	  else if constexpr (std::is_same_v<CompareBy, typename BidAsk<Duration>::Price>) {
+	  else if constexpr (std::is_same_v<CompareBy, typename BidAsk<ValueType>::Price>) {
 		  res = res &&
 				  lhs <= rhs.price;
 	  }
-	  else if constexpr (std::is_same_v<CompareBy, typename BidAsk<Duration>::Volume>) {
+	  else if constexpr (std::is_same_v<CompareBy, typename BidAsk<ValueType>::Volume>) {
 		  res = res &&
 				  lhs <= rhs.volume;
 	  }
 	  return res;
   }
 
-  template <typename Duration, typename CompareBy = typename BidAsk<Duration>::AllFields>
-  bool operator >= (const BidAsk<Duration>& lhs, const BidAsk<Duration>& rhs){
+  template <typename ValueType, typename CompareBy = typename BidAsk<ValueType>::AllFields>
+  bool operator >= (const BidAsk<ValueType>& lhs, const BidAsk<ValueType>& rhs){
 	  bool res {true};
-	  if constexpr (std::is_same_v<CompareBy, typename BidAsk<Duration>::AllFields>) {
+	  if constexpr (std::is_same_v<CompareBy, typename BidAsk<ValueType>::AllFields>) {
 		  res = res &&
 				  lhs.bid >= rhs.bid &&
 				  lhs.ask >= rhs.ask &&
@@ -409,38 +411,38 @@ namespace financial {
 				  lhs.price >= rhs.price &&
 				  lhs.volume >= rhs.volume;
 	  }
-	  else if constexpr (std::is_same_v<CompareBy, typename BidAsk<Duration>::Bid>) {
+	  else if constexpr (std::is_same_v<CompareBy, typename BidAsk<ValueType>::Bid>) {
 		  res = res &&
 				  lhs.bid >= rhs.bid;
 	  }
-	  else if constexpr (std::is_same_v<CompareBy, typename BidAsk<Duration>::Ask>) {
+	  else if constexpr (std::is_same_v<CompareBy, typename BidAsk<ValueType>::Ask>) {
 		  res = res &&
 				  lhs.ask >= rhs.ask;
 	  }
-	  else if constexpr (std::is_same_v<CompareBy, typename BidAsk<Duration>::Middle>) {
+	  else if constexpr (std::is_same_v<CompareBy, typename BidAsk<ValueType>::Middle>) {
 		  res = res &&
 				  lhs.middle >= rhs.middle;
 	  }
-	  else if constexpr (std::is_same_v<CompareBy, typename BidAsk<Duration>::Price>) {
+	  else if constexpr (std::is_same_v<CompareBy, typename BidAsk<ValueType>::Price>) {
 		  res = res &&
 				  lhs.price >= rhs.price;
 	  }
-	  else if constexpr (std::is_same_v<CompareBy, typename BidAsk<Duration>::Volume>) {
+	  else if constexpr (std::is_same_v<CompareBy, typename BidAsk<ValueType>::Volume>) {
 		  res = res &&
 				  lhs.volume >= rhs.volume;
 	  }
 	  return res;
   }
   template <
-		  typename Duration,
+		  typename ValueType,
 		  typename Other,
-		  requirements::NotSame<base::Value<Duration>, Other> = true,
-		  requirements::ComparisonOperationsDefined<base::Value<Duration>, Other> = true,
-		  typename CompareBy = typename BidAsk<Duration>::Price
+		  requirements::NotSame<base::Value<ValueType>, Other> = true,
+		  requirements::ComparisonOperationsDefined<base::Value<ValueType>, Other> = true,
+		  typename CompareBy = typename BidAsk<ValueType>::Price
   >
-  bool operator >= (const BidAsk<Duration>& lhs, const Other& rhs){
+  bool operator >= (const BidAsk<ValueType>& lhs, const Other& rhs){
 	  bool res {true};
-	  if constexpr (std::is_same_v<CompareBy, typename BidAsk<Duration>::AllFields>) {
+	  if constexpr (std::is_same_v<CompareBy, typename BidAsk<ValueType>::AllFields>) {
 		  res = res &&
 				  lhs.bid >= rhs &&
 				  lhs.ask >= rhs &&
@@ -448,38 +450,38 @@ namespace financial {
 				  lhs.price >= rhs &&
 				  lhs.volume >= rhs;
 	  }
-	  else if constexpr (std::is_same_v<CompareBy, typename BidAsk<Duration>::Bid>) {
+	  else if constexpr (std::is_same_v<CompareBy, typename BidAsk<ValueType>::Bid>) {
 		  res = res &&
 				  lhs.bid >= rhs;
 	  }
-	  else if constexpr (std::is_same_v<CompareBy, typename BidAsk<Duration>::Ask>) {
+	  else if constexpr (std::is_same_v<CompareBy, typename BidAsk<ValueType>::Ask>) {
 		  res = res &&
 				  lhs.ask >= rhs;
 	  }
-	  else if constexpr (std::is_same_v<CompareBy, typename BidAsk<Duration>::Middle>) {
+	  else if constexpr (std::is_same_v<CompareBy, typename BidAsk<ValueType>::Middle>) {
 		  res = res &&
 				  lhs.middle >= rhs;
 	  }
-	  else if constexpr (std::is_same_v<CompareBy, typename BidAsk<Duration>::Price>) {
+	  else if constexpr (std::is_same_v<CompareBy, typename BidAsk<ValueType>::Price>) {
 		  res = res &&
 				  lhs.price >= rhs;
 	  }
-	  else if constexpr (std::is_same_v<CompareBy, typename BidAsk<Duration>::Volume>) {
+	  else if constexpr (std::is_same_v<CompareBy, typename BidAsk<ValueType>::Volume>) {
 		  res = res &&
 				  lhs.volume < rhs;
 	  }
 	  return res;
   }
   template <
-		  typename Duration,
+		  typename ValueType,
 		  typename Other,
-		  requirements::NotSame<base::Value<Duration>, Other> = true,
-		  requirements::ComparisonOperationsDefined<base::Value<Duration>, Other> = true,
-		  typename CompareBy = typename BidAsk<Duration>::Price
+		  requirements::NotSame<base::Value<ValueType>, Other> = true,
+		  requirements::ComparisonOperationsDefined<base::Value<ValueType>, Other> = true,
+		  typename CompareBy = typename BidAsk<ValueType>::Price
   >
-  bool operator >= (const Other& lhs, const BidAsk<Duration>& rhs){
+  bool operator >= (const Other& lhs, const BidAsk<ValueType>& rhs){
 	  bool res {true};
-	  if constexpr (std::is_same_v<CompareBy, typename BidAsk<Duration>::AllFields>) {
+	  if constexpr (std::is_same_v<CompareBy, typename BidAsk<ValueType>::AllFields>) {
 		  res = res &&
 				  lhs >= rhs.bid &&
 				  lhs >= rhs.ask &&
@@ -487,23 +489,23 @@ namespace financial {
 				  lhs >= rhs.price &&
 				  lhs >= rhs.volume;
 	  }
-	  else if constexpr (std::is_same_v<CompareBy, typename BidAsk<Duration>::Bid>) {
+	  else if constexpr (std::is_same_v<CompareBy, typename BidAsk<ValueType>::Bid>) {
 		  res = res &&
 				  lhs >= rhs.bid;
 	  }
-	  else if constexpr (std::is_same_v<CompareBy, typename BidAsk<Duration>::Ask>) {
+	  else if constexpr (std::is_same_v<CompareBy, typename BidAsk<ValueType>::Ask>) {
 		  res = res &&
 				  lhs >= rhs.ask;
 	  }
-	  else if constexpr (std::is_same_v<CompareBy, typename BidAsk<Duration>::Middle>) {
+	  else if constexpr (std::is_same_v<CompareBy, typename BidAsk<ValueType>::Middle>) {
 		  res = res &&
 				  lhs >= rhs.middle;
 	  }
-	  else if constexpr (std::is_same_v<CompareBy, typename BidAsk<Duration>::Price>) {
+	  else if constexpr (std::is_same_v<CompareBy, typename BidAsk<ValueType>::Price>) {
 		  res = res &&
 				  lhs >= rhs.price;
 	  }
-	  else if constexpr (std::is_same_v<CompareBy, typename BidAsk<Duration>::Volume>) {
+	  else if constexpr (std::is_same_v<CompareBy, typename BidAsk<ValueType>::Volume>) {
 		  res = res &&
 				  lhs >= rhs.volume;
 	  }
@@ -511,9 +513,9 @@ namespace financial {
   }
 
 
-  template <typename Duration>
-  BidAsk<Duration> operator * (const BidAsk<Duration>& lhs, const BidAsk<Duration>& rhs) {
-	  BidAsk<Duration> res;
+  template <typename ValueType>
+  BidAsk<ValueType> operator * (const BidAsk<ValueType>& lhs, const BidAsk<ValueType>& rhs) {
+	  BidAsk<ValueType> res;
 	  res.bid = lhs.bid * rhs.bid;
 	  res.ask = lhs.ask * rhs.ask;
 	  res.middle = lhs.middle * rhs.middle;
@@ -522,14 +524,14 @@ namespace financial {
 	  return res;
   }
   template <
-		  typename Duration,
+		  typename ValueType,
 		  typename Other,
 		  bool VolumeToo = false,
-		  requirements::NotSame<base::Value<Duration>, Other> = true,
-		  requirements::BinOperatorsExist<base::Value<Duration>, Other> = true
+		  requirements::NotSame<base::Value<ValueType>, Other> = true,
+		  requirements::BinOperatorsExist<base::Value<ValueType>, Other> = true
   >
-  BidAsk<Duration> operator * (const BidAsk<Duration>& lhs, const Other &rhs) {
-	  BidAsk<Duration> res;
+  BidAsk<ValueType> operator * (const BidAsk<ValueType>& lhs, const Other &rhs) {
+	  BidAsk<ValueType> res;
 	  res.bid = lhs.bid * rhs;
 	  res.ask = lhs.ask * rhs;
 	  res.middle = lhs.middle * rhs;
@@ -540,14 +542,14 @@ namespace financial {
 	  return res;
   }
   template <
-		  typename Duration,
+		  typename ValueType,
 		  typename Other,
 		  bool VolumeToo = false,
-		  requirements::NotSame<base::Value<Duration>, Other> = true,
-		  requirements::BinOperatorsExist<base::Value<Duration>, Other> = true
+		  requirements::NotSame<base::Value<ValueType>, Other> = true,
+		  requirements::BinOperatorsExist<base::Value<ValueType>, Other> = true
   >
-  BidAsk<Duration> operator * (const Other &lhs, const BidAsk<Duration>& rhs) {
-	  BidAsk<Duration> res;
+  BidAsk<ValueType> operator * (const Other &lhs, const BidAsk<ValueType>& rhs) {
+	  BidAsk<ValueType> res;
 	  res.bid = lhs * rhs.bid;
 	  res.ask = lhs * rhs.ask;
 	  res.middle = lhs * rhs.middle;
@@ -558,9 +560,9 @@ namespace financial {
 	  return res;
   }
 
-  template <typename Duration>
-  BidAsk<Duration> operator / (const BidAsk<Duration>& lhs, const BidAsk<Duration>& rhs) {
-	  BidAsk<Duration> res;
+  template <typename ValueType>
+  BidAsk<ValueType> operator / (const BidAsk<ValueType>& lhs, const BidAsk<ValueType>& rhs) {
+	  BidAsk<ValueType> res;
 	  res.bid = lhs.bid / rhs.bid;
 	  res.ask = lhs.ask / rhs.ask;
 	  res.middle = lhs.middle / rhs.middle;
@@ -569,14 +571,14 @@ namespace financial {
 	  return res;
   }
   template <
-		  typename Duration,
+		  typename ValueType,
 		  typename Other,
 		  bool VolumeToo = false,
-		  requirements::NotSame<base::Value<Duration>, Other> = true,
-		  requirements::BinOperatorsExist<base::Value<Duration>, Other> = true
+		  requirements::NotSame<base::Value<ValueType>, Other> = true,
+		  requirements::BinOperatorsExist<base::Value<ValueType>, Other> = true
   >
-  BidAsk<Duration> operator / (const BidAsk<Duration>& lhs, const Other &rhs) {
-	  BidAsk<Duration> res;
+  BidAsk<ValueType> operator / (const BidAsk<ValueType>& lhs, const Other &rhs) {
+	  BidAsk<ValueType> res;
 	  res.bid = lhs.bid / rhs;
 	  res.ask = lhs.ask / rhs;
 	  res.middle = lhs.middle / rhs;
@@ -587,14 +589,14 @@ namespace financial {
 	  return res;
   }
   template <
-		  typename Duration,
+		  typename ValueType,
 		  typename Other,
 		  bool VolumeToo = false,
-		  requirements::NotSame<base::Value<Duration>, Other> = true,
-		  requirements::BinOperatorsExist<base::Value<Duration>, Other> = true
+		  requirements::NotSame<base::Value<ValueType>, Other> = true,
+		  requirements::BinOperatorsExist<base::Value<ValueType>, Other> = true
   >
-  BidAsk<Duration> operator / (const Other &lhs, const BidAsk<Duration>& rhs) {
-	  BidAsk<Duration> res;
+  BidAsk<ValueType> operator / (const Other &lhs, const BidAsk<ValueType>& rhs) {
+	  BidAsk<ValueType> res;
 	  res.bid = lhs / rhs.bid;
 	  res.ask = lhs / rhs.ask;
 	  res.middle = lhs / rhs.middle;
@@ -605,9 +607,9 @@ namespace financial {
 	  return res;
   }
 
-  template <typename Duration>
-  BidAsk<Duration> operator + (const BidAsk<Duration>& lhs, const BidAsk<Duration>& rhs) {
-	  BidAsk<Duration> res;
+  template <typename ValueType>
+  BidAsk<ValueType> operator + (const BidAsk<ValueType>& lhs, const BidAsk<ValueType>& rhs) {
+	  BidAsk<ValueType> res;
 	  res.bid = lhs.bid + rhs.bid;
 	  res.ask = lhs.ask + rhs.ask;
 	  res.middle = lhs.middle + rhs.middle;
@@ -616,14 +618,14 @@ namespace financial {
 	  return res;
   }
   template <
-		  typename Duration,
+		  typename ValueType,
 		  typename Other,
 		  bool VolumeToo = false,
-		  requirements::NotSame<base::Value<Duration>, Other> = true,
-		  requirements::BinOperatorsExist<base::Value<Duration>, Other> = true
+		  requirements::NotSame<base::Value<ValueType>, Other> = true,
+		  requirements::BinOperatorsExist<base::Value<ValueType>, Other> = true
   >
-  BidAsk<Duration> operator + (const BidAsk<Duration>& lhs, const Other &rhs) {
-	  BidAsk<Duration> res;
+  BidAsk<ValueType> operator + (const BidAsk<ValueType>& lhs, const Other &rhs) {
+	  BidAsk<ValueType> res;
 	  res.bid = lhs.bid + rhs;
 	  res.ask = lhs.ask + rhs;
 	  res.middle = lhs.middle + rhs;
@@ -634,14 +636,14 @@ namespace financial {
 	  return res;
   }
   template <
-		  typename Duration,
+		  typename ValueType,
 		  typename Other,
 		  bool VolumeToo = false,
-		  requirements::NotSame<base::Value<Duration>, Other> = true,
-		  requirements::BinOperatorsExist<base::Value<Duration>, Other> = true
+		  requirements::NotSame<base::Value<ValueType>, Other> = true,
+		  requirements::BinOperatorsExist<base::Value<ValueType>, Other> = true
   >
-  BidAsk<Duration> operator + (const Other &lhs, const BidAsk<Duration>& rhs) {
-	  BidAsk<Duration> res;
+  BidAsk<ValueType> operator + (const Other &lhs, const BidAsk<ValueType>& rhs) {
+	  BidAsk<ValueType> res;
 	  res.bid = lhs + rhs.bid;
 	  res.ask = lhs + rhs.ask;
 	  res.middle = lhs + rhs.middle;
@@ -652,9 +654,9 @@ namespace financial {
 	  return res;
   }
 
-  template <typename Duration>
-  BidAsk<Duration> operator - (const BidAsk<Duration>& lhs, const BidAsk<Duration>& rhs) {
-	  BidAsk<Duration> res;
+  template <typename ValueType>
+  BidAsk<ValueType> operator - (const BidAsk<ValueType>& lhs, const BidAsk<ValueType>& rhs) {
+	  BidAsk<ValueType> res;
 	  res.bid = lhs.bid - rhs.bid;
 	  res.ask = lhs.ask - rhs.ask;
 	  res.middle = lhs.middle - rhs.middle;
@@ -663,14 +665,14 @@ namespace financial {
 	  return res;
   }
   template <
-		  typename Duration,
+		  typename ValueType,
 		  typename Other,
 		  bool VolumeToo = false,
-		  requirements::NotSame<base::Value<Duration>, Other> = true,
-		  requirements::BinOperatorsExist<base::Value<Duration>, Other> = true
+		  requirements::NotSame<base::Value<ValueType>, Other> = true,
+		  requirements::BinOperatorsExist<base::Value<ValueType>, Other> = true
   >
-  BidAsk<Duration> operator - (const BidAsk<Duration>& lhs, const Other &rhs) {
-	  BidAsk<Duration> res;
+  BidAsk<ValueType> operator - (const BidAsk<ValueType>& lhs, const Other &rhs) {
+	  BidAsk<ValueType> res;
 	  res.bid = lhs.bid - rhs;
 	  res.ask = lhs.ask - rhs;
 	  res.middle = lhs.middle - rhs;
@@ -681,14 +683,14 @@ namespace financial {
 	  return res;
   }
   template <
-		  typename Duration,
+		  typename ValueType,
 		  typename Other,
 		  bool VolumeToo = false,
-		  requirements::NotSame<base::Value<Duration>, Other> = true,
-		  requirements::BinOperatorsExist<base::Value<Duration>, Other> = true
+		  requirements::NotSame<base::Value<ValueType>, Other> = true,
+		  requirements::BinOperatorsExist<base::Value<ValueType>, Other> = true
   >
-  BidAsk<Duration> operator - (const Other &lhs, const BidAsk<Duration>& rhs) {
-	  BidAsk<Duration> res;
+  BidAsk<ValueType> operator - (const Other &lhs, const BidAsk<ValueType>& rhs) {
+	  BidAsk<ValueType> res;
 	  res.bid = lhs - rhs.bid;
 	  res.ask = lhs - rhs.ask;
 	  res.middle = lhs - rhs.middle;
@@ -700,8 +702,8 @@ namespace financial {
   }
 
 
-  template <typename Duration>
-  BidAsk<Duration>& operator += (BidAsk<Duration>& lhs, const BidAsk<Duration>& rhs) {
+  template <typename ValueType>
+  BidAsk<ValueType>& operator += (BidAsk<ValueType>& lhs, const BidAsk<ValueType>& rhs) {
 	  lhs.bid += rhs.bid;
 	  lhs.ask += rhs.ask;
 	  lhs.middle += rhs.middle;
@@ -710,13 +712,13 @@ namespace financial {
 	  return lhs;
   }
   template <
-		  typename Duration,
+		  typename ValueType,
 		  typename Other,
 		  bool VolumeToo = false,
-		  requirements::NotSame<base::Value<Duration>, Other> = true,
-		  requirements::BinOperatorsExist<base::Value<Duration>, Other> = true
+		  requirements::NotSame<base::Value<ValueType>, Other> = true,
+		  requirements::BinOperatorsExist<base::Value<ValueType>, Other> = true
   >
-  BidAsk<Duration>& operator += (BidAsk<Duration>& lhs, const Other &rhs) {
+  BidAsk<ValueType>& operator += (BidAsk<ValueType>& lhs, const Other &rhs) {
 	  lhs.bid += rhs;
 	  lhs.ask += rhs;
 	  lhs.middle += rhs;
@@ -727,8 +729,8 @@ namespace financial {
 	  return lhs;
   }
 
-  template <typename Duration>
-  BidAsk<Duration>& operator -= (BidAsk<Duration>& lhs, const BidAsk<Duration>& rhs) {
+  template <typename ValueType>
+  BidAsk<ValueType>& operator -= (BidAsk<ValueType>& lhs, const BidAsk<ValueType>& rhs) {
 	  lhs.bid -= rhs.bid;
 	  lhs.ask -= rhs.ask;
 	  lhs.middle -= rhs.middle;
@@ -737,13 +739,13 @@ namespace financial {
 	  return lhs;
   }
   template <
-		  typename Duration,
+		  typename ValueType,
 		  typename Other,
 		  bool VolumeToo = false,
-		  requirements::NotSame<base::Value<Duration>, Other> = true,
-		  requirements::BinOperatorsExist<base::Value<Duration>, Other> = true
+		  requirements::NotSame<base::Value<ValueType>, Other> = true,
+		  requirements::BinOperatorsExist<base::Value<ValueType>, Other> = true
   >
-  BidAsk<Duration>& operator -= (BidAsk<Duration>& lhs, const Other &rhs) {
+  BidAsk<ValueType>& operator -= (BidAsk<ValueType>& lhs, const Other &rhs) {
 	  lhs.bid -= rhs;
 	  lhs.ask -= rhs;
 	  lhs.middle -= rhs;
@@ -754,8 +756,8 @@ namespace financial {
 	  return lhs;
   }
 
-  template <typename Duration>
-  BidAsk<Duration>& operator *= (BidAsk<Duration>& lhs, const BidAsk<Duration>& rhs) {
+  template <typename ValueType>
+  BidAsk<ValueType>& operator *= (BidAsk<ValueType>& lhs, const BidAsk<ValueType>& rhs) {
 	  lhs.bid *= rhs.bid;
 	  lhs.ask *= rhs.ask;
 	  lhs.middle *= rhs.middle;
@@ -764,13 +766,13 @@ namespace financial {
 	  return lhs;
   }
   template <
-		  typename Duration,
+		  typename ValueType,
 		  typename Other,
 		  bool VolumeToo = false,
-		  requirements::NotSame<base::Value<Duration>, Other> = true,
-		  requirements::BinOperatorsExist<base::Value<Duration>, Other> = true
+		  requirements::NotSame<base::Value<ValueType>, Other> = true,
+		  requirements::BinOperatorsExist<base::Value<ValueType>, Other> = true
   >
-  BidAsk<Duration>& operator *= (BidAsk<Duration>& lhs, const Other &rhs) {
+  BidAsk<ValueType>& operator *= (BidAsk<ValueType>& lhs, const Other &rhs) {
 	  lhs.bid *= rhs;
 	  lhs.ask *= rhs;
 	  lhs.middle *= rhs;
@@ -781,8 +783,8 @@ namespace financial {
 	  return lhs;
   }
 
-  template <typename Duration>
-  BidAsk<Duration>& operator /= (BidAsk<Duration>& lhs, const BidAsk<Duration>& rhs) {
+  template <typename ValueType>
+  BidAsk<ValueType>& operator /= (BidAsk<ValueType>& lhs, const BidAsk<ValueType>& rhs) {
 	  lhs.bid /= rhs.bid;
 	  lhs.ask /= rhs.ask;
 	  lhs.middle /= rhs.middle;
@@ -791,13 +793,13 @@ namespace financial {
 	  return lhs;
   }
   template <
-		  typename Duration,
+		  typename ValueType,
 		  typename Other,
 		  bool VolumeToo = false,
-		  requirements::NotSame<base::Value<Duration>, Other> = true,
-		  requirements::BinOperatorsExist<base::Value<Duration>, Other> = true
+		  requirements::NotSame<base::Value<ValueType>, Other> = true,
+		  requirements::BinOperatorsExist<base::Value<ValueType>, Other> = true
   >
-  BidAsk<Duration>& operator /= (BidAsk<Duration>& lhs, const Other &rhs) {
+  BidAsk<ValueType>& operator /= (BidAsk<ValueType>& lhs, const Other &rhs) {
 	  lhs.bid /= rhs;
 	  lhs.ask /= rhs;
 	  lhs.middle /= rhs;
@@ -809,8 +811,8 @@ namespace financial {
   }
 
 
-  template <typename Duration>
-  std::ostream& operator << (std::ostream& os, const BidAsk<Duration>& ohlcv) {
+  template <typename ValueType>
+  std::ostream& operator << (std::ostream& os, const BidAsk<ValueType>& ohlcv) {
 	  return os
 			  << ohlcv.bid << ", "
 			  << ohlcv.ask << ", "
@@ -818,9 +820,9 @@ namespace financial {
 			  << ohlcv.price << ", "
 			  << ohlcv.volume;
   }//!operator
-  template <typename Duration>
-  std::istream& operator >> (std::istream& is, BidAsk<Duration>& ohlcv) {
-	  typename BidAsk<Duration>::Type open, high, low, close, volume {0.0};
+  template <typename ValueType>
+  std::istream& operator >> (std::istream& is, BidAsk<ValueType>& ohlcv) {
+	  typename BidAsk<ValueType>::Type open, high, low, close, volume {0.0};
 	  bool ohlc_read_ok {false}, volume_read_ok {false};
 	  if (is && !is.eof()) {
 		  is >> open >> high >> low >> close;

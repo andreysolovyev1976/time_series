@@ -13,7 +13,7 @@ TYPED_TEST(CompareSingletons, Equal) {
 	int v5 {2};
 	ASSERT_TRUE(v1 == v1);
 	ASSERT_TRUE(v2 == v2);
-	if (std::is_integral_v<typename TypeParam::type>) {
+	if (std::is_integral_v<typename TypeParam::value_type>) {
 		ASSERT_TRUE(v1 == -1);
 	} else {
 		ASSERT_TRUE(v1 == v4);
@@ -61,7 +61,7 @@ TYPED_TEST(CompareSingletons, LessOrEqual) {
 	ASSERT_TRUE(!(v2 <= v1));
 	ASSERT_TRUE(v1 <= v3);
 	ASSERT_TRUE(v1 <= v5);
-	if (std::is_integral_v<typename TypeParam::type>) {
+	if (std::is_integral_v<typename TypeParam::value_type>) {
 		ASSERT_TRUE(v1 <= 0);
 		ASSERT_TRUE(v1 <= -1);
 	} else {
@@ -96,7 +96,7 @@ TYPED_TEST(CompareSingletons, GreaterOrEqual) {
 	ASSERT_TRUE(!(v1 >= v2));
 	ASSERT_TRUE(v3 >= v1);
 	ASSERT_TRUE(v5 >= v1);
-	if (std::is_integral_v<typename TypeParam::type>) {
+	if (std::is_integral_v<typename TypeParam::value_type>) {
 		/* do nothing */
 	} else {
 		ASSERT_TRUE(v4 >= v1);

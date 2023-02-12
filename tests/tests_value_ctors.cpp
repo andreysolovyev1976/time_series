@@ -57,7 +57,7 @@ TYPED_TEST(CtorsSingletons, CopyCtor) {
 	TypeParam v (42.5);
 	auto copy = v;
 	ASSERT_EQ(copy.value, v.value);
-	if (std::is_integral_v<typename TypeParam::type>) {
+	if (std::is_integral_v<typename TypeParam::value_type>) {
 		ASSERT_EQ(copy.value, 42);
 	} else {
 		ASSERT_EQ(copy.value, 42.5);
@@ -66,7 +66,7 @@ TYPED_TEST(CtorsSingletons, CopyCtor) {
 TYPED_TEST(CtorsSingletons, MoveCtor) {
 	TypeParam v (42.5);
 	auto move__ = std::move(v);
-	if (std::is_integral_v<typename TypeParam::type>) {
+	if (std::is_integral_v<typename TypeParam::value_type>) {
 		ASSERT_EQ(move__.value, 42);
 	} else {
 		ASSERT_EQ(move__.value, 42.5);
@@ -90,12 +90,13 @@ TYPED_TEST(CtorsMultiField, ValueDefault) {
 	ASSERT_NO_THROW(TypeParam ());
 }
 TYPED_TEST(CtorsMultiField, CtorInitializerList) {
-	base::Value<base::Seconds> one (42.5);
-	base::Value<base::Seconds> two (42.5);
+	using v_type = typename TypeParam::value_type;
+	base::Value<v_type> one (42.5);
+	base::Value<v_type> two (42.5);
 	ASSERT_ANY_THROW([[maybe_unused]] TypeParam d ({one, two}));
-	base::Value<base::Seconds> three (42.5);
-	base::Value<base::Seconds> four (42.5);
-	base::Value<base::Seconds> five (42.5);
+	base::Value<v_type> three (42.5);
+	base::Value<v_type> four (42.5);
+	base::Value<v_type> five (42.5);
 	ASSERT_NO_THROW([[maybe_unused]] TypeParam d ({one, two, three, four, five}));
 }
 
@@ -116,24 +117,5 @@ TYPED_TEST(CtorsMultiField, CompileError) {
 	// base::Value<base::Seconds> d (s); //todo: make a compile time test
 }
 
-
-/**
- * @details
- * Element
- *
- * */
-
-
-template<typename T>
-class CtorsOfElementOk : public testing::Test {};
-TYPED_TEST_SUITE(CtorsOfElementOk, test_element_ok);
-
-template<typename T>
-class CtorsOfElementThrow : public testing::Test {};
-TYPED_TEST_SUITE(CtorsOfElementThrow, test_element_throw);
-
-TYPED_TEST(CtorsOfElementOk, CtorFromElemTypes) {
-	ASSERT_NO_THROW([[maybe_unused]] TypeParam d);
-}
 
 //todo: add copy and move ctors f
