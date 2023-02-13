@@ -5,6 +5,20 @@ project(${PROJECT_NAME_TEST}
         DESCRIPTION "Testing Quote"
         LANGUAGES CXX)
 
+
+find_package (Boost)
+if(Boost_FOUND)
+    message(STATUS "FOUND Boost, including and linking...")
+    #    message(STATUS "${Boost_VERSION}")
+    set(Boost_USE_STATIC_LIBS ON)
+    set(Boost_USE_MULTITHREAD ON)
+    include_directories(${Boost_INCLUDE_DIRS})
+    #    message(STATUS "incl: ${Boost_INCLUDE_DIRS}")
+else()
+    message(STATUS "NOT FOUND Boost")
+endif()
+
+
 find_package(GTest REQUIRED)
 if(GTest_FOUND)
     message(STATUS "FOUND GTest, including and linking...")
@@ -16,7 +30,6 @@ endif()
 if (APPLE)
     add_definitions(-DGTEST_USE_OWN_TR1_TUPLE)
 endif (APPLE)
-
 
 add_executable(${PROJECT_NAME_TEST}
         tests_all.cpp
@@ -32,6 +45,7 @@ add_executable(${PROJECT_NAME_TEST}
 
 message(STATUS "Linking test in Debug mode...")
 target_link_libraries(${PROJECT_NAME_TEST}
+        Boost::boost
         ${GTEST_LIBRARIES}
         pthread
         fin_data_time_series

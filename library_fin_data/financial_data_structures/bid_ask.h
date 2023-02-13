@@ -15,11 +15,9 @@
 
 namespace financial {
 
-  //todo: add requirement for Other - should be an Arithmetic or better - operator is defined?
-  // it is part of an Element, therfore ValueType should be removed
-
   template <typename ValueType = base::traits::ValueTypeDefault>
-  struct BidAsk final {
+//  struct BidAsk final : base::traits::ValueBase<BidAsk<ValueType>> { //excluded CRTP, no need for now
+	struct BidAsk final {
 	  using value_type = ValueType;
 
 	  struct AllFields{};

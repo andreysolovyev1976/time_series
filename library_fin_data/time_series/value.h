@@ -7,8 +7,8 @@
 #include "const_values.h"
 #include "timestamp.h"
 #include "floating_point_comp.h"
-#include "utils.h"
-#include "value_type.h"
+#include "utils/utils.h"
+#include "value_traits.h"
 #include "type_requirements.h"
 
 #ifndef BASE_VALUE_H
@@ -25,10 +25,11 @@ namespace base {
    * */
 
   template <typename ValueType = traits::ValueTypeDefault>
-  struct Value  {
+//  struct Value : traits::ValueBase<Value<ValueType>> { //excluded CRTP, no need for that
+	struct Value {
 	  using value_type = ValueType;
 
-	  ValueType value = 0.0;
+	  ValueType value {};
 	  Value() = default;
 	  template <typename Input,
 			  requirements::ConveribleOrConstructibleFromTo<Input, ValueType> = true>
@@ -74,7 +75,7 @@ namespace base {
 		  return lhs.value == rhs.value;
   }
   /**
-   * @brief
+   *
    * value_type is floating and other is floating
    * value_type is floating and other is integral
    * value_type is integral and other is floating

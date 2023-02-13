@@ -11,7 +11,8 @@
 
 namespace financial {
 
-  using SingleQuote = base::Value<base::traits::ValueTypeDefault>;
+  template <typename ValueType = base::traits::ValueTypeDefault>
+  using SingleQuote = base::Value<ValueType>;
 
 }
 

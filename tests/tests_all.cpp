@@ -8,7 +8,8 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char **argv) {
 	testing::InitGoogleTest(&argc, argv);
 	testing::GTEST_FLAG(color) = "yes";
 //	testing::GTEST_FLAG(filter) = "Ctors*:Assignments*:Constructible*:Compare*:Arithmetics*";
-//	testing::GTEST_FLAG(filter) = "CompareBasics*";
+	testing::GTEST_FLAG(filter) = "ElementFnApplication*";
+//	testing::GTEST_FLAG(filter) = "ElementFnApplication/1.*";
 	return RUN_ALL_TESTS();
 }
 

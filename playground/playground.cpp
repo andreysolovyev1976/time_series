@@ -232,7 +232,7 @@ int main () {
 #if 0
 
 #include <iostream>
-#include "cpp_version.h"
+#include "utils/cpp_version.h"
 
 int main () {
 	std::cout << (int)cpp_standard::get_version<cpp_standard::version>() << '\n';
@@ -241,3 +241,131 @@ int main () {
 }
 
 #endif
+
+#if 0
+#include <iostream>
+#include <type_traits>
+
+template <typename Derived>
+struct Base {
+		using type = Derived;
+		virtual ~Base () {}
+	};
+
+
+template <typename T>
+struct D : Base <D<T>> {
+	T value;
+};
+
+struct S {};
+
+int main () {
+	D<S> d1;
+	D<S>::Base::type d2;
+
+	std::cout << typeid(decltype(d1)).name() << '\n';
+	std::cout << typeid(decltype(d2)).name() << '\n';
+}
+
+#endif
+
+#include <cassert>
+#include <utility>
+#include <functional>
+#include <iostream>
+#include "boost/type_index.hpp"
+
+#include "time_series/type_requirements.h"
+
+template <typename T, typename U>
+void lvalue_func (T& t, U b) { t += b; }
+template <typename T, typename U>
+T const_lvalue_func (const T& t, U b) { T res = t + b;return std::move(res); }
+
+struct S {int i {42};};
+
+int main () {
+	std::cout << std::boolalpha;
+	using namespace requirements;
+	namespace ti = boost::typeindex;
+
+	S s;
+	const S& s1 = s;
+	S& s2 = s;
+	S&& s3 = S{.i = 12};
+	const S s4;
+	const S* s5 = &s4;
+	const S* const s6 = &s4;
+	S* const s7 = &s4;
+	S* s8 = &s4;
+
+	std:: cout
+			<< "object s: "
+			<< std::is_same_v<decltype(s), std::decay_t<decltype(s)>> << ' '
+			<< std::is_lvalue_reference_v<decltype(s)> << ' '
+			<< std::is_const_v<std::remove_reference_t<decltype(s)>> << ' '
+			<< std::is_const_v<decltype(s)> << ' '
+			<< std::is_rvalue_reference_v<decltype(s)> << '\n';
+
+	std:: cout
+			<< "const lref s1: "
+			<< std::is_same_v<decltype(s1), std::decay_t<decltype(s1)>> << ' '
+			<< std::is_lvalue_reference_v<decltype(s1)> << ' '
+			<< std::is_const_v<std::remove_reference_t<decltype(s1)>> << ' '
+			<< std::is_const_v<decltype(s1)> << ' '
+			<< std::is_rvalue_reference_v<decltype(s1)> << '\n';
+
+	std:: cout
+			<< "lref s2: "
+			<< std::is_same_v<decltype(s2), std::decay_t<decltype(s2)>> << ' '
+			<< std::is_lvalue_reference_v<decltype(s2)> << ' '
+			<< std::is_const_v<std::remove_reference_t<decltype(s2)>> << ' '
+			<< std::is_const_v<decltype(s2)> << ' '
+			<< std::is_rvalue_reference_v<decltype(s2)> << '\n';
+
+	std:: cout
+			<< "rref s3: "
+			<< std::is_same_v<decltype(s3), std::decay_t<decltype(s3)>> << ' '
+			<< std::is_lvalue_reference_v<decltype(s3)> << ' '
+			<< std::is_const_v<std::remove_reference_t<decltype(s4)>> << ' '
+			<< std::is_const_v<decltype(s3)> << ' '
+			<< std::is_rvalue_reference_v<decltype(s3)> << '\n';
+
+	std:: cout
+			<< "const object s4: "
+			<< std::is_same_v<decltype(s4), std::decay_t<decltype(s4)>> << ' '
+			<< std::is_lvalue_reference_v<decltype(s4)> << ' '
+			<< std::is_const_v<std::remove_reference_t<decltype(s4)>> << ' '
+			<< std::is_const_v<decltype(s4)> << ' '
+			<< std::is_rvalue_reference_v<decltype(s4)> << '\n';
+
+
+	std::cout << ti::type_id_with_cvr<decltype(s.i)>().pretty_name() << '\n';
+	typename std::add_lvalue_reference_t<std::decay_t<decltype(s.i)>> lref (s.i);
+	std::cout << ti::type_id_with_cvr<decltype(lref)>().pretty_name() << '\n';
+	typename std::add_lvalue_reference_t<std::add_const_t<std::decay_t<decltype(s.i)>>> clref (s.i);
+	std::cout << ti::type_id_with_cvr<decltype(clref)>().pretty_name() << '\n';
+
+	std::cout
+			<< func_modifies_elem_in_place<decltype(lvalue_func<int&, int>), int&, int> << ' '
+			<< func_modifies_elem_in_place<decltype(lvalue_func<decltype(lref), int>), decltype(lref), int> << ' '
+			<< func_modifies_elem_in_place<decltype(lvalue_func<int, int>), int, int> << ' '
+			<< func_modifies_elem_in_place<decltype(const_lvalue_func<int, int>), int, int> << ' '
+//			<< func_modifies_elem_in_place<decltype(const_lvalue_func<decltype(lref), int>), decltype(lref), int> << ' '
+			<< '\n'
+			<< func_creates_new_elem<decltype(const_lvalue_func<const int&, int>), const int&, int> << ' '
+			<< func_creates_new_elem<decltype(const_lvalue_func<decltype(clref), int>), decltype(clref), int> << ' '
+			<< func_creates_new_elem<decltype(const_lvalue_func<int, int>), int, int> << ' '
+			<< func_creates_new_elem<decltype(lvalue_func<int&, int>), int&, int> << ' '
+			<< '\n';
+
+	s.i = 2;
+	lvalue_func(lref, 2);
+	std::cout << lref << '\n';
+
+	int k = const_lvalue_func(clref, 2);
+	std::cout << clref << ' ' << k << '\n';
+
+	return 0;
+}

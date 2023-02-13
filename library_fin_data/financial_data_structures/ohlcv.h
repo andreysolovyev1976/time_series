@@ -5,7 +5,7 @@
 #pragma once
 
 #include "const_values.h"
-#include "time_series//value.h"
+#include "time_series/value.h"
 
 #include <iosfwd>
 #include <string>
@@ -18,7 +18,8 @@
 namespace financial {
 
   template <typename ValueType = base::traits::ValueTypeDefault>
-  struct OHLCV final {
+//  struct OHLCV final : base::traits::ValueBase<OHLCV<ValueType>> { //excluded CRTP, no need for now
+	struct OHLCV final  {
 	  using value_type = ValueType;
 
 	  struct AllFields{};
