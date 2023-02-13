@@ -270,13 +270,40 @@ int main () {
 
 #endif
 
+#if 0
+
 #include <cassert>
 #include <utility>
 #include <functional>
 #include <iostream>
 #include "boost/type_index.hpp"
 
-#include "time_series/type_requirements.h"
+template <typename Fn, typename Elem, typename... Args>
+inline
+constexpr bool func_modifies_elem_in_place =
+		std::conjunction_v<
+				std::is_lvalue_reference<Elem>,
+				std::negation<std::is_const<Elem>>,
+				std::negation<std::is_rvalue_reference<Elem>>,
+				std::is_invocable<Fn, Elem, Args...>
+		>;
+
+template <typename Fn, typename Elem, typename... Args>
+inline
+constexpr bool func_creates_new_elem =
+		std::conjunction_v<
+				std::disjunction<
+						std::is_const<Elem>,
+						std::is_rvalue_reference<Elem>,
+						std::conjunction<
+								std::is_lvalue_reference<Elem>,
+								std::is_const<std::remove_reference_t<Elem>>
+						>
+				>,
+
+				std::is_invocable_r<std::decay_t<Elem>, Fn, Elem, Args...>
+		>;
+
 
 template <typename T, typename U>
 void lvalue_func (T& t, U b) { t += b; }
@@ -295,10 +322,10 @@ int main () {
 	S& s2 = s;
 	S&& s3 = S{.i = 12};
 	const S s4;
-	const S* s5 = &s4;
-	const S* const s6 = &s4;
-	S* const s7 = &s4;
-	S* s8 = &s4;
+	[[maybe_unused]] const S* s5 = &s4;
+	[[maybe_unused]] const S* const s6 = &s4;
+	[[maybe_unused]] S* const s7 = &s;
+	[[maybe_unused]] S* s8 = &s;
 
 	std:: cout
 			<< "object s: "
@@ -369,3 +396,13 @@ int main () {
 
 	return 0;
 }
+#endif
+
+#if 1
+
+#include <iostream>
+
+int main () { }
+
+
+#endif
