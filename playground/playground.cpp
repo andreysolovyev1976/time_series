@@ -398,11 +398,55 @@ int main () {
 }
 #endif
 
+#if 0
+
+#include <iostream>
+#include <type_traits>
+#include <stdexcept>
+#include <cassert>
+#include <iostream>
+#include "boost/type_index.hpp"
+
+template <typename T>
+struct S {
+	T value {1};
+
+	template <typename Fn, typename... Args>
+	auto apply (Fn&& fn, Args&& ...args) {
+		return std::invoke(std::forward<Fn>(fn), value, std::forward<Args...>(args...));
+	}
+};
+
+template <typename T>
+void func_ret_void (T& t, int param) { t += param; }
+
+template <typename T>
+T func_ret_value (const T& t, int param) {T res{}; res = t + param; return res;}
+
+
+int main (){
+	namespace ti = boost::typeindex;
+
+	std::cout << ti::type_id_with_cvr<decltype(func_ret_void<int>)>().pretty_name() << '\n';
+	std::cout << ti::type_id_with_cvr<decltype(func_ret_value<int>)>().pretty_name() << '\n';
+
+	S<int> s1;
+	s1.apply<decltype(func_ret_void<int>), int>(func_ret_void, 1);
+	assert(s1.value==2);
+
+	int i = s1.apply<decltype(func_ret_value<int>), int>(func_ret_value, 1);
+	assert(s1.value == 2);
+	assert(i == 3);
+}
+
+#endif
+
 #if 1
 
 #include <iostream>
 
-int main () { }
+int main () {
 
+}
 
 #endif

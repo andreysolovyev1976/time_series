@@ -30,31 +30,38 @@ namespace base {
 	  using value_type = ValueType;
 
 	  ValueType value {};
+
 	  Value() = default;
-	  template <typename Input,
-			  requirements::ConveribleOrConstructibleFromTo<Input, ValueType> = true>
-	  Value(Input input);
-	  template <typename Input,
-			  requirements::ConveribleOrConstructibleFromTo<Input, ValueType> = true>
-	  Value& operator = (Input input);
-	  Value (std::string input);
+	  template <typename Input, requirements::ConveribleOrConstructibleFromTo<Input, ValueType> = true>
+	  Value(Input&& input);
+	  template <typename Input, requirements::ConveribleOrConstructibleFromTo<Input, ValueType> = true>
+	  Value& operator = (Input&& input);
+	  Value (std::string&& input);
+	  Value (const std::string& input);
+
 	  std::string toString () const;
   };
 
   template <typename ValueType>
   template <typename Input,
 		  requirements::ConveribleOrConstructibleFromTo<Input, ValueType>>
-  Value<ValueType>::Value(Input input) : value(input) {}
+  Value<ValueType>::Value(Input&& input) : value(std::forward<Input>(input)) {}
 
   template <typename ValueType>
-  template <typename Input,
-		  requirements::ConveribleOrConstructibleFromTo<Input, ValueType>>
-  Value<ValueType>& Value<ValueType>::operator = (Input input) {
-	  value = input;
+  template <typename Input, requirements::ConveribleOrConstructibleFromTo<Input, ValueType>>
+  Value<ValueType>& Value<ValueType>::operator = (Input&& input) {
+	  value = std::forward<Input>(input);
 	  return *this;
   }
   template <typename ValueType>
-  Value<ValueType>::Value (std::string input) {
+  Value<ValueType>::Value (std::string&& input) {
+	  auto input_number = base::utils::fromChars(std::move(input));
+	  using Input = decltype(input_number);
+	  static_assert(requirements::isConveribleOrConstructible<Input, ValueType>());
+	  value = input_number;
+  }
+  template <typename ValueType>
+  Value<ValueType>::Value (const std::string& input) {
 	  auto input_number = base::utils::fromChars(input);
 	  using Input = decltype(input_number);
 	  static_assert(requirements::isConveribleOrConstructible<Input, ValueType>());

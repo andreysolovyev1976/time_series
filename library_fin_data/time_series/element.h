@@ -39,6 +39,10 @@ namespace time_series {
 	  Element (ElemType &&e);
 	  Element (value_type &&p);
 	  Element (const value_type &p);
+	  Element& operator = (const ElemType &e);
+	  Element& operator = (ElemType &&e);
+	  Element& operator = (value_type &&p);
+	  Element& operator = (const value_type &p);
 
 	  const value_type& operator () () const;
 
@@ -74,6 +78,28 @@ namespace time_series {
 	  return {timestamp, value}; //todo: check what is a subject for reference - a pair itself or two referencies of the respective fields
   }
 
+  template <typename Duration, typename ElemType>
+  Element<Duration, ElemType>& Element<Duration, ElemType>::operator = (const ElemType &e) {
+	  value = e;
+	  return *this;
+  }
+  template <typename Duration, typename ElemType>
+  Element<Duration, ElemType>& Element<Duration, ElemType>::operator = (ElemType &&e)  {
+	  value = std::move(e);
+	  return *this;
+  }
+  template <typename Duration, typename ElemType>
+  Element<Duration, ElemType>& Element<Duration, ElemType>::operator = (value_type &&p) {
+	  timestamp = std::move(p.first);
+	  value = std::move(p.second);
+	  return *this;
+  }
+  template <typename Duration, typename ElemType>
+  Element<Duration, ElemType>& Element<Duration, ElemType>::operator = (const value_type &p) {
+	  timestamp = p.first;
+	  value = p.second;
+	  return *this;
+  }
 
   template <typename Duration, typename ElemType>
   std::string Element<Duration, ElemType>::toString () const {
@@ -89,18 +115,7 @@ namespace time_series {
   template <typename Duration, typename ElemType>
   template <typename Fn, typename... Args>
   decltype(auto) Element<Duration, ElemType>::applyFunction (Fn&& fn, Args&& ...args) {
-	  if constexpr (requirements::func_modifies_elem_in_place<Fn, ElemType, Args...>) {
-		  typename std::add_lvalue_reference_t<ElemType> value_lref (value);
-		  std::invoke(std::forward<Fn>(fn), value_lref, std::forward<Args...>(args...));
-		  return *this;
-	  }
-	  else if constexpr (requirements::func_creates_new_elem<Fn, ElemType, Args...>) {
-		  typename std::add_lvalue_reference_t<std::add_const_t<ElemType>> value_clref (value);
-		  return std::invoke(std::forward<Fn>(fn), value_clref, std::forward<Args...>(args...));
-	  }
-	  else {
-		  throw std::runtime_error("Impossible call over element\n");
-	  }
+	  return std::invoke(std::forward<Fn>(fn), value, std::forward<Args...>(args...));
   }
 
 

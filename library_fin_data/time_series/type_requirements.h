@@ -147,31 +147,5 @@ namespace requirements {
   template <typename DataStructure, BinOperatorsExist<DataStructure, double> = true>
   using CanBeElemType = bool;
 
-  template <typename Fn, typename Elem, typename... Args>
-  inline
-  constexpr bool func_modifies_elem_in_place =
-		  std::conjunction_v<
-		          std::is_lvalue_reference<Elem>,
-				  std::negation<std::is_const<Elem>>,
-		          std::negation<std::is_rvalue_reference<Elem>>,
-				  std::is_invocable<Fn, Elem, Args...>
-				  >;
-
-  template <typename Fn, typename Elem, typename... Args>
-  inline
-  constexpr bool func_creates_new_elem =
-		  std::conjunction_v<
-				  std::disjunction<
-						  std::is_const<Elem>,
-						  std::is_rvalue_reference<Elem>,
-						  std::conjunction<
-								  std::is_lvalue_reference<Elem>,
-								  std::is_const<std::remove_reference_t<Elem>>
-						  >
-				  >,
-
-				  std::is_invocable_r<std::decay_t<Elem>, Fn, Elem, Args...>
-		  >;
-
 }//!namespace
 #endif //TYPE_REQUIREMENTS_H

@@ -19,7 +19,7 @@ namespace financial {
 
   template <typename ValueType = base::traits::ValueTypeDefault>
 //  struct OHLCV final : base::traits::ValueBase<OHLCV<ValueType>> { //excluded CRTP, no need for now
-	struct OHLCV final  {
+  struct OHLCV final  {
 	  using value_type = ValueType;
 
 	  struct AllFields{};
@@ -31,6 +31,10 @@ namespace financial {
 
 	  OHLCV () = default;
 	  OHLCV (std::initializer_list<base::Value<ValueType>> values);
+	  template <typename Input, requirements::ConveribleOrConstructibleFromTo<Input, base::Value<ValueType>> = true>
+	  OHLCV(const Input &input);
+	  template <typename Input, requirements::ConveribleOrConstructibleFromTo<Input, base::Value<ValueType>> = true>
+	  OHLCV& operator = (const Input &input);
 
 	  std::string toString() const;
 
@@ -43,14 +47,35 @@ namespace financial {
 	  if (values.size() != 5u) {
 		  throw std::invalid_argument (
 				  "OHLCV ctor doesn't get correct arg count. Received "s +
-				  std::to_string(values.size()) +
-				  " instead of 5"s);
+						  std::to_string(values.size()) +
+						  " instead of 5"s);
 	  }
 	  open = *(values.begin());
 	  high = *(values.begin() + 1);
 	  low = *(values.begin() + 2);
 	  close = *(values.begin() + 3);
 	  volume = *(values.begin() + 4);
+  }
+
+  template <typename ValueType>
+  template <typename Input, requirements::ConveribleOrConstructibleFromTo<Input, base::Value<ValueType>>>
+  OHLCV<ValueType>::OHLCV(const Input &input){
+	  open = input;
+	  high = input;
+	  low = input;
+	  close = input;
+	  volume = input;
+  }
+
+  template <typename ValueType>
+  template <typename Input, requirements::ConveribleOrConstructibleFromTo<Input, base::Value<ValueType>>>
+  OHLCV<ValueType>& OHLCV<ValueType>::operator = (const Input &input) {
+	  open = input;
+	  high = input;
+	  low = input;
+	  close = input;
+	  volume = input;
+	  return *this;
   }
 
   template <typename ValueType>
@@ -523,8 +548,8 @@ namespace financial {
 	  return res;
   }
   template <
-          typename ValueType, 
-		  typename Other, 
+		  typename ValueType,
+		  typename Other,
 		  bool VolumeToo = false,
 		  requirements::NotSame<base::Value<ValueType>, Other> = true,
 		  requirements::BinOperatorsExist<base::Value<ValueType>, Other> = true

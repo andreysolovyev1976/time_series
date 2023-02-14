@@ -17,7 +17,7 @@ namespace financial {
 
   template <typename ValueType = base::traits::ValueTypeDefault>
 //  struct BidAsk final : base::traits::ValueBase<BidAsk<ValueType>> { //excluded CRTP, no need for now
-	struct BidAsk final {
+  struct BidAsk final {
 	  using value_type = ValueType;
 
 	  struct AllFields{};
@@ -29,6 +29,10 @@ namespace financial {
 
 	  BidAsk () = default;
 	  BidAsk (std::initializer_list<base::Value<ValueType>> values);
+	  template <typename Input, requirements::ConveribleOrConstructibleFromTo<Input, base::Value<ValueType>> = true>
+	  BidAsk(const Input &input);
+	  template <typename Input, requirements::ConveribleOrConstructibleFromTo<Input, base::Value<ValueType>> = true>
+	  BidAsk& operator = (const Input &input);
 
 	  std::string toString() const;
 
@@ -50,6 +54,28 @@ namespace financial {
 	  price = *(values.begin() + 3);
 	  volume = *(values.begin() + 4);
   }
+
+  template <typename ValueType>
+  template <typename Input, requirements::ConveribleOrConstructibleFromTo<Input, base::Value<ValueType>>>
+  BidAsk<ValueType>::BidAsk(const Input &input){
+	  bid = input;
+	  ask = input;
+	  middle = input;
+	  price = input;
+	  volume = input;
+  }
+
+  template <typename ValueType>
+  template <typename Input, requirements::ConveribleOrConstructibleFromTo<Input, base::Value<ValueType>>>
+  BidAsk<ValueType>& BidAsk<ValueType>::operator = (const Input &input) {
+	  bid = input;
+	  ask = input;
+	  middle = input;
+	  price = input;
+	  volume = input;
+	  return *this;
+  }
+
 
   template <typename ValueType>
   std::string BidAsk< ValueType>::toString() const {
