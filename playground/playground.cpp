@@ -270,40 +270,14 @@ int main () {
 
 #endif
 
-#if 0
+#if 1
 
 #include <cassert>
 #include <utility>
 #include <functional>
 #include <iostream>
+#include "utils/arg_types_traits.h"
 #include "boost/type_index.hpp"
-
-template <typename Fn, typename Elem, typename... Args>
-inline
-constexpr bool func_modifies_elem_in_place =
-		std::conjunction_v<
-				std::is_lvalue_reference<Elem>,
-				std::negation<std::is_const<Elem>>,
-				std::negation<std::is_rvalue_reference<Elem>>,
-				std::is_invocable<Fn, Elem, Args...>
-		>;
-
-template <typename Fn, typename Elem, typename... Args>
-inline
-constexpr bool func_creates_new_elem =
-		std::conjunction_v<
-				std::disjunction<
-						std::is_const<Elem>,
-						std::is_rvalue_reference<Elem>,
-						std::conjunction<
-								std::is_lvalue_reference<Elem>,
-								std::is_const<std::remove_reference_t<Elem>>
-						>
-				>,
-
-				std::is_invocable_r<std::decay_t<Elem>, Fn, Elem, Args...>
-		>;
-
 
 template <typename T, typename U>
 void lvalue_func (T& t, U b) { t += b; }
@@ -314,8 +288,8 @@ struct S {int i {42};};
 
 int main () {
 	std::cout << std::boolalpha;
-	using namespace requirements;
 	namespace ti = boost::typeindex;
+	using namespace arg_traits;
 
 	S s;
 	const S& s1 = s;
@@ -328,46 +302,13 @@ int main () {
 	[[maybe_unused]] S* s8 = &s;
 
 	std:: cout
-			<< "object s: "
-			<< std::is_same_v<decltype(s), std::decay_t<decltype(s)>> << ' '
-			<< std::is_lvalue_reference_v<decltype(s)> << ' '
-			<< std::is_const_v<std::remove_reference_t<decltype(s)>> << ' '
-			<< std::is_const_v<decltype(s)> << ' '
-			<< std::is_rvalue_reference_v<decltype(s)> << '\n';
+	<< "object: " << isObjectMutable(s) << ' ' << isObjectMutable(s1)<< ' ' << isObjectMutable(s2)<< ' ' << isObjectMutable(s3)<< ' ' << isObjectMutable(s4) << '\n'
+	<< "const object: " << isObjectConst(s4) << ' ' << isObjectConst(s) << ' ' << isObjectConst(s1) << ' ' << isObjectConst(s2)  << ' ' << isObjectConst(s3) << '\n'
+	<< "const lref: " << isLValueRefConst(s1) << ' ' << isLValueRefConst(s)  << ' ' << isLValueRefConst(s2) << ' ' << isLValueRefConst(s3) << ' ' << isLValueRefConst(s4) << '\n'
+	<< "lref: " << isLValueRefMutable(s2) << ' ' << isLValueRefMutable(s) << ' ' << isLValueRefMutable(s1) << ' ' << isLValueRefMutable(s3) << ' ' << isLValueRefMutable(s4) << '\n'
+	<< "rref: " << isRValueRef(s3) << ' ' << isRValueRef(s) << ' ' << isRValueRef(s1) << ' ' << isRValueRef(s2) << ' ' << isRValueRef(s4) << '\n';
 
-	std:: cout
-			<< "const lref s1: "
-			<< std::is_same_v<decltype(s1), std::decay_t<decltype(s1)>> << ' '
-			<< std::is_lvalue_reference_v<decltype(s1)> << ' '
-			<< std::is_const_v<std::remove_reference_t<decltype(s1)>> << ' '
-			<< std::is_const_v<decltype(s1)> << ' '
-			<< std::is_rvalue_reference_v<decltype(s1)> << '\n';
-
-	std:: cout
-			<< "lref s2: "
-			<< std::is_same_v<decltype(s2), std::decay_t<decltype(s2)>> << ' '
-			<< std::is_lvalue_reference_v<decltype(s2)> << ' '
-			<< std::is_const_v<std::remove_reference_t<decltype(s2)>> << ' '
-			<< std::is_const_v<decltype(s2)> << ' '
-			<< std::is_rvalue_reference_v<decltype(s2)> << '\n';
-
-	std:: cout
-			<< "rref s3: "
-			<< std::is_same_v<decltype(s3), std::decay_t<decltype(s3)>> << ' '
-			<< std::is_lvalue_reference_v<decltype(s3)> << ' '
-			<< std::is_const_v<std::remove_reference_t<decltype(s4)>> << ' '
-			<< std::is_const_v<decltype(s3)> << ' '
-			<< std::is_rvalue_reference_v<decltype(s3)> << '\n';
-
-	std:: cout
-			<< "const object s4: "
-			<< std::is_same_v<decltype(s4), std::decay_t<decltype(s4)>> << ' '
-			<< std::is_lvalue_reference_v<decltype(s4)> << ' '
-			<< std::is_const_v<std::remove_reference_t<decltype(s4)>> << ' '
-			<< std::is_const_v<decltype(s4)> << ' '
-			<< std::is_rvalue_reference_v<decltype(s4)> << '\n';
-
-
+#if 0
 	std::cout << ti::type_id_with_cvr<decltype(s.i)>().pretty_name() << '\n';
 	typename std::add_lvalue_reference_t<std::decay_t<decltype(s.i)>> lref (s.i);
 	std::cout << ti::type_id_with_cvr<decltype(lref)>().pretty_name() << '\n';
@@ -393,6 +334,7 @@ int main () {
 
 	int k = const_lvalue_func(clref, 2);
 	std::cout << clref << ' ' << k << '\n';
+#endif
 
 	return 0;
 }
@@ -410,12 +352,23 @@ int main () {
 template <typename T>
 struct S {
 	T value {1};
+	S () = default;
+	S (T t) : value (t) {}
 
 	template <typename Fn, typename... Args>
-	auto apply (Fn&& fn, Args&& ...args) {
-		return std::invoke(std::forward<Fn>(fn), value, std::forward<Args...>(args...));
+	decltype(auto) apply (Fn&& fn, Args&& ...args) {
+		if constexpr (std::is_same_v<std::invoke_result_t<Fn, T&, Args...>, void>) {
+			std::invoke(std::forward<Fn>(fn), value, std::forward<Args...>(args...));
+			return *this;
+		}
+		else if constexpr (std::is_same_v<std::invoke_result_t<Fn, T, Args...>, T>) {
+			return S(std::invoke(std::forward<Fn>(fn), value, std::forward<Args...>(args...)));
+		} else {
+			static_assert(sizeof(Fn) == 0, "Unexpected callable while applying over element");
+		}
 	}
 };
+
 
 template <typename T>
 void func_ret_void (T& t, int param) { t += param; }
@@ -426,7 +379,6 @@ T func_ret_value (const T& t, int param) {T res{}; res = t + param; return res;}
 
 int main (){
 	namespace ti = boost::typeindex;
-
 	std::cout << ti::type_id_with_cvr<decltype(func_ret_void<int>)>().pretty_name() << '\n';
 	std::cout << ti::type_id_with_cvr<decltype(func_ret_value<int>)>().pretty_name() << '\n';
 
@@ -434,14 +386,14 @@ int main (){
 	s1.apply<decltype(func_ret_void<int>), int>(func_ret_void, 1);
 	assert(s1.value==2);
 
-	int i = s1.apply<decltype(func_ret_value<int>), int>(func_ret_value, 1);
+	S<int> s2 = s1.apply<decltype(func_ret_value<int>), int>(func_ret_value, 1);
 	assert(s1.value == 2);
-	assert(i == 3);
+	assert(s2.value == 3);
 }
 
 #endif
 
-#if 1
+#if 0
 
 #include <iostream>
 

@@ -4,10 +4,10 @@
 
 #include "typed_tests_list.h"
 
-TYPED_TEST(CtorsSingletons, DefaultCtor) {
+TYPED_TEST(ValueCtorsSingletons, DefaultCtor) {
 	ASSERT_NO_THROW(TypeParam ());
 }
-TYPED_TEST(CtorsSingletons, CtorFromInt) {
+TYPED_TEST(ValueCtorsSingletons, CtorFromInt) {
 	ASSERT_NO_THROW(TypeParam (42));
 	ASSERT_NO_THROW(TypeParam (42u));
 	ASSERT_NO_THROW(TypeParam (42l));
@@ -22,7 +22,7 @@ TYPED_TEST(CtorsSingletons, CtorFromInt) {
 	ASSERT_NO_THROW(TypeParam ( [](){return 42;}() ));
 	ASSERT_NO_THROW(TypeParam (3'000'000'000));
 }
-TYPED_TEST(CtorsSingletons, CtorFromFloat) {
+TYPED_TEST(ValueCtorsSingletons, CtorFromFloat) {
 	ASSERT_NO_THROW(TypeParam (42.0f));
 	ASSERT_NO_THROW(TypeParam (-1.42f));
 	ASSERT_NO_THROW(TypeParam (0.0f));
@@ -39,7 +39,7 @@ TYPED_TEST(CtorsSingletons, CtorFromFloat) {
 	ASSERT_NO_THROW(TypeParam ( [](){return 42.42;}() ));
 //	ASSERT_EQ(s2, TypeParam ("42"s));
 }
-TYPED_TEST(CtorsSingletons, CtorFromString) {
+TYPED_TEST(ValueCtorsSingletons, CtorFromString) {
 	using namespace std::string_literals;
 	ASSERT_NO_THROW(TypeParam ("42"s));
 	ASSERT_NO_THROW(TypeParam ("-1"s));
@@ -53,7 +53,7 @@ TYPED_TEST(CtorsSingletons, CtorFromString) {
 	ASSERT_NO_THROW(TypeParam ("1.42"s));
 	ASSERT_NO_THROW(TypeParam ("+1.42"s));
 }
-TYPED_TEST(CtorsSingletons, CopyCtor) {
+TYPED_TEST(ValueCtorsSingletons, CopyCtor) {
 	TypeParam v (42.5);
 	auto copy = v;
 	ASSERT_EQ(copy.value, v.value);
@@ -63,7 +63,7 @@ TYPED_TEST(CtorsSingletons, CopyCtor) {
 		ASSERT_EQ(copy.value, 42.5);
 	}
 }
-TYPED_TEST(CtorsSingletons, MoveCtor) {
+TYPED_TEST(ValueCtorsSingletons, MoveCtor) {
 	TypeParam v (42.5);
 	auto move__ = std::move(v);
 	if (std::is_integral_v<typename TypeParam::value_type>) {
@@ -72,7 +72,7 @@ TYPED_TEST(CtorsSingletons, MoveCtor) {
 		ASSERT_EQ(move__.value, 42.5);
 	}
 }
-TYPED_TEST(CtorsSingletons, CompileError) {
+TYPED_TEST(ValueCtorsSingletons, CompileError) {
 	struct S {};
 	[[maybe_unused]] S s;
 	// base::Value<base::Seconds> d (s); //todo: make a compile time test
@@ -86,10 +86,10 @@ TYPED_TEST(CtorsSingletons, CompileError) {
  *
  * */
 
-TYPED_TEST(CtorsMultiField, ValueDefault) {
+TYPED_TEST(ValueCtorsMultiField, ValueDefault) {
 	ASSERT_NO_THROW(TypeParam ());
 }
-TYPED_TEST(CtorsMultiField, CtorInitializerList) {
+TYPED_TEST(ValueCtorsMultiField, CtorInitializerList) {
 	using v_type = typename TypeParam::value_type;
 	base::Value<v_type> one (42.5);
 	base::Value<v_type> two (42.5);
@@ -100,18 +100,18 @@ TYPED_TEST(CtorsMultiField, CtorInitializerList) {
 	ASSERT_NO_THROW([[maybe_unused]] TypeParam d ({one, two, three, four, five}));
 }
 
-TYPED_TEST(CtorsMultiField, ValueCopyCtor) {
+TYPED_TEST(ValueCtorsMultiField, ValueCopyCtor) {
 	TypeParam d ({12.2, 12.3, 12.4, 12.5, 12.7});
 	auto copy = d;
 	ASSERT_EQ(copy, d);
 }
-TYPED_TEST(CtorsMultiField, ValueMoveCtor) {
+TYPED_TEST(ValueCtorsMultiField, ValueMoveCtor) {
 	TypeParam d ({12.2, 12.3, 12.4, 12.5, 12.7});
 	TypeParam copy ({12.2, 12.3, 12.4, 12.5, 12.7});
 	auto move__ = std::move(d);
 	ASSERT_EQ(move__, copy);
 }
-TYPED_TEST(CtorsMultiField, CompileError) {
+TYPED_TEST(ValueCtorsMultiField, CompileError) {
 	struct S {};
 	[[maybe_unused]] S s;
 	// base::Value<base::Seconds> d (s); //todo: make a compile time test

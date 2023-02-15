@@ -9,7 +9,8 @@
 #include "floating_point_comp.h"
 #include "utils/utils.h"
 #include "value_traits.h"
-#include "type_requirements.h"
+#include "types_requirements/ctor_input.h"
+#include "types_requirements/operators.h"
 
 #ifndef BASE_VALUE_H
 #define BASE_VALUE_H

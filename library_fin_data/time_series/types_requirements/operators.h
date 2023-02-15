@@ -7,35 +7,10 @@
 #include <type_traits>
 #include <functional>
 
-#ifndef TYPE_REQUIREMENTS_H
-#define TYPE_REQUIREMENTS_H
+#ifndef TYPE_REQUIREMENTS_OPERATORS_H
+#define TYPE_REQUIREMENTS_OPERATORS_H
 
 namespace requirements {
-
-  template <typename Number>
-  using IsFloatinPoint = std::enable_if_t<std::is_floating_point_v<Number>, bool>;
-  template <typename Number>
-  using IsNotFloatinPoint = std::enable_if_t<not std::is_floating_point_v<Number>, bool>;
-
-  template <typename Number>
-  using IsIntegral = std::enable_if_t<std::is_integral_v<Number>, bool>;
-
-  template <typename Number>
-  using IsNotIntegral = std::enable_if_t<not std::is_integral_v<Number>, bool>;
-
-
-  template <typename Input, typename Result>
-  using ConveribleOrConstructibleFromTo = std::enable_if_t<
-		  std::disjunction_v<
-				  std::is_convertible<Input, Result>,
-				  std::is_constructible<Result, Input>
-		  >
-		  , bool>;
-
-  template <typename Input, typename Result, ConveribleOrConstructibleFromTo<Input, Result> = true>
-  constexpr bool isConveribleOrConstructible () {return true;}
-
-
   /**
    * @details
    * Operators check is based on a SFINAE technic, is copied from this source
@@ -136,16 +111,8 @@ namespace requirements {
   using BinOperatorsExist = bool;
 
 
-
-
   template <typename L, typename R>
   using NotSame = std::enable_if_t<not std::is_same_v<std::decay_t<L>, std::decay_t<R>>, bool>;
 
-
-
-
-  template <typename DataStructure, BinOperatorsExist<DataStructure, double> = true>
-  using CanBeElemType = bool;
-
 }//!namespace
-#endif //TYPE_REQUIREMENTS_H
+#endif //TYPE_REQUIREMENTS_OPERATORS_H

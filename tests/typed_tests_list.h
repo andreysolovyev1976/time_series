@@ -41,14 +41,14 @@ using value_multifield = testing::Types<
  */
 
 template<typename T>
-class CtorsSingletons : public testing::Test {};
-TYPED_TEST_SUITE(CtorsSingletons, value_single_field);
+class ValueCtorsSingletons : public testing::Test {};
+TYPED_TEST_SUITE(ValueCtorsSingletons, value_single_field);
 
 template<typename T>
-class CtorsMultiField : public testing::Test {};
-TYPED_TEST_SUITE(CtorsMultiField, value_multifield);
+class ValueCtorsMultiField : public testing::Test {};
+TYPED_TEST_SUITE(ValueCtorsMultiField, value_multifield);
 
-using test_element_value = testing::Types<
+using test_value = testing::Types<
 		double,
 		int,
 		base::Value<base::traits::ValueTypeDefault>,
@@ -74,12 +74,12 @@ using test_element_throw = testing::Types<
  */
 
 template<typename T>
-class CompareSingletons : public testing::Test {};
-TYPED_TEST_SUITE(CompareSingletons, value_single_field);
+class ValueCompareSingletons : public testing::Test {};
+TYPED_TEST_SUITE(ValueCompareSingletons, value_single_field);
 
 template<typename T>
-class CompareMultiField : public testing::Test {};
-TYPED_TEST_SUITE(CompareMultiField, value_multifield);
+class ValueCompareMultiField : public testing::Test {};
+TYPED_TEST_SUITE(ValueCompareMultiField, value_multifield);
 
 
 /**
@@ -88,12 +88,12 @@ TYPED_TEST_SUITE(CompareMultiField, value_multifield);
  */
 
 template<typename T>
-class ArithmeticsSingletons : public testing::Test {};
-TYPED_TEST_SUITE(ArithmeticsSingletons, value_single_field);
+class ValueArithmeticsSingletons : public testing::Test {};
+TYPED_TEST_SUITE(ValueArithmeticsSingletons, value_single_field);
 
 template<typename T>
-class ArithmeticsMultiField : public testing::Test {};
-TYPED_TEST_SUITE(ArithmeticsMultiField, value_multifield);
+class ValueArithmeticsMultiField : public testing::Test {};
+TYPED_TEST_SUITE(ValueArithmeticsMultiField, value_multifield);
 
 
 /**

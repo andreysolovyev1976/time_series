@@ -6,7 +6,7 @@
 #include "typed_tests_list.h"
 
 
-TYPED_TEST(CompareSingletons, Equal) {
+TYPED_TEST(ValueCompareSingletons, Equal) {
 	TypeParam v1(-1.5), v2(2.0);
 	double v3 {2.0};
 	double v4 {-1.5};
@@ -24,7 +24,7 @@ TYPED_TEST(CompareSingletons, Equal) {
 	ASSERT_TRUE(v2 == v5);
 	ASSERT_TRUE(v5 == v2);
 }
-TYPED_TEST(CompareSingletons, NotEqual) {
+TYPED_TEST(ValueCompareSingletons, NotEqual) {
 	TypeParam v1(-1.5), v2(2.0);
 	double v3 {2.0};
 	double v4 {-1.5};
@@ -38,7 +38,7 @@ TYPED_TEST(CompareSingletons, NotEqual) {
 	ASSERT_TRUE(v2 != v4);
 	ASSERT_TRUE(v4 != v2);
 }
-TYPED_TEST(CompareSingletons, Less) {
+TYPED_TEST(ValueCompareSingletons, Less) {
 	TypeParam v1(-1.5), v2(2.0);
 	double v3 {2.0};
 	double v4 {-1.5};
@@ -52,7 +52,7 @@ TYPED_TEST(CompareSingletons, Less) {
 	ASSERT_TRUE(!(v2 < v4));
 	ASSERT_TRUE(v4 < v2);
 }
-TYPED_TEST(CompareSingletons, LessOrEqual) {
+TYPED_TEST(ValueCompareSingletons, LessOrEqual) {
 	TypeParam v1(-1.5), v2(2.0);
 	double v3 {2.0};
 	double v4 {-1.5};
@@ -73,7 +73,7 @@ TYPED_TEST(CompareSingletons, LessOrEqual) {
 	ASSERT_TRUE(!(v2 <= v4));
 	ASSERT_TRUE(v4 <= v2);
 }
-TYPED_TEST(CompareSingletons, Greater) {
+TYPED_TEST(ValueCompareSingletons, Greater) {
 	TypeParam v1(-1.5), v2(2.0);
 	double v3 {2.0};
 	double v4 {-1.5};
@@ -87,7 +87,7 @@ TYPED_TEST(CompareSingletons, Greater) {
 	ASSERT_TRUE(v2 > v4);
 	ASSERT_TRUE(!(v4 > v2));
 }
-TYPED_TEST(CompareSingletons, GreaterOrEqual) {
+TYPED_TEST(ValueCompareSingletons, GreaterOrEqual) {
 	TypeParam v1(-1.5), v2(2.0);
 	double v3 {2.0};
 	double v4 {-1.5};
@@ -116,7 +116,7 @@ TYPED_TEST(CompareSingletons, GreaterOrEqual) {
  * so v3-v5 values are chosen to pass/fail a test.
  * */
 
-TYPED_TEST(CompareMultiField, Equal) {
+TYPED_TEST(ValueCompareMultiField, Equal) {
 	TypeParam v1 ({12.2, 12.3, 12.0, 12.5, 12.7});
 	TypeParam v2 ({22.2, 22.3, -0.4, 12.5, 12.7});
 	ASSERT_TRUE(v1 == v1);
@@ -135,7 +135,7 @@ TYPED_TEST(CompareMultiField, Equal) {
 	ASSERT_TRUE(v5 == v6);
 	ASSERT_TRUE(v6 == v5);
 }
-TYPED_TEST(CompareMultiField, NotEqual) {
+TYPED_TEST(ValueCompareMultiField, NotEqual) {
 	TypeParam v1 ({12.2, 12.3, 12.0, 12.5, 12.7});
 	TypeParam v2 ({22.2, 22.3, -1.5, 12.5, 12.7});
 	ASSERT_TRUE(v1 != v2);
@@ -155,7 +155,7 @@ TYPED_TEST(CompareMultiField, NotEqual) {
 	ASSERT_TRUE(v1 != v5);
 	ASSERT_TRUE(v2 != v5);
 }
-TYPED_TEST(CompareMultiField, Less) {
+TYPED_TEST(ValueCompareMultiField, Less) {
 	TypeParam v1 ({12.2, 12.3, 12.0, 11.5, 12.7}); //all of v1 < v2
 	TypeParam v2 ({22.2, 22.3, 12.5, 12.7, 12.8});
 	ASSERT_TRUE(v1 < v2);
@@ -173,7 +173,7 @@ TYPED_TEST(CompareMultiField, Less) {
 	ASSERT_TRUE(!(v5 < v1));
 	ASSERT_TRUE(!(v2 < v5));
 }
-TYPED_TEST(CompareMultiField, LessOrEqual) {
+TYPED_TEST(ValueCompareMultiField, LessOrEqual) {
 	TypeParam v1 ({12.2, 12.3, 12.0, 11.5, 12.7});
 	TypeParam v2 ({22.2, 22.3, 12.5, 12.0, 12.8});
 	TypeParam v3 ({22.2, 22.3, 12.5, 12.0, 12.9});
@@ -198,7 +198,7 @@ TYPED_TEST(CompareMultiField, LessOrEqual) {
 	ASSERT_TRUE(v5 <= v2);
 	ASSERT_TRUE(!(v6 <= v5));
 }
-TYPED_TEST(CompareMultiField, Greater) {
+TYPED_TEST(ValueCompareMultiField, Greater) {
 	TypeParam v1 ({12.2, 12.3, 12.0, 11.5, 12.7}); //all of v1 < v2
 	TypeParam v2 ({22.2, 22.3, 12.5, 12.7, 12.8});
 	ASSERT_TRUE(v2 > v1);
@@ -216,7 +216,7 @@ TYPED_TEST(CompareMultiField, Greater) {
 	ASSERT_TRUE(!(v1 > v5));
 	ASSERT_TRUE(!(v5 > v2));
 }
-TYPED_TEST(CompareMultiField, GreaterOrEqual) {
+TYPED_TEST(ValueCompareMultiField, GreaterOrEqual) {
 	TypeParam v1 ({12.2, 12.3, 12.0, 11.5, 12.7});
 	TypeParam v2 ({22.2, 22.3, 12.5, 12.0, 12.8});
 	TypeParam v3 ({22.2, 22.3, 12.5, 12.0, 12.9});

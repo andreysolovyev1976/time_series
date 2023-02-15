@@ -6,14 +6,14 @@
 
 
 template<typename T>
-class CtorsOfElementOk : public testing::Test {};
-TYPED_TEST_SUITE(CtorsOfElementOk, test_element_value);
+class ElementCtorsOk : public testing::Test {};
+TYPED_TEST_SUITE(ElementCtorsOk, test_value);
 
 template<typename T>
-class CtorsOfElementThrow : public testing::Test {};
-TYPED_TEST_SUITE(CtorsOfElementThrow, test_element_throw);
+class ElementCtorsThrow : public testing::Test {};
+TYPED_TEST_SUITE(ElementCtorsThrow, test_element_throw);
 
-TYPED_TEST(CtorsOfElementOk, CtorFromElemTypes) {
+TYPED_TEST(ElementCtorsOk, CtorFromElemTypes) {
 	ASSERT_NO_THROW([[maybe_unused]] TypeParam d);
 }
 

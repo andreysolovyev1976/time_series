@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include "type_requirements.h"
+#include "types_requirements/numerics.h"
 #include "const_values.h"
 
 #ifndef BASE_VALUE_COMP_H

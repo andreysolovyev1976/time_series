@@ -5,6 +5,8 @@ project(${PROJECT_NAME_TEST}
         DESCRIPTION "Testing Quote"
         LANGUAGES CXX)
 
+set(CMAKE_CXX_STANDARD 17)
+
 
 find_package (Boost)
 if(Boost_FOUND)
@@ -34,8 +36,10 @@ endif (APPLE)
 add_executable(${PROJECT_NAME_TEST}
         tests_all.cpp
         tests_basics_floating_point_comparison.cpp
+        tests_basics_timestamp.cpp
         tests_element_ctors.cpp
         tests_element_comparison.cpp
+        tests_element_arithmetics.cpp
         tests_element_fun_apply.cpp
         tests_value_ctors.cpp
         tests_value_comparison.cpp

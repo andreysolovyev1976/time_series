@@ -7,7 +7,8 @@
 #include "const_values.h"
 #include "timestamp.h"
 #include "value.h"
-#include "type_requirements.h"
+#include "types_requirements/ctor_input.h"
+#include "types_requirements/operators.h"
 
 #include <iosfwd>
 #include <string>
@@ -115,7 +116,15 @@ namespace time_series {
   template <typename Duration, typename ElemType>
   template <typename Fn, typename... Args>
   decltype(auto) Element<Duration, ElemType>::applyFunction (Fn&& fn, Args&& ...args) {
-	  return std::invoke(std::forward<Fn>(fn), value, std::forward<Args...>(args...));
+	  if constexpr (std::is_same_v<std::invoke_result_t<Fn, ElemType&, Args...>, void>) {
+		  std::invoke(std::forward<Fn>(fn), value, std::forward<Args...>(args...));
+		  return *this;
+	  }
+	  else if constexpr (std::is_same_v<std::invoke_result_t<Fn, ElemType, Args...>, ElemType>) {
+		  return Element<Duration, ElemType>(std::invoke(std::forward<Fn>(fn), value, std::forward<Args...>(args...)));
+	  } else {
+		  static_assert(sizeof(Fn) == 0, "Unexpected callable while applying over element");
+	  }
   }
 
 
@@ -210,15 +219,15 @@ namespace time_series {
   }
 
 
-#if 0
+
   template <typename Duration, typename ElemType>
   Element<Duration, ElemType> operator * (const Element<Duration, ElemType>& lhs, const Element<Duration, ElemType>& rhs) {
 	  return Element<Duration, ElemType> {
 			  .timestamp = {0},
 			  .value = lhs.value * rhs.value };
   }
-  template <typename Duration, typename ElemType, typename Other, 
-          requirements::BinOperatorsExist<Element<Duration, ElemType>, Other> = true>
+  template <typename Duration, typename ElemType, typename Other,
+		  requirements::BinOperatorsExist<Element<Duration, ElemType>, Other> = true>
   Element<Duration, ElemType> operator * (const Element<Duration, ElemType>& lhs, Other &&rhs) {
 	  return Element<Duration, ElemType> {
 			  .timestamp = lhs.timestamp,
@@ -237,8 +246,8 @@ namespace time_series {
 			  .timestamp = {0},
 			  .value = lhs.value / rhs.value };
   }
-  template <typename Duration, typename ElemType, typename Other, 
-          requirements::BinOperatorsExist<Element<Duration, ElemType>, Other> = true>
+  template <typename Duration, typename ElemType, typename Other,
+		  requirements::BinOperatorsExist<Element<Duration, ElemType>, Other> = true>
   Element<Duration, ElemType> operator / (const Element<Duration, ElemType>& lhs, Other &&rhs) {
 	  return Element<Duration, ElemType> {
 			  .timestamp = lhs.timestamp,
@@ -257,8 +266,8 @@ namespace time_series {
 			  .timestamp = {0},
 			  .value = lhs.value + rhs.value };
   }
-  template <typename Duration, typename ElemType, typename Other, 
-          requirements::BinOperatorsExist<Element<Duration, ElemType>, Other> = true>
+  template <typename Duration, typename ElemType, typename Other,
+		  requirements::BinOperatorsExist<Element<Duration, ElemType>, Other> = true>
   Element<Duration, ElemType> operator + (const Element<Duration, ElemType>& lhs, Other &&rhs) {
 	  return Element<Duration, ElemType> {
 			  .timestamp = lhs.timestamp,
@@ -277,8 +286,8 @@ namespace time_series {
 			  .timestamp = {0},
 			  .value = lhs.value - rhs.value };
   }
-  template <typename Duration, typename ElemType, typename Other, 
-          requirements::BinOperatorsExist<Element<Duration, ElemType>, Other> = true>
+  template <typename Duration, typename ElemType, typename Other,
+		  requirements::BinOperatorsExist<Element<Duration, ElemType>, Other> = true>
   Element<Duration, ElemType> operator - (const Element<Duration, ElemType>& lhs, Other &&rhs) {
 	  return Element<Duration, ElemType> {
 			  .timestamp = lhs.timestamp,
@@ -292,15 +301,15 @@ namespace time_series {
 			  .value = lhs - rhs.value };
   }
 
-  
+
   template <typename Duration, typename ElemType>
   Element<Duration, ElemType>& operator += (Element<Duration, ElemType>& lhs, const Element<Duration, ElemType>& rhs) {
 	  lhs.timestamp = {0};
 	  lhs.value += rhs.value;
 	  return lhs;
   }
-  template <typename Duration, typename ElemType, typename Other, 
-          requirements::BinOperatorsExist<Element<Duration, ElemType>, Other> = true>
+  template <typename Duration, typename ElemType, typename Other,
+		  requirements::BinOperatorsExist<Element<Duration, ElemType>, Other> = true>
   Element<Duration, ElemType>& operator += (Element<Duration, ElemType>& lhs, Other &&rhs) {
 	  lhs.value += rhs;
 	  return lhs;
@@ -312,40 +321,39 @@ namespace time_series {
 	  lhs.value -= rhs.value;
 	  return lhs;
   }
-  template <typename Duration, typename ElemType, typename Other, 
-          requirements::BinOperatorsExist<Element<Duration, ElemType>, Other> = true>
+  template <typename Duration, typename ElemType, typename Other,
+		  requirements::BinOperatorsExist<Element<Duration, ElemType>, Other> = true>
   Element<Duration, ElemType>& operator -= (Element<Duration, ElemType>& lhs, Other &&rhs) {
 	  lhs.value -= rhs;
 	  return lhs;
   }
-  
+
   template <typename Duration, typename ElemType>
   Element<Duration, ElemType>& operator *= (Element<Duration, ElemType>& lhs, const Element<Duration, ElemType>& rhs) {
 	  lhs.timestamp = {0};
 	  lhs.value *= rhs.value;
 	  return lhs;
   }
-  template <typename Duration, typename ElemType, typename Other, 
-          requirements::BinOperatorsExist<Element<Duration, ElemType>, Other> = true>
+  template <typename Duration, typename ElemType, typename Other,
+		  requirements::BinOperatorsExist<Element<Duration, ElemType>, Other> = true>
   Element<Duration, ElemType>& operator *= (Element<Duration, ElemType>& lhs, Other &&rhs) {
 	  lhs.value *= rhs;
 	  return lhs;
   }
-  
+
   template <typename Duration, typename ElemType>
   Element<Duration, ElemType>& operator /= (Element<Duration, ElemType>& lhs, const Element<Duration, ElemType>& rhs) {
 	  lhs.timestamp = {0};
 	  lhs.value /= rhs.value;
 	  return lhs;
   }
-  template <typename Duration, typename ElemType, typename Other, 
-          requirements::BinOperatorsExist<Element<Duration, ElemType>, Other> = true>
+  template <typename Duration, typename ElemType, typename Other,
+		  requirements::BinOperatorsExist<Element<Duration, ElemType>, Other> = true>
   Element<Duration, ElemType>& operator /= (Element<Duration, ElemType>& lhs, Other &&rhs) {
 	  lhs.value /= rhs;
 	  return lhs;
   }
 
-#endif
 
   template <typename Duration, typename ElemType>
   std::ostream& operator << (std::ostream& os, const Element<Duration, ElemType>& element) {

@@ -11,31 +11,31 @@
 
 namespace arg_traits {
   template <typename Arg>
-  constexpr bool isLValueRefMutable () {
-	  return std::is_lvalue_reference_v<Arg>;
+  constexpr bool isLValueRefMutable (Arg&& arg) {
+	  return std::is_lvalue_reference_v<decltype(std::forward<Arg>(arg))>;
   }
 
   template <typename Arg>
-  constexpr bool isLValueRefConst () {
+  constexpr bool isLValueRefConst (Arg&& arg) {
 	  return std::conjunction_v<
-			  std::is_lvalue_reference<Arg>,
-			  std::is_const<std::remove_reference_t<Arg>>
+			  std::is_lvalue_reference<decltype(std::forward<Arg>(arg))>,
+			  std::is_const<std::remove_reference_t<decltype(std::forward<Arg>(arg))>>
 	  >;
   }
   template <typename Arg>
-  constexpr bool isRValueRef () {
+  constexpr bool isRValueRef (Arg&& arg) {
 	  return std::conjunction_v<
-			  std::is_rvalue_reference<Arg>,
-			  std::is_const<std::remove_reference_t<Arg>>
+			  std::is_rvalue_reference<decltype(std::forward<Arg>(arg))>,
+			  std::is_const<std::remove_reference_t<decltype(std::forward<Arg>(arg))>>
 	  >;
   }
   template <typename Arg>
-  constexpr bool isObjectConst () {
-	  return std::is_const_v<Arg>;
+  constexpr bool isObjectConst (Arg&& arg) {
+	  return std::is_const_v<decltype(std::forward<Arg>(arg))>;
   }
   template <typename Arg>
-  constexpr bool isObjectMutable () {
-	  return std::is_same_v<Arg, std::decay_t<Arg>>;
+  constexpr bool isObjectMutable (Arg&& arg) {
+	  return std::is_same_v<decltype(std::forward<Arg>(arg)), std::decay_t<decltype(std::forward<Arg>(arg))>>;
   }
 
 }//!namespace
