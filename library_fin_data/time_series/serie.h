@@ -5,7 +5,10 @@
 #pragma once
 
 #include "element.h"
-#include <vector>
+#include "types_requirements/series_container.h"
+
+#include <deque>
+#include <cstddef>
 
 #ifndef TS_SERIE_H
 #define TS_SERIE_H
@@ -16,32 +19,30 @@ namespace time_series {
   //todo: requirements for Elements, should contain Timestamp
   //todo: requirements for Container
 
-  template <typename Elem, template <typename = Elem> typename Container = std::vector>
-//  template <typename Container = std::vector<Element<>>>
-
-  class Serie {
+  template <
+		  typename Container = std::deque<time_series::Element<>>,
+		  requirements::IsContainerOk<Container> = true
+		  >
+  class Serie : public Container {
   public:
-	  using Iter = typename Container<Elem>::iterator;
-	  using CIter = typename Container<Elem>::const_iterator;
-	  using RIter = typename Container<Elem>::reverse_iterator;
-	  using CRIter = typename Container<Elem>::const_reverse_iterator;
-
-	  Serie () = default;
-	  explicit Serie (Container<Elem> &&values);
-	  explicit Serie (const Container<Elem> &values);
-	  explicit Serie (std::initializer_list<Elem> values);
+	  using Container::Container;
 
 	  template <typename Fn, typename Iter>
 	  Serie& applyFunction (Fn &&fn /* should be applicable using iterators */);
 
-	  template <typename Iter>
-	  Iter begin();
-	  void end();
-	  void begin() const;
-	  void end() const;
+	  void setMaxSize ();
+	  void pushBack ();
+	  void popBack ();
+	  void pushFront ();
+	  void popFront ();
+
   private:
-	  Container<Elem> data;
+	  std::size_t max_size;
   };
+
+
+  void setMaxSize ();
+
 
 }//!namespace
 

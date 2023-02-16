@@ -45,7 +45,7 @@ add_executable(${PROJECT_NAME_TEST}
         tests_value_comparison.cpp
         tests_value_arithmetics.cpp
 #        tests_precision.cpp
-        )
+        tests_basics_types_requirements.cpp)
 
 message(STATUS "Linking test in Debug mode...")
 target_link_libraries(${PROJECT_NAME_TEST}
