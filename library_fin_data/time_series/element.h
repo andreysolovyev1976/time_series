@@ -23,7 +23,6 @@ namespace time_series {
   //todo: add requirements on ElemType
   //todo: add requirements for Other - should be an Arithmetic or better - operator is defined?
 
-
   template <typename Duration = base::Seconds, typename ElemType = base::Value<base::traits::ValueTypeDefault>>
   struct Element final {
 	  using elem_type = ElemType;
@@ -46,6 +45,10 @@ namespace time_series {
 	  Element& operator = (const value_type &p);
 
 	  const value_type& operator () () const;
+	  const key_type& first () const;
+	  key_type& first ();
+	  const elem_type& second () const;
+	  elem_type& second ();
 
 	  std::string toString () const;
 
@@ -55,6 +58,15 @@ namespace time_series {
 	  base::Timestamp<Duration> timestamp;
 	  ElemType value;
   };
+
+
+  template <typename Duration, typename ElemType>
+  struct ElementHasher {
+	  size_t operator () (const Element<Duration, ElemType>& element) const {
+		  return element.timestamp.time_point.time_since_epoch().count();
+	  }
+  };
+
 
   template <typename Duration, typename ElemType>
   Element<Duration, ElemType>::Element (const ElemType &e) : value (e)
@@ -77,6 +89,22 @@ namespace time_series {
   template <typename Duration, typename ElemType>
   const typename Element<Duration, ElemType>::value_type& Element<Duration, ElemType>::operator () () const {
 	  return {timestamp, value}; //todo: check what is a subject for reference - a pair itself or two referencies of the respective fields
+  }
+  template <typename Duration, typename ElemType>
+  const typename Element<Duration, ElemType>::key_type& Element<Duration, ElemType>::first () const {
+	  return timestamp;
+  }
+  template <typename Duration, typename ElemType>
+  typename Element<Duration, ElemType>::key_type& Element<Duration, ElemType>::first () {
+	  return timestamp;
+  }
+  template <typename Duration, typename ElemType>
+  const typename Element<Duration, ElemType>::elem_type& Element<Duration, ElemType>::second () const {
+	  return value;
+  }
+  template <typename Duration, typename ElemType>
+  typename Element<Duration, ElemType>::elem_type& Element<Duration, ElemType>::second () {
+	  return value;
   }
 
   template <typename Duration, typename ElemType>

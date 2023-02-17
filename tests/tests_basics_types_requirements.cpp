@@ -5,7 +5,7 @@
 #include <gtest/gtest.h>
 
 #include "time_series/types_requirements/ctor_input.h"
-#include "time_series/types_requirements/series_container.h"
+#include "time_series/types_requirements/container.h"
 #include <vector>
 #include <map>
 #include <deque>
@@ -14,8 +14,9 @@
 #include <variant>
 
 
+template <typename T>
 struct S {
-	int value {42};
+	T value {42};
 	operator double () {return static_cast<double>(value);}
 };
 
@@ -26,7 +27,7 @@ TEST(BasicsTypesRequirements, CtorInputOk) {
 	ASSERT_TRUE(ok);
 	ok = requirements::isConveribleOrConstructible<int, bool>();
 	ASSERT_TRUE(ok);
-	ok = requirements::isConveribleOrConstructible<S, double>();
+	ok = requirements::isConveribleOrConstructible<S<int>, double>();
 	ASSERT_TRUE(ok);
 }
 
@@ -40,20 +41,18 @@ TEST(BasicsTypesRequirements, CtorInputNotOk) {
 
 TEST(BasicsTypesRequirements, ContainerOk) {
 	std::map<int, int> m;
-	ASSERT_TRUE(requirements::IsContainer_v<std::vector<int>>());
-	ASSERT_TRUE(requirements::IsContainer_v<decltype(m)>());
-	// compile-time fail
-//	ASSERT_TRUE(requirements::IsContainer_v<std::map<int, int>>());
-	ASSERT_TRUE(requirements::IsContainer_v<std::deque<int>>());
-	ASSERT_TRUE(requirements::IsContainer_v<std::set<int>>());
-	ASSERT_TRUE(requirements::IsContainer_v<std::string>());
+	ASSERT_TRUE(requirements::IsContainer_v<std::vector>());
+	ASSERT_TRUE(requirements::IsContainer_v<std::map>());
+	ASSERT_TRUE(requirements::IsContainer_v<std::deque>());
+	ASSERT_TRUE(requirements::IsContainer_v<std::set>());
+//	ASSERT_TRUE(requirements::IsContainer_v<std::string>());
 }
 
 TEST(BasicsTypesRequirements, ContainerNotOk) {
-	ASSERT_FALSE(requirements::IsContainer_v<double>());
-	ASSERT_FALSE(requirements::IsContainer_v<int>());
+//	ASSERT_FALSE(requirements::IsContainer_v<double>());
+//	ASSERT_FALSE(requirements::IsContainer_v<int>());
 	ASSERT_FALSE(requirements::IsContainer_v<S>());
-	std::variant<int, double> v;
-	ASSERT_FALSE(requirements::IsContainer_v<decltype(v)>());
+	ASSERT_FALSE(requirements::IsContainer_v<std::variant>());
+	ASSERT_FALSE(true);
 }
 
