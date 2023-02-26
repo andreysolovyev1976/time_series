@@ -306,7 +306,7 @@ namespace time_series {
   Element<Duration, ElemType> operator + (Other &&rhs, const Element<Duration, ElemType>& lhs) {
 	  return Element<Duration, ElemType> {
 			  .timestamp = lhs.timestamp,
-			  .value = lhs + rhs.value };
+			  .value = lhs + rhs.data };
   }
   template <typename Duration, typename ElemType>
   Element<Duration, ElemType> operator - (const Element<Duration, ElemType>& lhs, const Element<Duration, ElemType>& rhs) {
@@ -326,7 +326,7 @@ namespace time_series {
   Element<Duration, ElemType> operator - (Other &&rhs, const Element<Duration, ElemType>& lhs) {
 	  return Element<Duration, ElemType> {
 			  .timestamp = lhs.timestamp,
-			  .value = lhs - rhs.value };
+			  .value = lhs - rhs.data };
   }
 
 

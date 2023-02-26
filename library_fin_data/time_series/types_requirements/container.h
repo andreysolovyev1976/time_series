@@ -45,8 +45,10 @@ namespace requirements {
   struct MaybeUserDefinedHash<Key, Type, HashResult,
 							  std::void_t<
 									  std::enable_if_t<std::negation_v<std::is_same<HashResult, bool>>>,
-									  std::enable_if_t<std::is_invocable_r_v<std::size_t, Type, std::add_const_t<std::decay_t<Key>>>>
-							  >
+									  std::enable_if_t<std::is_invocable_r_v<std::size_t, Type, std::add_const_t<std::decay_t<Key>>>>,
+									  std::enable_if_t<std::is_copy_constructible_v<Type>>,
+									  std::enable_if_t<std::is_move_constructible_v<Type>>
+  >
   > : std::true_type {};
   template<typename Key, typename Type, typename = void>
   struct MaybeBuiltInHash : std::false_type { };

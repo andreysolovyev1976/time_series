@@ -35,8 +35,7 @@ template <typename Iter>
 using select_access_type_for = typename Iter::reference;
 
 template <typename Iter1, typename Iter2>
-class zip_iterator
-{
+class zip_iterator{
 public:
 
 	using value_type = std::pair<
@@ -49,37 +48,31 @@ public:
 	zip_iterator(Iter1 iter_1_begin, Iter2 iter_2_begin)
 			: m_iter_1_begin{ iter_1_begin }
 			, m_iter_2_begin{ iter_2_begin }
-	{
-	}
+	{}
 
-	auto operator++() -> zip_iterator&
-	{
+	auto operator++() -> zip_iterator& {
 		++m_iter_1_begin;
 		++m_iter_2_begin;
 		return *this;
 	}
 
-	auto operator++(int) -> zip_iterator
-	{
+	auto operator++(int) -> zip_iterator {
 		auto tmp = *this;
 		++* this;
 		return tmp;
 	}
 
-	auto operator!=(zip_iterator const& other) const
-	{
+	auto operator!=(zip_iterator const& other) const{
 		return !(*this == other);
 	}
 
-	auto operator==(zip_iterator const& other) const
-	{
+	auto operator==(zip_iterator const& other) const{
 		return
 				m_iter_1_begin == other.m_iter_1_begin ||
 						m_iter_2_begin == other.m_iter_2_begin;
 	}
 
-	auto operator*() -> value_type
-	{
+	auto operator*() -> value_type {
 		return value_type{ *m_iter_1_begin, *m_iter_2_begin };
 	}
 
@@ -95,8 +88,7 @@ using select_iterator_for = std::conditional_t<
 		typename std::decay_t<T>::iterator>;
 
 template <typename T, typename U>
-class zipper
-{
+class zipper {
 public:
 
 	using Iter1 = select_iterator_for<T>;
@@ -108,15 +100,12 @@ public:
 	zipper(V&& a, W&& b)
 			: m_a{ a }
 			, m_b{ b }
-	{
-	}
+	{}
 
-	auto begin() -> zip_type
-	{
+	auto begin() -> zip_type {
 		return zip_type{ std::begin(m_a), std::begin(m_b) };
 	}
-	auto end() -> zip_type
-	{
+	auto end() -> zip_type {
 		return zip_type{ std::end(m_a), std::end(m_b) };
 	}
 private:
@@ -125,8 +114,7 @@ private:
 };
 
 template <typename T, typename U>
-auto zip(T&& t, U&& u)
-{
+auto zip(T&& t, U&& u) {
 	auto res = zipper<T, U>{ std::forward<T>(t), std::forward<U>(u) };
 	return Sequence<decltype(res.begin())>(res.begin(),res.end());
 }

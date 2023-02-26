@@ -330,3 +330,31 @@ TEST(SerieContainer, Exotics_UnorderedMap) {
 	}
 	ASSERT_TRUE(assigned_values.empty());
 }
+
+namespace user_defined_containers {
+  template <typename T>
+  struct OkContainer {
+	  T data [3];
+	  const T& begin() const {return data[0];}
+	  const T& end() const {return data[4];}
+  };
+}//!namespace
+TEST(SerieContainer, UserDefinedContainer) {
+	time_series::Serie<
+			Duration, ElemType,
+			user_defined_containers::OkContainer
+	> serie;
+
+	serie.data[0] = Elem(12);
+	serie.data[1] = Elem(1);
+	serie.data[2] = Elem(3);
+
+	std::set assigned_values {1, 3, 12};
+	for (const auto& [ts, elem] : serie.data) {
+		if (auto found = assigned_values.find(elem.value);
+				found != assigned_values.end()) {
+			assigned_values.erase(found);
+		}
+	}
+	ASSERT_TRUE(assigned_values.empty());
+}
