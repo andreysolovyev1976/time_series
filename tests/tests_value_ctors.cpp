@@ -56,20 +56,20 @@ TYPED_TEST(ValueCtorsSingletons, CtorFromString) {
 TYPED_TEST(ValueCtorsSingletons, CopyCtor) {
 	TypeParam v (42.5);
 	auto copy = v;
-	ASSERT_EQ(copy.data, v.data);
+	ASSERT_EQ(copy.value, v.value);
 	if (std::is_integral_v<typename TypeParam::value_type>) {
-		ASSERT_EQ(copy.data, 42);
+		ASSERT_EQ(copy.value, 42);
 	} else {
-		ASSERT_EQ(copy.data, 42.5);
+		ASSERT_EQ(copy.value, 42.5);
 	}
 }
 TYPED_TEST(ValueCtorsSingletons, MoveCtor) {
 	TypeParam v (42.5);
 	auto move__ = std::move(v);
 	if (std::is_integral_v<typename TypeParam::value_type>) {
-		ASSERT_EQ(move__.data, 42);
+		ASSERT_EQ(move__.value, 42);
 	} else {
-		ASSERT_EQ(move__.data, 42.5);
+		ASSERT_EQ(move__.value, 42.5);
 	}
 }
 TYPED_TEST(ValueCtorsSingletons, CompileError) {

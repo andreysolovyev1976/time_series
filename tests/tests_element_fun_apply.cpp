@@ -32,7 +32,7 @@ TYPED_TEST (ElementFnApplication, ApplyFunctionInPlace) {
 	const int init_value {10};
 	TypeParam t1 = initWithValue<TypeParam>(init_value);
 	const int value = rand()%100;
-	t1.applyFunction(modifyValue<std::decay_t<decltype(t1.data)>, decltype(value)>, value);
+	t1.applyFunction(modifyValue<std::decay_t<decltype(t1.value)>, decltype(value)>, value);
 	ASSERT_EQ(t1, (value + init_value));
 }
 
@@ -41,8 +41,8 @@ TYPED_TEST (ElementFnApplication, ApplyFunctionInPlaceChaining) {
 	TypeParam t1 = initWithValue<TypeParam>(init_value);
 	const int value = rand()%100;
 	t1
-	.applyFunction(modifyValuesChaining<std::decay_t<decltype(t1.data)>, decltype(value)>, value)
-	.applyFunction(modifyValuesChaining<std::decay_t<decltype(t1.data)>, decltype(value)>, value);
+	.applyFunction(modifyValuesChaining<std::decay_t<decltype(t1.value)>, decltype(value)>, value)
+	.applyFunction(modifyValuesChaining<std::decay_t<decltype(t1.value)>, decltype(value)>, value);
 
 	ASSERT_EQ(t1, (value * 2 + init_value));
 }
@@ -52,7 +52,7 @@ TYPED_TEST (ElementFnApplication, ApplyFunctionCreateNew) {
 	TypeParam t1 = initWithValue<TypeParam>(init_value);
 	const int value = rand()%100;
 
-	TypeParam t2 (t1.applyFunction(addValue<std::decay_t<decltype(t1.data)>, decltype(value)>, value));
+	TypeParam t2 (t1.applyFunction(addValue<std::decay_t<decltype(t1.value)>, decltype(value)>, value));
 	ASSERT_EQ(t1, init_value);
 	ASSERT_EQ(t2, (value + init_value));
 }

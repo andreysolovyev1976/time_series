@@ -8,20 +8,20 @@
 
 #include <sstream>
 
-TEST(BasicsItertools, Vectors) {
+TEST(BasicsItertools, VectorAndVector) {
 	std::vector<int> arr{ 1,2,3,4,5 };
 	std::string s { "abcdefghhlk" };
 
 	std::stringstream ss;
 
-	for (auto const& elem : zip(s, arr)) {
+	for (auto const& elem : iterators::zip(s, arr)) {
 		ss << elem.first << ' ' << elem.second << '\n';
 	}
 	std::string check {R"(a 1
 b 2
 c 3
-e 4
-f 5
+d 4
+e 5
 )"};
 	ASSERT_EQ(ss.str(), check);
 }
@@ -39,7 +39,7 @@ TEST(BasicsItertools, VectorAndMap) {
 
 	std::stringstream ss;
 
-	for (auto const& elem : zip(arr, m)) {
+	for (auto const& elem : iterators::zip(arr, m)) {
 		ss << elem.first << ' ' << elem.second.first << ' ' << elem.second.second << '\n';
 	}
 	std::string check {R"(1 1 one
@@ -57,14 +57,14 @@ TEST(BasicsItertools, TimeSeries) {
 
 	std::stringstream ss;
 
-	for (auto const& elem : zip(arr, s)) {
-		ss << elem.first << ' ' << elem.second << '\n';
+	for (auto const& elem : iterators::zip(arr, s)) {
+		ss << elem.second << ' ' << elem.first << '\n';
 	}
 	std::string check {R"(a 1
 b 2
 c 3
-e 4
-f 5
+d 4
+e 5
 )"};
 
 	ASSERT_EQ(ss.str(), check);

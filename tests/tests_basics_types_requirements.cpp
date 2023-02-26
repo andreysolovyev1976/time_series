@@ -60,6 +60,7 @@ TEST(BasicsTypesRequirements, CtorInputNotOk) {
 TEST(BasicsTypesRequirements, ContainerOk) {
 	using Elem = time_series::Element<base::Seconds, int>;
 	using Map = std::map<base::Timestamp<base::Seconds>, base::Value<base::traits::ValueTypeDefault>>;
+	ASSERT_TRUE(requirements::isContainer_v<std::string>());
 	ASSERT_TRUE(requirements::isContainer_v<std::vector<Elem>>());
 	ASSERT_TRUE(requirements::isContainer_v<Map>());
 	ASSERT_TRUE(requirements::isContainer_v<std::deque<Elem>>());
