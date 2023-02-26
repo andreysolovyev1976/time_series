@@ -5,7 +5,7 @@
 #pragma once
 
 #include "const_values.h"
-#include "time_series/value.h"
+#include "time_series/value.hpp"
 
 #include <iosfwd>
 #include <string>

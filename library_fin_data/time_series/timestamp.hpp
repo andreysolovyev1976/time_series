@@ -11,6 +11,8 @@
 #include <chrono>
 #include <ratio>
 #include <cstdint>
+#include <cstddef>
+#include <cmath>
 #include <iosfwd>
 
 #ifndef BASE_TIMESTAMP_H
@@ -44,7 +46,23 @@ typedef duration<     long, ratio<3600> > hours;
 	//todo: add SFINAE / concept to check Duration is a time constructable
 
 
-	template <typename Duration>
+  namespace require {
+
+	template <typename Number>
+	using IsFloatinPoint = std::enable_if_t<std::is_floating_point_v<Number>, bool>;
+	template <typename Number>
+	using IsNotFloatinPoint = std::enable_if_t<not std::is_floating_point_v<Number>, bool>;
+
+	template <typename Number>
+	using IsIntegral = std::enable_if_t<std::is_integral_v<Number>, bool>;
+
+	template <typename Number>
+	using IsNotIntegral = std::enable_if_t<not std::is_integral_v<Number>, bool>;
+
+  }//!namespace
+
+
+  template <typename Duration>
 	constexpr bool IsMicroseconds (Duration) {
 		return std::is_same_v<Duration, Microseconds>;
 	}
@@ -82,7 +100,7 @@ typedef duration<     long, ratio<3600> > hours;
 			return output;
 		}
 		void setToZero() noexcept {
-			time_point(Clock::from_time_t(0));
+			time_point(Clock::from_time_t(0)); //todo check
 		}
 		void setToNow() noexcept {
 			time_point(std::chrono::floor<Duration>(Clock::now()));
@@ -91,10 +109,17 @@ typedef duration<     long, ratio<3600> > hours;
 
 	template <typename Duration>
 	struct TimestampHasher {
-		size_t operator () (const Timestamp<Duration>& t) const {
+		std::size_t operator () (const Timestamp<Duration>& t) const {
 			return t.time_point.time_since_epoch().count();
 		}
 	};
+
+  template <typename Duration>
+  struct TimestampComparator {
+	  bool operator () (const Timestamp<Duration>& lhs, const Timestamp<Duration> &rhs) const {
+		  return lhs < rhs;
+	  }
+  };
 
 	template<typename Duration>
 	bool operator==(const Timestamp<Duration>& lhs, const Timestamp<Duration>& rhs) {
@@ -102,23 +127,23 @@ typedef duration<     long, ratio<3600> > hours;
 	}
 	template<typename Duration>
 	bool operator!=(const Timestamp<Duration>& lhs, const Timestamp<Duration>& rhs){
-		return not (rhs==lhs);
+		return not (lhs==rhs);
 	}
 	template<typename Duration>
 	bool operator < (const Timestamp<Duration>& lhs, const Timestamp<Duration>& rhs){
 		return lhs.time_point < rhs.time_point;
 	}
 	template<typename Duration>
-	bool operator >(const Timestamp<Duration>& lhs, const Timestamp<Duration>& rhs){
-		return not (rhs < lhs);
+	bool operator > (const Timestamp<Duration>& lhs, const Timestamp<Duration>& rhs){
+		return not (lhs < rhs) && not (lhs == rhs);
 	}
 	template<typename Duration>
 	bool operator<=(const Timestamp<Duration>& lhs, const Timestamp<Duration>& rhs){
-		return not (rhs > lhs);
+		return not (lhs > rhs);
 	}
 	template<typename Duration>
 	bool operator>=(const Timestamp<Duration>& lhs, const Timestamp<Duration>& rhs) {
-		return not (lhs<rhs);
+		return not (lhs < rhs);
 	}
 
 	template<typename Duration>
@@ -149,6 +174,31 @@ typedef duration<     long, ratio<3600> > hours;
 //		result.time_point += std::chrono::duration_cast<Duration>(lhs.time_point + rhs.time_point);
 		return result;
 	}
+
+
+  template<typename Duration, typename Number, require::IsIntegral<Number> = true>
+  Timestamp<Duration>& operator -= (Timestamp<Duration>& lhs, Number rhs) {
+	  if (rhs > 0 && lhs.time_point >= rhs) {
+		  lhs.time_point -= rhs;
+	  } else {
+		  throw std::invalid_argument("If implemented as requested you would have a date before 1-1-1970");
+	  }
+	  return lhs;
+  }
+
+  template<typename Duration, typename Number, require::IsIntegral<Number> = true>
+  Timestamp<Duration>& operator += (Timestamp<Duration>& lhs, Number rhs) {
+	  if (rhs < 0) {
+		  if (lhs.time_point>=std::abs(rhs)) {
+			  lhs.time_point += rhs;
+		  }
+		  else {
+			  throw std::invalid_argument("If implemented as requested you would have a date before 1-1-1970");
+		  }
+	  }
+	  return lhs;
+  }
+
 
 }//!namespace
 

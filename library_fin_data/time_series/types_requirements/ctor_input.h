@@ -11,17 +11,29 @@
 
 namespace requirements {
 
+  template <typename Input, typename Result, typename = void>
+  struct TestConveribleOrConstructibleFromTo : std::false_type {};
+
   template <typename Input, typename Result>
-  using ConveribleOrConstructibleFromTo = std::enable_if_t<
-		  std::disjunction_v<
-				  std::is_convertible<Input, Result>,
-				  std::is_constructible<Result, Input>
+  struct TestConveribleOrConstructibleFromTo <
+		  Input, Result,
+		  std::void_t<
+				  std::enable_if_t<
+						  std::disjunction_v<
+								  std::is_convertible<Input, Result>,
+								  std::is_constructible<Result, Input>
+						  >
+				  >
 		  >
-		  , bool>;
+  > : std::true_type {};
 
+  template <typename Input, typename Result>
+  constexpr bool isConveribleOrConstructible () {
+	  return TestConveribleOrConstructibleFromTo<Input, Result>::value;
+  }
 
-  template <typename Input, typename Result, ConveribleOrConstructibleFromTo<Input, Result> = true>
-  constexpr bool isConveribleOrConstructible () {return true;}
+  template <typename Input, typename Result>
+  using ConveribleOrConstructibleFromTo = std::enable_if_t<isConveribleOrConstructible<Input, Result>(), bool>;
 
 }//!namespace
 #endif //TYPE_REQUIREMENTS_CTORS_H

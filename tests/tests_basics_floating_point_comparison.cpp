@@ -3,7 +3,7 @@
 //
 
 #include <gtest/gtest.h>
-#include "floating_point_comp.h"
+#include "floating_point_comp.hpp"
 
 
 using namespace comp;

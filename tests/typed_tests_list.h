@@ -5,11 +5,11 @@
 #pragma once
 
 #include <gtest/gtest.h>
-#include "time_series/value.h"
+#include "time_series/value.hpp"
 #include "financial_data_structures/single_quote.h"
 #include "financial_data_structures/ohlcv.h"
 #include "financial_data_structures/bid_ask.h"
-#include "time_series/element.h"
+#include "time_series/element.hpp"
 
 #include <cstdint>
 

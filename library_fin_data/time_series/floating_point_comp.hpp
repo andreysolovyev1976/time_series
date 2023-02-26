@@ -4,8 +4,8 @@
 
 #pragma once
 
-#include "types_requirements/numerics.h"
-#include "const_values.h"
+#include "time_series/types_requirements/numerics.h"
+#include "time_series/const_values.h"
 
 #ifndef BASE_VALUE_COMP_H
 #define BASE_VALUE_COMP_H

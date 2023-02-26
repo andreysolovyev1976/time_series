@@ -10,7 +10,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char **argv) {
 //	testing::GTEST_FLAG(filter) = "Ctors*:Assignments*:Constructible*:Compare*:Arithmetics*";
 //	testing::GTEST_FLAG(filter) = "ElementFnApplication*";
 //	testing::GTEST_FLAG(filter) = "ElementFnApplication/1.*";
-	testing::GTEST_FLAG(filter) = "SerieContainer*";
+//	testing::GTEST_FLAG(filter) = "SerieContainer*";
 	return RUN_ALL_TESTS();
 }
 
@@ -19,3 +19,8 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char **argv) {
 // test double < int , int < double, double < string, string < double
 // test change of epsilon
 // test arithmetics and comparison with other field, than default
+// timestamp works poorly with high_res clock
+
+//todo:
+// iter tools - zip
+// duration cast

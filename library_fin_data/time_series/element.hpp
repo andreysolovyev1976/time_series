@@ -4,11 +4,11 @@
 
 #pragma once
 
-#include "const_values.h"
-#include "timestamp.h"
-#include "value.h"
-#include "types_requirements/ctor_input.h"
-#include "types_requirements/operators.h"
+#include "time_series/const_values.h"
+#include "time_series/timestamp.hpp"
+#include "time_series/value.hpp"
+#include "time_series/types_requirements/ctor_input.h"
+#include "time_series/types_requirements/operators.h"
 
 #include <iosfwd>
 #include <string>
@@ -203,47 +203,47 @@ namespace time_series {
 
   template <typename Duration, typename ElemType>
   bool operator > (const Element<Duration, ElemType>& lhs, const Element<Duration, ElemType>& rhs) {
-	  return (!(operator == <ElemType, Duration> (rhs, lhs)) && !(operator< <ElemType, Duration> (lhs, rhs)));
+	  return (!(lhs == rhs) && !(lhs < rhs));
   }
   template <typename Duration, typename ElemType, typename Other,
 		  requirements::BinOperatorsExist<Element<Duration, ElemType>, Other> = true>
   bool operator > (const Element<Duration, ElemType>& lhs, const Other& rhs) {
-	  return (!(operator == <ElemType, Duration> (rhs, lhs)) && !(operator < <ElemType, Duration> (lhs, rhs)));
+	  return (!(lhs == rhs) && !(lhs < rhs));
   }
   template <typename Duration, typename ElemType, typename Other,
 		  requirements::BinOperatorsExist<Element<Duration, ElemType>, Other> = true>
   bool operator > (const Other& lhs, const Element<Duration, ElemType>& rhs) {
-	  return (!(rhs == lhs) && !(lhs < rhs));
+	  return (!(lhs == rhs) && !(lhs < rhs));
   }
 
   template <typename Duration, typename ElemType>
   bool operator <= (const Element<Duration, ElemType>& lhs, const Element<Duration, ElemType>& rhs) {
-	  return ((rhs == lhs) || (lhs < rhs));
+	  return ((lhs == rhs) || (lhs < rhs));
   }
   template <typename Duration, typename ElemType, typename Other,
 		  requirements::BinOperatorsExist<Element<Duration, ElemType>, Other> = true>
   bool operator <= (const Element<Duration, ElemType>& lhs, const Other& rhs) {
-	  return ((rhs == lhs) || (lhs < rhs));
+	  return ((lhs == rhs) || (lhs < rhs));
   }
   template <typename Duration, typename ElemType, typename Other,
 		  requirements::BinOperatorsExist<Element<Duration, ElemType>, Other> = true>
   bool operator <= (const Other& lhs, const Element<Duration, ElemType>& rhs) {
-	  return ((rhs == lhs) || (lhs < rhs));
+	  return ((lhs == rhs) || (lhs < rhs));
   }
 
   template <typename Duration, typename ElemType>
   bool operator >= (const Element<Duration, ElemType>& lhs, const Element<Duration, ElemType>& rhs){
-	  return ((rhs == lhs) || (lhs > rhs));
+	  return ((lhs == rhs) || (lhs > rhs));
   }
   template <typename Duration, typename ElemType, typename Other,
 		  requirements::BinOperatorsExist<Element<Duration, ElemType>, Other> = true>
   bool operator >= (const Element<Duration, ElemType>& lhs, const Other& rhs){
-	  return ((rhs == lhs) || (lhs > rhs));
+	  return ((lhs == rhs) || (lhs > rhs));
   }
   template <typename Duration, typename ElemType, typename Other,
 		  requirements::BinOperatorsExist<Element<Duration, ElemType>, Other> = true>
   bool operator >= (const Other& lhs, const Element<Duration, ElemType>& rhs) {
-	  return ((rhs == lhs) || (lhs > rhs));
+	  return ((lhs == rhs) || (lhs > rhs));
   }
 
 

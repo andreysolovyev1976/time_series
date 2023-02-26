@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.21)
 set (PROJECT_NAME fin_data)
 project(${PROJECT_NAME}
         VERSION 0.1
-        DESCRIPTION "Financial Data project"
+        DESCRIPTION "Financial time series project"
         LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 17)

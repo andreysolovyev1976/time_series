@@ -3,7 +3,7 @@
 //
 
 #include <gtest/gtest.h>
-#include "time_series/timestamp.h"
+#include "time_series/timestamp.hpp"
 #include <sstream>
 #include <thread>
 

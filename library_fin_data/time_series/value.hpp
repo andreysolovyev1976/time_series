@@ -4,13 +4,13 @@
 
 #pragma once
 
-#include "const_values.h"
-#include "timestamp.h"
-#include "floating_point_comp.h"
 #include "utils/utils.h"
-#include "value_traits.h"
-#include "types_requirements/ctor_input.h"
-#include "types_requirements/operators.h"
+#include "time_series/const_values.h"
+#include "time_series/timestamp.hpp"
+#include "time_series/floating_point_comp.hpp"
+#include "time_series/value_traits.h"
+#include "time_series/types_requirements/ctor_input.h"
+#include "time_series/types_requirements/operators.h"
 
 #ifndef BASE_VALUE_H
 #define BASE_VALUE_H

@@ -2,8 +2,17 @@
 // Created by Andrey Solovyev on 24/01/2023.
 //
 
+//#define NESTED_OPERATORS
+//#define OPERATORS_EXISTANCE
+//#define CPP_STANDARD
+//#define CRTP_CORE
+//#define LVALUE_RVALUE_RTTI
+//#define APPLY_FUNC
+//#define CONSTRUCTIBLE
+//#define COMPILE_TIME_TEST_EXAMPLE
+//#define SERIE_FACTORY_OPTIONS
 
-#if 0
+#ifdef NESTED_OPERATORS
 #include <iostream>
 #include <iomanip>
 #include <type_traits>
@@ -89,102 +98,9 @@ int main () {
 	std::cout << (42 == fst.value);
 
 }
-
 #endif
 
-
-#if 0
-#include "financial_data_structures/ohlcv.h"
-#include "financial_data_structures/bid_ask.h"
-#include "time_series/element.h"
-#include "time_series/value.h"
-
-#include <iostream>
-
-
-template <typename T>
-T sq (T a) {
-	return a * a;
-}
-
-
-/// Create compile-time tests that allow checking a specific function's type
-#define COMPILE_TIME_TEST(func) COMPILE_TIME_TEST_FUNCTION(func, func)
-#define COMPILE_TIME_TEST_FUNCTION(name, func)                                                              \
-namespace detail {                                                                                          \
-  template<typename R, auto... args> struct name ## FromArgs:std::false_type{};                             \
-  template<auto... args> struct name ## FromArgs<decltype(func(args...)), args...> : std::true_type{};      \
-  template<typename R, typename... Args> struct name ## FromType:std::false_type{};                         \
-  template<typename... Args> struct name ## FromType<decltype(func(std::declval<Args>()...)), Args...> : std::true_type{};\
-}                                                                                                           \
-template<typename R, auto ...Args>                                                                          \
-static constexpr auto name ## _compiles = detail::name ## FromArgs<R, Args...>::value;                      \
-template<typename ...Args> \
-static constexpr auto name ## _compiles_from_type = detail::name ## FromType<Args...>::value;\
-
-
-int func();
-template <typename T> void func(T);
-void func(double);
-void func(double, double );
-void func(double, double, double);
-
-// create the structs from above macros for the function `func`
-COMPILE_TIME_TEST(func);
-
-
-template <typename T, typename U>
-auto sum (T a, U b) {return a + b;}
-
-int main () {
-
-	static_assert(!func_compiles<void>);
-	static_assert(func_compiles<int>);
-	static_assert(func_compiles_from_type<void, double, double>);
-	static_assert(!func_compiles_from_type<void, double, double, double, double>);
-
-	static_assert(func_compiles<void, 1>);
-	static_assert(!func_compiles<void, 1, nullptr>);
-
-
-
-	financial::OHLCV<base::Seconds> point;
-	point.open = 1.0;
-	point.high = 2.0;
-	point.low = 3.0;
-	point.close = 4.0;
-	point.volume = 12.0;
-	auto s = point.toString();
-	std::cout << s << '\n';
-	std::cout << point << '\n';
-
-
-	financial::BidAsk<base::Seconds> b;
-	b.bid = 1.0;
-	b.ask = 2.0;
-	b.middle = 3.0;
-	b.price = 4.0;
-	b.volume = 12.0;
-	s = b.toString();
-	std::cout << s << '\n';
-	std::cout << b << '\n';
-
-	time_series::Element<base::Seconds, financial::BidAsk<base::Seconds>> element (b);
-	s = element.toString();
-	std::cout << s << '\n';
-	std::cout << element << '\n';
-
-	time_series::Element<base::Seconds, double> element_double (42.12);
-	std::cout << element_double << '\n';
-
-	time_series::Element<base::Seconds, int> element_int (42);
-	std::cout << element_int << '\n';
-}
-
-#endif
-
-
-#if 0
+#ifdef OPERATORS_EXISTANCE
 #include <iostream>
 #include "time_series/type_requirements.h"
 #include "time_series/value.h"
@@ -226,11 +142,9 @@ int main () {
 	cout << i1 + i2 << '\n';
 	cout << i2 - 1.5 << '\n';
 }
-
 #endif
 
-#if 0
-
+#ifdef CPP_STANDARD
 #include <iostream>
 #include "utils/cpp_version.h"
 
@@ -239,10 +153,9 @@ int main () {
 	std::cout << cpp_standard::get_version<std::string_view>() << '\n';
 	cpp_standard::get_version<double>();
 }
-
 #endif
 
-#if 0
+#ifdef CRTP_CORE
 #include <iostream>
 #include <type_traits>
 
@@ -267,11 +180,9 @@ int main () {
 	std::cout << typeid(decltype(d1)).name() << '\n';
 	std::cout << typeid(decltype(d2)).name() << '\n';
 }
-
 #endif
 
-#if 1
-
+#ifdef LVALUE_RVALUE_RTTI
 #include <cassert>
 #include <utility>
 #include <functional>
@@ -340,8 +251,7 @@ int main () {
 }
 #endif
 
-#if 0
-
+#ifdef APPLY_FUNC
 #include <iostream>
 #include <type_traits>
 #include <stdexcept>
@@ -390,11 +300,291 @@ int main (){
 	assert(s1.value == 2);
 	assert(s2.value == 3);
 }
+#endif
+
+#ifdef CONSTRUCTIBLE
+#include "time_series/types_requirements/container.h"
+#include <iostream>
+#include <cassert>
+#include <cstddef>
+#include <vector>
+#include <map>
+#include <unordered_map>
+
+struct S1 {int value {42};};
+struct SHasher {
+	std::size_t operator () (const S1& s) const {
+		return s.value;
+	}
+};
+bool operator == (const S1& lhs, const S1& rhs) {
+	return lhs.value == rhs.value;
+}
+bool operator < (const S1& lhs, const S1& rhs) {
+	return lhs.value < rhs.value;
+}
+struct SComparator {
+	bool operator () (const S1& lhs, const S1& rhs) const {
+		return lhs.value < rhs.value;
+	}
+};
+
+int main () {
+	std::cout << std::boolalpha;
+
+	std::cout << "vector is constructible: "
+			  << std::is_constructible_v<std::vector<S1>> << '\n';
+	std::cout << "vector is constructible: "
+			  << std::is_constructible_v<std::vector<int>> << '\n';
+
+	std::cout << "unordered_map is constructible: "
+	<< std::is_constructible_v<std::unordered_map<S1, int, SHasher>> << '\n';
+
+	std::cout << requirements::ContainerArgsCount<std::vector, S1>() << '\n';
+
+}
+#endif
+
+
+#ifdef COMPILE_TIME_TEST_EXAMPLE
+
+#include <iostream>
+#include <string>
+#include "time_series/types_requirements/compile_time_test.h"
+
+
+struct SomeStruct {int value {42};};
+
+int func();
+template <typename T> void func(T);
+void func(double);
+void func(double, double );
+void func(double, double, double);
+
+// create the structs from above macros for the function `func`
+COMPILE_TIME_TEST(func);
+
+
+void f (int) {}
+int f (int, int) {return 42;}
+int g (double) {return 42;}
+
+COMPILE_TIME_TEST(f);
+COMPILE_TIME_TEST(g);
+
+
+void call_vec (std::vector<int>&) {}
+COMPILE_TIME_TEST(call_vec);
+
+
+int main () {
+
+	using namespace std::string_literals;
+
+	static_assert(!func_compiles<void>);
+	static_assert(func_compiles<int>);
+	static_assert(func_compiles_from_type<void, double, double>);
+	static_assert(!func_compiles_from_type<void, double, double, double, double>);
+
+	static_assert(func_compiles<void, 1>);
+	static_assert(!func_compiles<void, 1, nullptr>);
+
+	static_assert(f_compiles<void, 1>);
+	static_assert(!f_compiles<void, 1, nullptr>);
+
+
+	[[maybe_unused]] SomeStruct s;
+	std::cout << std::boolalpha;
+	std::cout << Compilable<decltype(g), int, double>() << '\n';
+//	std::cout << CompileTimeTest(f, 12) << '\n';
+//	std::cout << CompileTimeTest(f, 12, 12) << '\n';
+//	std::cout << CompileTimeTest(f, 12, 12, 12) << '\n';
+//	std::cout << CompileTimeTest(f, 12, "fail"s, 12) << '\n';
+//	std::cout << CompileTimeTest<int>(g, 12.2) << '\n';
+//	std::cout << CompileTimeTest(&func, 12.2, 12.2, 12.2) << '\n';
+
+	std::cout << std::is_invocable_r_v<int, decltype(g), decltype(12.2)> << '\n';
+
+}
 
 #endif
 
-#if 0
+#ifdef SERIE_FACTORY_OPTIONS
 
+#include "time_series/element.hpp"
+
+#include <iostream>
+#include <type_traits>
+#include <cstddef>
+
+#include <map>
+#include <vector>
+#include <unordered_map>
+
+
+#include "boost/type_index.hpp"
+
+using namespace time_series;
+using namespace boost::typeindex;
+using namespace requirements;
+
+#if 1
+
+template<typename Container, typename = void>
+struct MaybeContainer : std::false_type {};
+
+template<typename Container>
+struct MaybeContainer<
+		Container,
+		std::void_t<
+				decltype(std::declval<Container>().begin()),
+				decltype(std::declval<Container>().end())
+		>
+> : std::true_type {};
+
+template<typename Container>
+inline constexpr bool is_container_v { MaybeContainer<Container>::value };
+
+//template<typename Container>
+//using IsContainer = std::enable_if_t<isContainer_v<Container>, bool>;
+
+#endif
+
+#if 1
+template <template <typename...> typename Container, typename Arg1, typename = void>
+struct ContainerHasSingleArg : std::false_type {};
+template <template <typename...> typename Container, typename Arg1>
+struct ContainerHasSingleArg <Container,
+		Arg1, std::void_t<std::is_constructible<Container<Arg1>>>
+> : std::true_type {};
+template <template <typename...> typename Container, typename Arg1>
+constexpr bool ContainerHasSingleArg_v () {return ContainerHasSingleArg<Container, Arg1>::value;}
+
+template <template <typename...> typename Container, typename Arg1, typename Arg2, typename = void>
+struct ContainerHasTwoArgs : std::false_type {};
+template <template <typename...> typename Container, typename Arg1, typename Arg2>
+struct ContainerHasTwoArgs <Container,
+							Arg1, Arg2,
+							std::void_t<std::is_constructible<Container<Arg1, Arg2>>>
+> : std::true_type {};
+template <template <typename...> typename Container, typename Arg1, typename Arg2>
+constexpr bool ContainerHasTwoArgs_v () {return ContainerHasTwoArgs<Container, Arg1, Arg2>::value;}
+
+
+
+template<typename C>
+struct TypeHolder {
+	using container_type = C;
+};
+
+template<
+		typename Duration,
+		typename ElemType,
+		template<typename...> typename Container,
+		typename... Args
+>
+static
+constexpr auto getContainer()
+{
+	using namespace requirements;
+	using Elem = Element<Duration, ElemType>;
+	using Timestamp = base::Timestamp<Duration>;
+
+	if constexpr (ContainerHasSingleArg_v<Container, Elem>()) {
+		if constexpr (is_container_v<Container<Elem, Args...>>) {
+			return TypeHolder<Container<Elem, Args...>>{};
+		}
+	}
+	else if constexpr (ContainerHasTwoArgs_v<Container, Timestamp, ElemType>()) {
+		if constexpr (is_container_v<Container<Timestamp, ElemType, Args...>>) {
+			return TypeHolder<Container<Timestamp, ElemType, Args...>>{};
+		}
+	}
+	else {
+		throw std::invalid_argument("Unexpected parameters");
+	}
+}
+#endif
+
+#if 0
+namespace belts {
+// Inspired by
+// * https://www.youtube.com/watch?v=U3jGdnRL3KI
+// * http://cppconf.ru/talks/ivan-cukic?lang=ru
+
+  struct nonesuch{};
+
+  template <
+		  typename Def,
+		  typename Void,
+		  template<typename...> typename Op,
+		  typename... Args
+  >
+  struct DETECTOR {
+	  using value_t = std::false_type;
+	  using type = Def;
+  };
+
+  template <
+		  typename Def,
+		  template<typename...> typename Op,
+		  typename... Args
+  >
+  struct DETECTOR<Def, std::void_t<Op<Args...>>, Op, Args...> {
+	  using value_t = std::true_type;
+	  using type = Op<Args...>;
+  };
+
+  template <template<typename...> typename Op, typename... Args>
+  using is_detected = typename DETECTOR<nonesuch, void, Op, Args...>::value_t;
+
+  template <template<typename...> typename Op, typename... Args>
+  [[maybe_unused]]
+  constexpr bool is_detected_v = is_detected<Op, Args...>::value;
+
+  template <template<typename...> typename Op, typename... Args>
+  using detected_t = typename DETECTOR<nonesuch, void, Op, Args...>::type;
+
+// https://stackoverflow.com/a/39818497
+	template<typename T, typename = void>
+  [[maybe_unused]]
+  constexpr bool is_defined = false;
+
+  template<typename T>
+  [[maybe_unused]]
+  constexpr bool is_defined<T, decltype(sizeof(T), void())> = true;
+}
+#endif
+
+template <typename T>
+struct S11 {T value;};
+
+int main(){
+	[[maybe_unused]] S11<int> s11;
+	std::cout << std::boolalpha;
+
+
+	base::Timestamp<base::Nanoseconds> ts;
+	std::cerr << ts.time_point.time_since_epoch().count() << '\n';
+
+
+	auto v = getContainer<base::Nanoseconds, int, std::vector>();
+	std::cerr << type_id_with_cvr<typename decltype(v)::container_type>().pretty_name() << '\n';
+	auto m = getContainer<base::Nanoseconds, int, std::map>();
+	std::cerr << type_id_with_cvr<typename decltype(m)::container_type>().pretty_name() << '\n';
+
+
+	using H = typename base::TimestampHasher<base::Nanoseconds>;
+	std::cerr << std::is_copy_constructible<H>::value << '\n';
+	std::cerr << std::is_move_constructible<H>::value << '\n';
+	std::cerr << std::is_invocable_r<std::size_t, H, base::Timestamp<base::Nanoseconds> const&>::value << '\n';
+	std::cerr << std::__check_hash_requirements<base::Timestamp<base::Nanoseconds>, H>::value << '\n';
+	auto h = getContainer<base::Nanoseconds, int, std::unordered_map, H>();
+	std::cerr << type_id_with_cvr<typename decltype(h)::container_type>().pretty_name() << '\n';
+}
+#endif
+
+#if 1
 #include <iostream>
 
 int main () {

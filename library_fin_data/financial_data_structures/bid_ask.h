@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include "time_series/value.h"
+#include "time_series/value.hpp"
 
 #include <iosfwd>
 #include <vector>

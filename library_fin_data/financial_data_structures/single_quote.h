@@ -3,7 +3,7 @@
 //
 
 #pragma once
-#include "time_series/value.h"
+#include "time_series/value.hpp"
 
 #ifndef FIN_SINGLE_QOUTE_H
 #define FIN_SINGLE_QOUTE_H

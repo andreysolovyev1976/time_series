@@ -39,6 +39,7 @@ add_executable(${PROJECT_NAME_TEST}
         tests_basics_floating_point_comparison.cpp
         tests_basics_timestamp.cpp
         tests_basics_types_requirements.cpp
+        tests_basics_itertools.cpp
 
         tests_value_ctors.cpp
         tests_value_comparison.cpp
