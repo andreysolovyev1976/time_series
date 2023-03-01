@@ -11,6 +11,7 @@
 //#define CONSTRUCTIBLE
 //#define COMPILE_TIME_TEST_EXAMPLE
 //#define SERIE_FACTORY_OPTIONS
+#define TUPLE_EXERCISES
 
 #ifdef NESTED_OPERATORS
 #include <iostream>
@@ -584,7 +585,199 @@ int main(){
 }
 #endif
 
-#if 1
+#ifdef TUPLE_EXERCISES
+
+#include "utils/itertools.hpp"
+#include <iostream>
+#include <tuple>
+#include <vector>
+#include <map>
+#include <string>
+#include <cmath>
+#include <functional>
+#include "boost/type_index.hpp"
+
+using namespace boost::typeindex;
+using namespace itertools;
+
+
+std::ostream& operator << (std::ostream& os, std::pair<int, std::string> const& p) {
+	os << p.first << ' ' << p.second;
+	return os;
+}
+
+
+
+template <typename Tuple, std::size_t... Is>
+void iterateTupleImpl(Tuple& t1, std::index_sequence<Is...>) {
+	((std::get<Is>(t1)), ...);
+}
+
+template <typename... Args>
+void iterateTuple(std::tuple<Args...> t1) {
+	iterateTupleImpl(t1, std::index_sequence_for<Args...>{});
+}
+
+
+//template <typename ...T, typename ...Slice>
+//bool comp (std::tuple<T...> const& lhs, std::tuple<T...> const& rhs) {
+//	bool equal = false;
+//	equal = equal || applySequence(compareEach<Slice...>, std::index_sequence_for<T...>{}, lhs, rhs);
+//	return equal;
+//}
+
+template <typename... Args>
+constexpr auto packToTuple(Args... args) {
+	return std::make_tuple(std::forward<Args>(args)...);
+}
+
+template <typename... Tuples>
+constexpr std::size_t getMinSize (const Tuples& ...) {
+	return std::min({std::tuple_size_v<std::decay_t<Tuples>>...});
+}
+
+template <typename NewElem, typename... TupleElems>
+std::tuple<TupleElems..., NewElem> tuplePushBack(std::tuple<TupleElems...> &&tup, NewElem &&el) {
+	return std::tuple_cat(
+			std::forward<std::tuple<TupleElems...>>(tup),
+			std::make_tuple(std::forward<NewElem>(el)));
+}
+
+template <typename NewElem, typename... TupleElems>
+std::tuple<TupleElems..., NewElem> tuplePushFront(std::tuple<TupleElems...> &&tup, NewElem &&el) {
+	return std::tuple_cat(
+			std::make_tuple(std::forward<NewElem>(el)),
+			std::forward<std::tuple<TupleElems...>>(tup));
+}
+
+template <std::size_t I, typename... Tuples>
+constexpr auto getSlice (Tuples&& ...tuples) {
+	return std::make_tuple(std::get<I>(tuples)...);
+}
+
+
+template <std::size_t Index, typename Function, typename... Tuples>
+constexpr void invokeAt([[maybe_unused]] Function&& func, Tuples&&... tuples) {
+//	func((std::get<Index>(std::forward<Tuples>(tuples)), ...));
+//	func(std::get<Index>(std::forward<Tuples>(tuples))...);
+//	std::cout << std::get<Index>(std::forward<Tuples>(tuples))... << ' ';
+	std::invoke(std::forward<Function>(func), (std::get<Index>(std::forward<Tuples>(tuples)),...) );
+}
+
+template <std::size_t... Indices, typename Function, typename... Tuples>
+constexpr void applySequence(Function&& func,  std::index_sequence<Indices...>, Tuples&&... tuples) {
+	(((void)invokeAt<Indices>(std::forward<Function>(func), std::forward<Tuples>(tuples)...), ...));
+}
+
+
+template <typename Function, typename... Tuples>
+constexpr void tuplesForEach(Function&& func, Tuples&&... tuples) {
+	static_assert(sizeof...(tuples) > 0, "Must be called with at least one tuple argument");
+	constexpr auto min_length = getMinSize(std::forward<Tuples>(tuples)...);
+	if constexpr (min_length != 0) {
+		applySequence(std::forward<Function>(func),
+				std::make_index_sequence<min_length>{},
+				std::forward<Tuples>(tuples)...);
+	}
+	else {
+//		func();
+	std::cout << "doin' nothin'\n";
+	}
+}
+
+
+template <typename ...Types>
+bool compareEach (Types&&... pack1, Types&&... pack2) {
+	return ((pack1,...) == (pack2,...) );
+}
+//template <typename ...Types>
+//void printEach (Types&&... pack) {
+//	((std::cout << std::forward<Types>(pack) << ' '), ...);
+//	std::cout << '\n';
+//}
+template <typename ...Types>
+void printEach (std::tuple<Types...> t) {
+	std::cout << std::get<0>( std::forward<std::tuple<Types...>>(t) ) << ' ';
+	std::cout << std::get<1>( std::forward<std::tuple<Types...>>(t) ) << ' ';
+//	std::cout << std::get<2>( std::forward<std::tuple<Types...>>(t) ) << ' ';
+	std::cout << '\n';
+}
+template <typename Type>
+void printOne (Type&& pack) {
+	std::cout << std::forward<Type>(pack) << '\n';
+}
+template <template <typename...> typename Fn>
+struct CallableHolder {
+	template <typename ...Args>
+	decltype(auto) operator () (Fn<Args...>&& fn, Args&&... args) {
+		return std::invoke(std::forward<Fn>(fn)(std::forward<Args>(args)...));
+	}
+};
+
+
+template<typename... T1, typename... T2, std::size_t... I>
+constexpr auto comp_impl(const std::tuple<T1...>& t1, const std::tuple<T2...>& t2, std::index_sequence<I...>) {
+	bool result {false};
+	((result = result || std::get<I>(t1) == std::get<I>(t2)) ,...);
+	return result;
+}
+
+template<typename... T1, typename... T2>
+constexpr auto comp(const std::tuple<T1...>& t1, const std::tuple<T2...>& t2) {
+	static_assert(sizeof...(T1) == sizeof...(T2));
+	return comp_impl(t1, t2, std::make_index_sequence<sizeof...(T1)>{});
+}
+
+
+template<typename Tuple2, typename... T1, std::size_t... I>
+constexpr auto produceDereferencedImpl(const std::tuple<T1...>& t1, std::index_sequence<I...>) {
+	return Tuple2({ ((*std::get<I>(t1)),...) });
+}
+
+template<typename Tuple2, typename... T1>
+constexpr auto produceDereferenced(const std::tuple<T1...>& t1) {
+	auto t2 = produceDereferencedImpl<Tuple2, T1...>(t1, std::make_index_sequence<sizeof...(T1)>{});
+	return t2;
+}
+
+int main () {
+	std::cout << std::boolalpha;
+	std::cerr << std::boolalpha;
+
+	[[maybe_unused]] std::tuple t1 = std::make_tuple (12, 3.5, 12);
+	[[maybe_unused]] std::tuple t2 = std::make_tuple (12, 42.5, 11);
+	[[maybe_unused]] std::tuple t3 = std::make_tuple (12, 3.5, 12);
+	[[maybe_unused]] std::tuple t4 = std::make_tuple (12, 3.5);
+	[[maybe_unused]] std::tuple t5 = std::make_tuple (15, 5.5, 12, 42);
+
+//	printEach (std::make_tuple(12, 'c', 42.5));
+//	std::cout << getMinSize(t3, t4, t1, t2, t5) << '\n';
+
+//	auto t_res2 = getSlice<1>(t1, t2, t5, t3);
+//	printEach (t_res2);
+//	std::cout << std::tuple_size<decltype(t_res2)>{} << '\n';
+
+//	std::cout << (comp(t1, t2)) << '\n';
+
+
+	[[maybe_unused]] std::tuple t6 = std::make_tuple (15, 5.5, 12, 42);
+	std::vector<int> v {1, 2, 3, 4, 5};
+	std::map<int, std::string> m {{1, "one"}, {2, "two"}, {3, "three"}};
+
+	[[maybe_unused]] std::tuple t_iter = std::make_tuple(v.begin(), m.begin());
+	std::cout << "tuple is created with a size of " << std::tuple_size<decltype(t_iter)>{} << '\n';
+	std::cout << *(std::get<0>(t_iter)) << ' ';
+	std::cout << (*(std::get<1>(t_iter))).first << ' ' << (*(std::get<1>(t_iter))).second << '\n';
+
+	std::tuple t_ref = std::make_tuple(*v.begin(), *m.begin());
+	printEach(t_ref);
+
+}
+
+#endif
+
+#if 0
+
 #include <iostream>
 
 int main () {

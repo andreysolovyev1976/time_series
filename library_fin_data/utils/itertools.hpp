@@ -4,165 +4,102 @@
 
 #pragma once
 
-#include <iostream>
-#include <list>
-#include <string>
-#include <vector>
-#include <type_traits>
-#include <memory>
 #include <utility>
+#include <tuple>
+#include <type_traits>
 
 #ifndef ITERTOOLS_H
 #define ITERTOOLS_H
 
-namespace iterators {
+namespace itertools {
 
-  namespace requirements {
+  namespace base::utils {
+	template<typename... T1, typename... T2, std::size_t... I>
+	constexpr auto weakComparisonImpl(const std::tuple<T1...>& t1, const std::tuple<T2...>& t2, std::index_sequence<I...>) {
+		bool result {false};
+		((result = result || std::get<I>(t1) == std::get<I>(t2)) ,...);
+		return result;
+	}
+	template<typename... T1, typename... T2>
+	constexpr auto weakComparison(const std::tuple<T1...>& t1, const std::tuple<T2...>& t2) {
+		static_assert(sizeof...(T1) == sizeof...(T2));
+		return weakComparisonImpl(t1, t2, std::make_index_sequence<sizeof...(T1)>{});
+	}
+  }
 
-	template<typename Iter>
-	using AccessTypeFor = typename Iter::reference;
-
-	template<typename Type>
-	using IteratorTypeSelect = std::conditional_t<
-			std::is_const_v<std::remove_reference_t<Type>>,
-			typename std::decay_t<Type>::const_iterator,
-			typename std::decay_t<Type>::iterator>;
-
-
-	template<typename Container, typename = void>
-	struct MaybeContainer : std::false_type {};
-
-	template<typename Container>
-	struct MaybeContainer<Container,
-						  std::void_t<
-								  decltype(std::declval<Container>().begin()),
-								  decltype(std::declval<Container>().end())
-						  >
-	> : std::true_type {};
-
-	template<typename Container>
-	constexpr bool is_container_v { MaybeContainer<Container>::value };
-
-	template<typename Container>
-	using IsContainer = std::enable_if_t<is_container_v<Container>, bool>;
-
-  }//!namespace
-
-  template<typename Iterator>
-  class Range {
-  public:
-	  Range(Iterator begin, Iterator end) : begin_(begin) , end_(end) {}
-	  auto begin() const { return begin_; }
-	  auto end() const { return end_; }
-  private:
-	  Iterator begin_;
-	  Iterator end_;
-  };
-
-  template<typename Iter1, typename Iter2>
-  class ZipIterator_ {
-  public:
-	  using value_type = typename std::pair<
-			  requirements::AccessTypeFor<Iter1>,
-			  requirements::AccessTypeFor<Iter2>
-	  >;
-
-	  ZipIterator_() = delete;
-
-	  ZipIterator_(Iter1 iter_1, Iter2 iter_2)
-			  : iter_1{iter_1}
-			  , iter_2{iter_2}
-	  {}
-
-	  ZipIterator_& operator++() {
-		  ++iter_1;
-		  ++iter_2;
-		  return *this;
-	  }
-#if 0
-	  ZipIterator_ operator++(int) {
-		  auto tmp = *this;
-		  ++*this;
-		  return tmp;
-	  }
-#endif
-	  bool operator==(ZipIterator_ const& other) const { return iter_1==other.iter_1 || iter_2==other.iter_2; }
-	  bool operator!=(ZipIterator_ const& other) const { return !(*this == other); }
-	  auto operator*() -> value_type { return value_type{*iter_1, *iter_2}; }
-  private:
-	  Iter1 iter_1;
-	  Iter2 iter_2;
-  };
-
-
-  template<typename Iter1, typename Iter2>
+  template<typename... Iter>
   class ZipIterator {
+  private:
+	  template<typename SomeIter>
+	  using AccessTypeFor = typename SomeIter::reference;
+
   public:
-	  using value_type = typename std::pair<
-			  requirements::AccessTypeFor<Iter1>,
-			  requirements::AccessTypeFor<Iter2>
-	  >;
+	  using value_type = typename std::tuple<AccessTypeFor<Iter>...>;
 
 	  ZipIterator() = delete;
 
-	  ZipIterator(Iter1 iter_1, Iter2 iter_2)
-			  : iter_1{iter_1}
-			  , iter_2{iter_2}
-			  {}
+	  explicit
+	  ZipIterator(Iter... iter) :iterators (std::make_tuple(iter...)) {}
 
 	  ZipIterator& operator++() {
-		  ++iter_1;
-		  ++iter_2;
+		  std::apply([](Iter&... iter){ ((++iter), ...); }, iterators);
 		  return *this;
 	  }
-#if 0
-	  ZipIterator operator++(int) {
-		  auto tmp = *this;
-		  ++*this;
-		  return tmp;
+
+	  bool operator==(ZipIterator const& other) const {
+		  return base::utils::weakComparison(this->iterators, other.iterators);
 	  }
-#endif
-	  bool operator==(ZipIterator const& other) const { return iter_1==other.iter_1 || iter_2==other.iter_2; }
 	  bool operator!=(ZipIterator const& other) const { return !(*this == other); }
-	  auto operator*() -> value_type { return value_type{*iter_1, *iter_2}; }
+	  value_type operator*() { return makeRefs(); }
+
   private:
-	  Iter1 iter_1;
-	  Iter2 iter_2;
+	  std::tuple<Iter...> iterators;
+
+	  template <std::size_t... I>
+	  auto makeRefsImpl (std::index_sequence<I...>) {
+		  return std::tuple<AccessTypeFor<Iter>...> ({ std::get<I>(iterators).operator*()... });
+	  }
+	  auto makeRefs () {
+		  return makeRefsImpl (std::make_index_sequence<sizeof...(Iter)>{});
+	  }
   };
 
-  template<
-		  typename Container1
-		  , typename Container2
-		  , requirements::IsContainer<Container1> = true
-		  , requirements::IsContainer<Container2> = true
-		  >
+  template<typename... Container>
   class Zipper {
+  private:
+
+	  /**
+	   * @brief
+	   * This seemingly innocent iterator type selection serves
+	   * as a guard - no Type without an iterator can pass this.
+	   * */
+	  template<typename Type>
+	  using IteratorTypeSelect = std::conditional_t<
+			  std::is_const_v<std::remove_reference_t<Type>>,
+			  typename std::decay_t<Type>::const_iterator,
+			  typename std::decay_t<Type>::iterator>;
+
   public:
-	  using Iter1 = requirements::IteratorTypeSelect<Container1>;
-	  using Iter2 = requirements::IteratorTypeSelect<Container2>;
-	  using zip_type = ZipIterator<Iter1, Iter2>;
+	  using zip_type = ZipIterator<IteratorTypeSelect<Container>...>;
 
 	  Zipper() = delete;
 
 	  explicit
-	  Zipper(Container1&& a, Container2&& b)
-			  : begin_1 (a.begin())
-			  , end_1 (a.end())
-			  , begin_2 (b.begin())
-			  , end_2 (b.end())
-			  {}
+	  Zipper(Container&&... containers)
+			  : begin_ (containers.begin()...)
+			  , end_ (containers.end()...)
+	  {}
 
-	  zip_type begin(){ return zip_type {begin_1, begin_2}; }
-	  zip_type end() { return zip_type {end_1, end_2}; }
+	  zip_type begin() { return begin_ ; }
+	  zip_type end() { return end_; }
   private:
-	  Iter1 begin_1, end_1;
-	  Iter2 begin_2, end_2;
+	  zip_type begin_, end_;
   };
 
-  template<typename T, typename U>
-  auto zip(T&& t, U&& u) {
-	  Zipper<T, U> zipper (std::forward<T>(t), std::forward<U>(u));
-	  return Range<typename Zipper<T, U>::zip_type>(zipper.begin(), zipper.end());
+
+  template<typename... Container>
+  auto zip(Container&&... container) {
+	  return Zipper<Container...> (std::forward<Container>(container)...);
   }
 }//!namespace
 #endif //ITERTOOLS_H

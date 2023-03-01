@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include "utils/utils.h"
+#include "utils/utils.hpp"
 #include "time_series/const_values.h"
 #include "time_series/timestamp.hpp"
 #include "time_series/floating_point_comp.hpp"

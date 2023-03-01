@@ -10,12 +10,13 @@
 #include <stdexcept>
 #include <system_error>
 
+#include <tuple>
+
+
 #ifndef BASE_UTILS_H
 #define BASE_UTILS_H
 
-namespace base {
-
-  namespace utils {
+namespace base::utils {
 
 	template<typename Number, typename = std::enable_if_t<std::is_arithmetic_v<Number>>>
 	std::string toChars(Number input) {
@@ -51,7 +52,5 @@ namespace base {
 		return local_result;
 	}
 
-
-  }//!namespace
 }//!namespace
 #endif //BASE_UTILS_H
