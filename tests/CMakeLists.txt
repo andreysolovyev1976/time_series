@@ -40,6 +40,7 @@ add_executable(${PROJECT_NAME_TEST}
         tests_basics_timestamp.cpp
         tests_basics_types_requirements.cpp
         tests_basics_itertools.cpp
+        tests_basics_joins.cpp
 
         tests_value_ctors.cpp
         tests_value_comparison.cpp
@@ -55,7 +56,8 @@ add_executable(${PROJECT_NAME_TEST}
         tests_serie_container.cpp
         tests_serie_itertools.cpp
         tests_serie_joins.cpp
-        )
+
+        tests_serie_fun_apply.cpp)
 
 message(STATUS "Linking test in Debug mode...")
 target_link_libraries(${PROJECT_NAME_TEST}

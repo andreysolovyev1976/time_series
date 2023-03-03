@@ -52,5 +52,20 @@ namespace base::utils {
 		return local_result;
 	}
 
+
+  template <typename NewElem, typename... TupleElems>
+  std::tuple<TupleElems..., NewElem> tuplePushBack(std::tuple<TupleElems...> &&tup, NewElem &&el) {
+	  return std::tuple_cat(
+			  std::forward<std::tuple<TupleElems...>>(tup),
+			  std::make_tuple(std::forward<NewElem>(el)));
+  }
+
+  template <typename NewElem, typename... TupleElems>
+  std::tuple<TupleElems..., NewElem> tuplePushFront(std::tuple<TupleElems...> &&tup, NewElem &&el) {
+	  return std::tuple_cat(
+			  std::make_tuple(std::forward<NewElem>(el)),
+			  std::forward<std::tuple<TupleElems...>>(tup));
+  }
+
 }//!namespace
 #endif //BASE_UTILS_H

@@ -6,6 +6,11 @@
 
 #include "time_series/types_requirements/serie.h"
 #include "utils/itertools.hpp"
+#include "utils/joins.hpp"
+
+#include <algorithm>
+#include <type_traits>
+#include <cstddef>
 
 #ifndef FIN_DATA_SERIE_JOIN_H
 #define FIN_DATA_SERIE_JOIN_H
@@ -91,43 +96,32 @@ namespace time_series {
    */
 
   namespace join {
-	namespace details {
 
-	  template <typename Serie, requirements::IsSerie<Serie> = true>
-	  bool isSortedAscending(Serie const& serie) {
-		  return serie.begin()->first < std::prev(serie.end())->first;
-	  }
 
-	  template <typename Serie, requirements::IsSerie<Serie> = true>
-	  auto getIter(Serie const& serie) {
-		  isSortedAscending
-		  return serie.begin()->first < std::prev(serie.end())->first;
-	  }
+	//todo: add serie requirementes
+	//todo: reduce IMPLEMENT OPERATION... macro by removing VA_ARGS
+	//todo: add UI
 
-	}
+	void outerFull () {}
+	void outerExcluding () {}
+	void inner () {}
 
-	/**
-	 * @brief
-	 * A Serie must be
-	 * a) not empty
-	 * b) sorted
-	 * otherwise you'll have your UB
-	 *
-	 * */
+	void leftOuter () {}
+	void leftExcluding () {}
 
-	template <
-			typename Serie1
-			, typename Serie2
-			, requirements::IsSerie<Serie1> = true
-			, requirements::IsSerie<Serie2> = true
-	>
-	Serie1 inner (Serie1&& serie_1, Serie2&& serie_2) {
+	void rightOuter () {}
+	void rightExcluding () {}
 
-		auto found = serie_1.find()
-	}
+/**
+ * @brief
+ * A Serie must be
+ * a) not empty
+ * b) sorted
+ * otherwise you'll have your UB
+ *
+ * */
+
 
   }//!namespace
-
-
 }//!namespace
 #endif //FIN_DATA_SERIE_JOIN_H

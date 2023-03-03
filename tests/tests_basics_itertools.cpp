@@ -7,10 +7,10 @@
 #include <vector>
 #include <map>
 #include <string>
-
 #include <sstream>
+#include <type_traits>
 
-TEST(BasicsItertools, Vector_String) {
+TEST(BasicsItertools, ZipIter_Vector_String) {
 	std::vector<int> v{ 1,2,3,4,5 };
 	std::string s { "abcdefghhlk" };
 
@@ -27,8 +27,7 @@ e 5
 )"};
 	ASSERT_EQ(ss.str(), check);
 }
-
-TEST(BasicsItertools, Vector_Map) {
+TEST(BasicsItertools, ZipIter_Vector_Map) {
 	using namespace std::string_literals;
 	std::vector<int> v{ 1,2,3,4,5 };
 	std::map<int, std::string> m {
@@ -52,8 +51,7 @@ TEST(BasicsItertools, Vector_Map) {
 )"};
 	ASSERT_EQ(ss.str(), check);
 }
-
-TEST(BasicsItertools, Vector_Map_String) {
+TEST(BasicsItertools, ZipIter_Vector_Map_String) {
 	using namespace std::string_literals;
 	std::vector<int> v{ 1,2,3,4,5 };
 	std::map<int, std::string> m {
@@ -78,8 +76,7 @@ TEST(BasicsItertools, Vector_Map_String) {
 )"};
 	ASSERT_EQ(ss.str(), check);
 }
-
-TEST(BasicsItertools, OneContainer) {
+TEST(BasicsItertools, ZipIter_OneContainer) {
 	std::vector<int> v{ 1,2,3,4,5 };
 	std::stringstream ss;
 
@@ -94,8 +91,7 @@ TEST(BasicsItertools, OneContainer) {
 )"};
 	ASSERT_EQ(ss.str(), check);
 }
-
-TEST(BasicsItertools, TwoContainers_OneEmpty) {
+TEST(BasicsItertools, ZipIter_TwoContainers_OneEmpty) {
 	std::vector<int> v{ 1,2,3,4,5 };
 	std::string s;
 	ASSERT_TRUE(s.empty());
@@ -109,8 +105,7 @@ TEST(BasicsItertools, TwoContainers_OneEmpty) {
 	std::string check;
 	ASSERT_EQ(ss.str(), check);
 }
-
-TEST(BasicsItertools, NonContainers) {
+TEST(BasicsItertools, ZipIter_NonContainers) {
 
 	struct NotOkContainer { int value {42}; };
 	[[maybe_unused]] NotOkContainer not_ok;
@@ -120,3 +115,35 @@ TEST(BasicsItertools, NonContainers) {
 	//todo: add compile time test
 }
 
+TEST(BasicsItertools, GetIterators_XValue) {
+	std::vector<int> vec {5, 2};
+	auto p = itertools::getIterators<decltype(vec), true>(vec);
+	bool constexpr is_same = std::is_same_v<decltype(vec.begin()), decltype(p.begin_)>;
+	ASSERT_TRUE(is_same);
+}
+TEST(BasicsItertools, GetIterators_LValue) {
+	std::vector<int> const vec_const {5, 2};
+	auto p = itertools::getIterators<decltype(vec_const), true>(vec_const);
+	bool constexpr is_same = std::is_same_v<decltype(vec_const.begin()), decltype(p.begin_)>;
+	ASSERT_TRUE(is_same);
+}
+TEST(BasicsItertools, GetIterators_XValueRef) {
+	std::vector<int> vec {5, 2};
+	std::vector<int> & vec_lref (vec);
+	auto p = itertools::getIterators<decltype(vec_lref), true>(vec_lref);
+	bool constexpr is_same = std::is_same_v<decltype(vec_lref.begin()), decltype(p.begin_)>;
+	ASSERT_TRUE(is_same);
+}
+TEST(BasicsItertools, GetIterators_XValueRef_Const) {
+	std::vector<int> vec {5, 2};
+	std::vector<int> const& vec_const_ref (vec);
+	auto p = itertools::getIterators<decltype(vec_const_ref), true>(vec_const_ref);
+	bool constexpr is_same = std::is_same_v<decltype(vec_const_ref.begin()), decltype(p.begin_)>;
+	ASSERT_TRUE(is_same);
+}
+TEST(BasicsItertools, GetIterators_RValue) {
+	std::vector<int> && vec_rref {5, 2};
+	auto p = itertools::getIterators<decltype(vec_rref), true>(vec_rref);
+	bool constexpr is_same = std::is_same_v<decltype(vec_rref.begin()), decltype(p.begin_)>;
+	ASSERT_TRUE(is_same);
+}

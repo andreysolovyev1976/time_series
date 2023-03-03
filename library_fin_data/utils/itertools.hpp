@@ -14,6 +14,10 @@
 
 namespace itertools {
 
+  /**
+ * @brief
+ * Common element, can be used anywhere
+ * */
   namespace base::utils {
 	template<typename... T1, typename... T2, std::size_t... I>
 	constexpr auto weakComparisonImpl(std::tuple<T1...> const& t1, std::tuple<T2...> const& t2, std::index_sequence<I...>) {
@@ -28,79 +32,182 @@ namespace itertools {
 	}
   }
 
-  template<typename... Iter>
-  class ZipIterator {
-  private:
-	  template<typename SomeIter>
-	  using AccessTypeFor = typename SomeIter::reference;
+  namespace details {
+	/**
+   * @brief
+   * Zip Iterator
+   * */
+	template<typename... Iter>
+	class ZipIterator {
+	private:
+		template<typename SomeIter>
+		using AccessTypeFor = typename SomeIter::reference;
 
-  public:
-	  using value_type = typename std::tuple<AccessTypeFor<Iter>...>;
+	public:
+		using value_type = typename std::tuple<AccessTypeFor<Iter>...>;
 
-	  ZipIterator() = delete;
+		ZipIterator() = delete;
 
-	  explicit
-	  ZipIterator(Iter... iter) :iterators (std::make_tuple(iter...)) {}
+		explicit
+		ZipIterator(Iter... iter)
+				:iterators(std::make_tuple(iter...)) { }
 
-	  ZipIterator& operator++() {
-		  std::apply([](Iter&... iter){ ((++iter), ...); }, iterators);
-		  return *this;
-	  }
+		ZipIterator& operator++()
+		{
+			std::apply([](Iter& ... iter) { ((++iter), ...); }, iterators);
+			return *this;
+		}
 
-	  bool operator==(ZipIterator const& other) const {
-		  return base::utils::weakComparison(this->iterators, other.iterators);
-	  }
-	  bool operator!=(ZipIterator const& other) const { return !(*this == other); }
-	  value_type operator*() { return makeRefs(); }
+		bool operator==(ZipIterator const& other) const
+		{
+			return base::utils::weakComparison(this->iterators, other.iterators);
+		}
+		bool operator!=(ZipIterator const& other) const { return !(*this==other); }
+		value_type operator*() { return makeRefs(); }
 
-  private:
-	  std::tuple<Iter...> iterators;
+	private:
+		std::tuple<Iter...> iterators;
 
-	  template <std::size_t... I>
-	  auto makeRefsImpl (std::index_sequence<I...>) {
-		  return std::tuple<AccessTypeFor<Iter>...> ({ std::get<I>(iterators).operator*()... });
-	  }
-	  auto makeRefs () {
-		  return makeRefsImpl (std::make_index_sequence<sizeof...(Iter)>{});
-	  }
-  };
+		template<std::size_t... I>
+		auto makeRefsImpl(std::index_sequence<I...>)
+		{
+			return std::tuple<AccessTypeFor<Iter>...>({std::get<I>(iterators).operator*()...});
+		}
+		auto makeRefs()
+		{
+			return makeRefsImpl(std::make_index_sequence<sizeof...(Iter)>{});
+		}
+	};
 
-  template<typename... Container>
-  class Zipper {
-  private:
+	/**
+   * @brief
+   * Zipper, using ZipIterators
+   * */
+	template<typename... Container>
+	class Zipper {
+	private:
 
-	  /**
-	   * @brief
-	   * This seemingly innocent iterator type selection serves
-	   * as a guard - no Type without an iterator can pass this.
-	   * */
-	  template<typename Type>
-	  using IteratorTypeSelect = std::conditional_t<
-			  std::is_const_v<std::remove_reference_t<Type>>,
-			  typename std::remove_reference_t<Type>::const_iterator,
-			  typename std::remove_reference_t<Type>::iterator>;
+		/**
+		 * @brief
+		 * This seemingly innocent iterator type selection serves
+		 * as a guard - no Type without an iterator can pass this.
+		 * */
+		template<typename Type>
+		using IteratorTypeSelect = std::conditional_t<
+				std::is_const_v<std::remove_reference_t<Type>>,
+				typename std::remove_reference_t<Type>::const_iterator,
+				typename std::remove_reference_t<Type>::iterator>;
 
-  public:
-	  using zip_type = ZipIterator<IteratorTypeSelect<Container>...>;
+	public:
+		using zip_type = ZipIterator<IteratorTypeSelect<Container>...>;
 
-	  Zipper() = delete;
+		Zipper() = delete;
 
-	  explicit
-	  Zipper(Container&&... containers)
-			  : begin_ (containers.begin()...)
-			  , end_ (containers.end()...)
-	  {}
+		explicit
+		Zipper(Container&& ... containers)
+				:begin_(containers.begin()...), end_(containers.end()...) { }
 
-	  zip_type begin() const { return begin_ ; }
-	  zip_type end() const { return end_; }
-  private:
-	  zip_type begin_, end_;
-  };
+		zip_type begin() const { return begin_; }
+		zip_type end() const { return end_; }
+	private:
+		zip_type begin_, end_;
+	};
+  }//!details
 
-
+  /**
+ * @brief
+ * UI
+ * */
   template<typename... Container>
   auto zip(Container&&... container) {
-	  return Zipper<Container...> (std::forward<Container>(container)...);
+	  return details::Zipper<Container...> (std::forward<Container>(container)...);
   }
+
+
+  namespace details {
+	/**
+   * @brief
+   * pair of iterators
+   * */
+	template<typename Iter>
+	struct Range {
+		Iter begin_, end_;
+		Iter begin() const { return begin_; }
+		Iter end() const { return end_; }
+	};
+
+	/**
+   * @brief
+   * Detect Type of Iterator
+   * */
+	template<typename Serie, bool ascending>
+	struct DetectIter {
+		using Container = std::remove_reference_t<Serie>;
+		bool static constexpr r_value{std::is_rvalue_reference_v<Container>};
+		bool static constexpr constant{std::is_const_v<Container>};
+
+		using type =
+				std::conditional_t<
+						ascending,
+						std::conditional_t< //ascending
+								r_value,
+								decltype(std::make_move_iterator(
+										std::declval<Container>().begin())), //ascending && rvalue
+								std::conditional_t< //ascending && !rvalue
+										constant,
+										typename Container::const_iterator, //ascending && !rvalue && const
+										typename Container::iterator //ascending && !rvalue && !const
+								>
+						>,
+						std::conditional_t< // !ascending
+								r_value,
+								decltype(std::make_move_iterator(
+										std::declval<Container>().rbegin())), // !ascending && rvalue
+								std::conditional_t<
+										constant,
+										typename Container::const_reverse_iterator, // !ascending && !rvalue && const
+										typename Container::reverse_iterator // !ascending && !rvalue && !const
+								>
+						>
+				>;
+	};
+  }//!namespace
+
+/**
+ * @brief
+ * There are two ideas behind this func:
+ * 1) avoid having a Serie&& as a param, as if submitted by value then may be lost;
+ * 2) using constexpr for runtime func is necessary as it allows to return different types;
+ * 3) ascending is a runtime parameter, that can't be used to determine a return type;
+ *
+ * UI
+ * */
+  template<typename Serie, bool ascending>
+  details::Range<typename details::DetectIter<Serie, ascending>::type>
+  getIterators(Serie& serie)
+  {
+	  using Container = std::remove_reference_t<Serie>;
+	  bool constexpr r_value{std::is_rvalue_reference_v<Container>};
+	  bool constexpr constant{std::is_const_v<Container>};
+
+	  if constexpr (constant && ascending) return {.begin_ = serie.cbegin(), .end_ = serie.cend()};
+	  else if constexpr (constant && !ascending) return {.begin_ = serie.crbegin(), .end_ = serie.crend()};
+	  else if constexpr (!constant && ascending && !r_value) return {.begin_ = serie.begin(), .end_ = serie.end()};
+	  else if constexpr (!constant && !ascending && !r_value) return {.begin_ = serie.rbegin(), .end_ = serie.rend()};
+	  else if constexpr (!constant && ascending && r_value)
+		  return {
+				  .begin_ = std::make_move_iterator(serie.begin()),
+				  .end_ = std::make_move_iterator(serie.end())
+		  };
+	  else if constexpr (!constant && !ascending && r_value)
+		  return {
+				  .begin_ = std::make_move_iterator(serie.rbegin()),
+				  .end_ = std::make_move_iterator(serie.rend())};
+
+	  else {
+		  return {};  //to shut "func doesn't return" warning
+	  }
+  }
+
 }//!namespace
 #endif //ITERTOOLS_H

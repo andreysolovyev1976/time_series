@@ -26,13 +26,13 @@ namespace time_series {
   template <typename Duration = base::Seconds, typename ElemType = base::Value<base::traits::ValueTypeDefault>>
   struct Element final {
 	  using elem_type = ElemType;
-	  using key_type = Duration;
+	  using key_type = base::Timestamp<Duration>;
 
 	  /**
 	   * @brief
 	   * for map-alike collections
 	   * */
-	  using value_type = std::pair<Duration, ElemType>;
+	  using value_type = std::pair<base::Timestamp<Duration>, ElemType>;
 
 	  Element() = default;
 	  Element (const ElemType &e);
@@ -48,7 +48,7 @@ namespace time_series {
 	  value_type& operator()();
 	  operator value_type () const;
 	  operator elem_type () const;
-	  operator base::Timestamp<Duration> () const;
+	  operator key_type () const;
 
 	  const key_type& first () const;
 	  key_type& first ();
@@ -109,7 +109,7 @@ namespace time_series {
 	  return value;
   }
   template <typename Duration, typename ElemType>
-  Element<Duration, ElemType>::operator base::Timestamp<Duration> () const {
+  Element<Duration, ElemType>::operator Element<Duration, ElemType>::key_type () const {
 	  return timestamp;
   }
 
