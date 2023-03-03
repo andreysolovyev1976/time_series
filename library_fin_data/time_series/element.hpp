@@ -45,12 +45,18 @@ namespace time_series {
 	  Element& operator = (const value_type &p);
 
 	  const value_type& operator () () const;
+	  value_type& operator()();
+	  operator value_type () const;
+	  operator elem_type () const;
+	  operator base::Timestamp<Duration> () const;
+
 	  const key_type& first () const;
 	  key_type& first ();
 	  const elem_type& second () const;
 	  elem_type& second ();
 
 	  std::string toString () const;
+	  operator std::string () const;
 
 	  template <typename Fn, typename... Args>
 	  decltype(auto) applyFunction (Fn&& fn, Args&& ...args);
@@ -90,6 +96,23 @@ namespace time_series {
   const typename Element<Duration, ElemType>::value_type& Element<Duration, ElemType>::operator () () const {
 	  return {timestamp, value}; //todo: check what is a subject for reference - a pair itself or two referencies of the respective fields
   }
+  template <typename Duration, typename ElemType>
+  typename Element<Duration, ElemType>::value_type& Element<Duration, ElemType>::operator()(){
+	  return {timestamp, value}; //todo: check what is a subject for reference - a pair itself or two referencies of the respective fields
+  }
+  template <typename Duration, typename ElemType>
+  Element<Duration, ElemType>::operator typename Element<Duration, ElemType>::value_type () const {
+	  return {timestamp, value};
+  }
+  template <typename Duration, typename ElemType>
+  Element<Duration, ElemType>::operator typename Element<Duration, ElemType>::elem_type () const {
+	  return value;
+  }
+  template <typename Duration, typename ElemType>
+  Element<Duration, ElemType>::operator base::Timestamp<Duration> () const {
+	  return timestamp;
+  }
+
   template <typename Duration, typename ElemType>
   const typename Element<Duration, ElemType>::key_type& Element<Duration, ElemType>::first () const {
 	  return timestamp;
@@ -140,6 +163,12 @@ namespace time_series {
 	  res.append(value.toString());
 	  return res;
   }
+
+  template <typename Duration, typename ElemType>
+  Element<Duration, ElemType>::operator std::string () const {
+	  return toString();
+  }
+
 
   template <typename Duration, typename ElemType>
   template <typename Fn, typename... Args>

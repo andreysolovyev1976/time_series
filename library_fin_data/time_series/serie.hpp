@@ -75,6 +75,10 @@ namespace time_series {
 					   decltype(details::getContainer<Duration, ElemType, Container, Args...>())::container_type {
 	  using container_type = typename decltype(details::getContainer<Duration, ElemType, Container, Args...>())::container_type;
 	  using container_type::container_type;
+	  using duration_type = Duration;
+	  using elem_type = ElemType;
+
+	  struct serie_tag {};
 
 	  template <typename Fn, typename Iter>
 	  Serie& applyFunction (Fn &&fn, Iter b = container_type::begin(), Iter e = container_type::end());

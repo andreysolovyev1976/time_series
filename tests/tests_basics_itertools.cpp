@@ -11,12 +11,12 @@
 #include <sstream>
 
 TEST(BasicsItertools, Vector_String) {
-	std::vector<int> arr{ 1,2,3,4,5 };
+	std::vector<int> v{ 1,2,3,4,5 };
 	std::string s { "abcdefghhlk" };
 
 	std::stringstream ss;
 
-	for (auto const& [first, second] : itertools::zip(s, arr)) {
+	for (auto const& [first, second] : itertools::zip(s, v)) {
 		ss << first << ' ' << second << '\n';
 	}
 	std::string check {R"(a 1
@@ -30,7 +30,7 @@ e 5
 
 TEST(BasicsItertools, Vector_Map) {
 	using namespace std::string_literals;
-	std::vector<int> arr{ 1,2,3,4,5 };
+	std::vector<int> v{ 1,2,3,4,5 };
 	std::map<int, std::string> m {
 		{1, "one"s},
 		{2, "two"s},
@@ -41,7 +41,7 @@ TEST(BasicsItertools, Vector_Map) {
 
 	std::stringstream ss;
 
-	for (auto const& [first, pair] : itertools::zip(arr, m)) {
+	for (auto const& [first, pair] : itertools::zip(v, m)) {
 		ss << first << ' ' << pair.first << ' ' << pair.second << '\n';
 	}
 	std::string check {R"(1 1 one
@@ -55,7 +55,7 @@ TEST(BasicsItertools, Vector_Map) {
 
 TEST(BasicsItertools, Vector_Map_String) {
 	using namespace std::string_literals;
-	std::vector<int> arr{ 1,2,3,4,5 };
+	std::vector<int> v{ 1,2,3,4,5 };
 	std::map<int, std::string> m {
 			{1, "one"s},
 			{2, "two"s},
@@ -67,7 +67,7 @@ TEST(BasicsItertools, Vector_Map_String) {
 
 	std::stringstream ss;
 
-	for (auto const& [first, pair, ch] : itertools::zip(arr, m, s)) {
+	for (auto const& [first, pair, ch] : itertools::zip(v, m, s)) {
 		ss << first << ' ' << pair.first << ' ' << pair.second << ' ' << ch << '\n';
 	}
 	std::string check {R"(1 1 one a
@@ -80,10 +80,10 @@ TEST(BasicsItertools, Vector_Map_String) {
 }
 
 TEST(BasicsItertools, OneContainer) {
-	std::vector<int> arr{ 1,2,3,4,5 };
+	std::vector<int> v{ 1,2,3,4,5 };
 	std::stringstream ss;
 
-	for (auto const& [first] : itertools::zip(arr)) {
+	for (auto const& [first] : itertools::zip(v)) {
 		ss << first << '\n';
 	}
 	std::string check {R"(1
@@ -96,13 +96,13 @@ TEST(BasicsItertools, OneContainer) {
 }
 
 TEST(BasicsItertools, TwoContainers_OneEmpty) {
-	std::vector<int> arr{ 1,2,3,4,5 };
+	std::vector<int> v{ 1,2,3,4,5 };
 	std::string s;
 	ASSERT_TRUE(s.empty());
 
 	std::stringstream ss;
 
-	for (auto const& [first, ch] : itertools::zip(arr, s)) {
+	for (auto const& [first, ch] : itertools::zip(v, s)) {
 		ss << first << ' ' << ch << '\n';
 	}
 
@@ -114,8 +114,7 @@ TEST(BasicsItertools, NonContainers) {
 
 	struct NotOkContainer { int value {42}; };
 	[[maybe_unused]] NotOkContainer not_ok;
-
-	std::vector<int> arr{ 1,2,3,4,5 };
+	[[maybe_unused]] std::vector<int> v{ 1,2,3,4,5 };
 
 //	auto z = iterators::zip(arr, not_ok); //doesn't compile
 	//todo: add compile time test

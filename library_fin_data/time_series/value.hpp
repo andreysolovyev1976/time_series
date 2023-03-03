@@ -27,7 +27,7 @@ namespace base {
 
   template <typename ValueType = traits::ValueTypeDefault>
 //  struct Value : traits::ValueBase<Value<ValueType>> { //excluded CRTP, no need for that
-	struct Value {
+  struct Value {
 	  using value_type = ValueType;
 
 	  ValueType value {};
@@ -37,10 +37,17 @@ namespace base {
 	  Value(Input&& input);
 	  template <typename Input, requirements::ConveribleOrConstructibleFromTo<Input, ValueType> = true>
 	  Value& operator = (Input&& input);
+
 	  Value (std::string&& input);
 	  Value (const std::string& input);
 
 	  std::string toString () const;
+
+	  operator std::string () const;
+	  operator ValueType () const;
+
+	  ValueType const& operator()() const;
+	  ValueType& operator()();
   };
 
   template <typename ValueType>
@@ -72,6 +79,25 @@ namespace base {
   template <typename ValueType>
   std::string Value<ValueType>::toString () const {
 	  return utils::toChars(value);
+  }
+
+
+  template <typename ValueType>
+  Value<ValueType>::operator std::string () const {
+	  return toString();
+  }
+  template <typename ValueType>
+  Value<ValueType>::operator ValueType () const {
+	  return value;
+  }
+
+  template <typename ValueType>
+  ValueType const& Value<ValueType>::operator()() const {
+	  return value;
+  }
+  template <typename ValueType>
+  ValueType& Value<ValueType>::operator()() {
+	  return value;
   }
 
 

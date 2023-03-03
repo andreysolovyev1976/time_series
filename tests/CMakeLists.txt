@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.21)
 set (PROJECT_NAME_TEST ${PROJECT_NAME}_tests)
 project(${PROJECT_NAME_TEST}
         VERSION 0.1
-        DESCRIPTION "Testing Quote"
+        DESCRIPTION "Testing Timeseries"
         LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 17)
@@ -43,14 +43,18 @@ add_executable(${PROJECT_NAME_TEST}
 
         tests_value_ctors.cpp
         tests_value_comparison.cpp
+        tests_value_conversion_operators.cpp
         tests_value_arithmetics.cpp
 
         tests_element_ctors.cpp
         tests_element_comparison.cpp
+        tests_element_conversion_operators.cpp
         tests_element_arithmetics.cpp
         tests_element_fun_apply.cpp
 
         tests_serie_container.cpp
+        tests_serie_itertools.cpp
+        tests_serie_joins.cpp
         )
 
 message(STATUS "Linking test in Debug mode...")

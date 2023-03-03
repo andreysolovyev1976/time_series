@@ -11,7 +11,7 @@
 //#define CONSTRUCTIBLE
 //#define COMPILE_TIME_TEST_EXAMPLE
 //#define SERIE_FACTORY_OPTIONS
-#define TUPLE_EXERCISES
+//#define TUPLE_EXERCISES
 
 #ifdef NESTED_OPERATORS
 #include <iostream>
@@ -608,23 +608,6 @@ std::ostream& operator << (std::ostream& os, std::pair<int, std::string> const& 
 
 
 
-template <typename Tuple, std::size_t... Is>
-void iterateTupleImpl(Tuple& t1, std::index_sequence<Is...>) {
-	((std::get<Is>(t1)), ...);
-}
-
-template <typename... Args>
-void iterateTuple(std::tuple<Args...> t1) {
-	iterateTupleImpl(t1, std::index_sequence_for<Args...>{});
-}
-
-
-//template <typename ...T, typename ...Slice>
-//bool comp (std::tuple<T...> const& lhs, std::tuple<T...> const& rhs) {
-//	bool equal = false;
-//	equal = equal || applySequence(compareEach<Slice...>, std::index_sequence_for<T...>{}, lhs, rhs);
-//	return equal;
-//}
 
 template <typename... Args>
 constexpr auto packToTuple(Args... args) {
@@ -776,11 +759,292 @@ int main () {
 
 #endif
 
-#if 0
+#if 1
 
 #include <iostream>
+#include <map>
+#include <vector>
+#include <string>
+#include <algorithm>
+#include <type_traits>
+#include <cassert>
+#include <cstddef>
+
+#include "boost/type_index.hpp"
+
+using namespace boost::typeindex;
+using namespace std::string_literals;
+
+std::ostream& operator << (std::ostream& os, std::pair<int, std::string> const& p) {
+	os << p.first << ' ' << p.second;
+	return os;
+}
+
+struct ValueHolder {
+	int value;
+};
+bool operator < (ValueHolder const& lhs, ValueHolder const& rhs) { return lhs.value < rhs.value; }
+bool operator == (ValueHolder const& lhs, ValueHolder const& rhs) { return lhs.value == rhs.value; }
+bool operator < (ValueHolder const& lhs, std::pair<const int, std::string> const& rhs) { return lhs.value < rhs.first; }
+bool operator == (ValueHolder const& lhs, std::pair<const int, std::string> const& rhs) { return lhs.value == rhs.first; }
+bool operator < (std::pair<const int, std::string> const& lhs, ValueHolder const& rhs) { return lhs.first < rhs.value; }
+bool operator == (std::pair<const int, std::string> const& lhs, ValueHolder const& rhs) { return lhs.first == rhs.value; }
+
+std::ostream& operator << (std::ostream& os, std::vector<int> const& v) {
+	os << "{ "s;
+	for (auto const& elem: v) os << elem << ' ';
+	os << '}';
+	return os;
+}
+
+std::ostream& operator << (std::ostream& os, std::vector<ValueHolder> const& v) {
+	os << "{ "s;
+	for (auto const& elem: v) os << elem.value << ' ';
+	os << '}';
+	return os;
+}
+
+template <typename Serie>
+bool isSortedAscending(Serie const& v) {
+	return *v.begin() < *std::prev(v.end());
+}
+
+template<typename Iter>
+struct Range {
+	Iter begin_, end_;
+	Iter begin() const {return begin_;}
+	Iter end() const {return end_;}
+};
+
+template <typename Serie, bool ascending>
+struct DetectIter {
+	bool static constexpr r_value {std::is_rvalue_reference_v<Serie>};
+	bool static constexpr constant {std::is_const_v<Serie>};
+	using Container = std::remove_reference_t<Serie>;
+
+	using type =
+	std::conditional_t<
+			ascending,
+			std::conditional_t< //ascending
+					r_value,
+					decltype(std::make_move_iterator(std::declval<Container>().begin())), //ascending && rvalue
+					std::conditional_t< //ascending && !rvalue
+							constant,
+							typename Container::const_iterator, //ascending && !rvalue && const
+							typename Container::iterator //ascending && !rvalue && !const
+					>
+			>,
+			std::conditional_t< // !ascending
+					r_value,
+					decltype(std::make_move_iterator(std::declval<Container>().rbegin())), // !ascending && rvalue
+					std::conditional_t<
+							constant,
+							typename Container::const_reverse_iterator, // !ascending && !rvalue && const
+							typename Container::reverse_iterator // !ascending && !rvalue && !const
+					>
+			>
+	>;
+};
+
+//avoid having a Serie&& as a param, as if submitted by value then may be lost here
+template <typename Serie, bool ascending>
+Range<typename DetectIter<Serie, ascending>::type>
+getIterators(Serie serie) {
+	bool constexpr r_value {std::is_rvalue_reference_v<Serie>};
+	bool constexpr constant {std::is_const_v<Serie>};
+
+	if constexpr (constant && ascending) return {.begin_ = serie.cbegin(), .end_ = serie.cend()};
+	else if constexpr(constant && !ascending) return {.begin_ = serie.crbegin(), .end_ = serie.crend()};
+	else if constexpr(!constant && ascending && !r_value) return {.begin_ = serie.begin(), .end_ = serie.end()};
+	else if constexpr (!constant && !ascending && !r_value) return {.begin_ = serie.rbegin(), .end_ = serie.rend()};
+	else if constexpr (!constant && ascending  && r_value)
+		return {
+				.begin_ = std::make_move_iterator(serie.begin()),
+				.end_ = std::make_move_iterator(serie.end())
+		};
+	else if constexpr (!constant && !ascending && r_value)
+		return {
+				.begin_ = std::make_move_iterator(serie.rbegin()),
+				.end_ = std::make_move_iterator(serie.rend())};
+
+	else {
+		return {};  //to shut "func doesn't return" warning
+	}
+}
+
+template <typename Serie1, typename Serie2, typename RetSerie = Serie1, typename Comp = std::nullptr_t>
+auto inner (Serie1&& serie_1, Serie2&& serie_2, [[maybe_unused]] Comp comp = nullptr) {
+	std::remove_reference_t<RetSerie> ret_serie;
+	auto ret_iter = std::inserter(ret_serie, ret_serie.begin());
+
+	bool const ascending1 { isSortedAscending(serie_1) };
+	bool const ascending2 { isSortedAscending(serie_2) };
+
+#define CALL_OPERATION(first_cond, second_cond) \
+	auto [b1, e1] = getIterators<Serie1, first_cond>(serie_1); \
+	auto [b2, e2] = getIterators<Serie2, second_cond>(serie_2); \
+	if constexpr (std::is_same_v<Comp, std::nullptr_t>) { \
+		std::set_intersection(b1, e1, b2, e2, ret_iter); \
+	} \
+	else { \
+		std::set_intersection(b1, e1, b2, e2, ret_iter, comp); \
+	}
+
+	if 		(ascending1  && ascending2 ) { CALL_OPERATION(true,  true ) }
+	else if (ascending1  && !ascending2) { CALL_OPERATION(true,  false) }
+	else if (!ascending1 && ascending2 ) { CALL_OPERATION(false, true ) }
+	else if (!ascending1 && !ascending2) { CALL_OPERATION(false, false) }
+
+#undef CALL_OPERATION
+	return ret_serie;
+}
+
+
+template <typename... Serie, std::size_t... I>
+void getSortingOrderImpl (
+		std::tuple<Serie...> const& series
+		, std::vector<bool> & ascending_flags
+		, std::index_sequence<I...>
+) {
+	((ascending_flags[I] = isSortedAscending(std::get<I>(series))), ...);
+}
+
+template <typename... Serie, std::size_t... I>
+void getSortingOrder (std::tuple<Serie...> const& series, std::vector<bool> & ascending_flags) {
+	assert(ascending_flags.size() == std::tuple_size<std::tuple<Serie...>>());
+	getSortingOrderImpl(series, ascending_flags, std::make_index_sequence<sizeof...(Serie)>{});
+}
+
+template <
+		std::size_t I = 0
+		, typename SerieRet
+		, typename... SerieArgs
+		>
+typename std::enable_if_t<I == sizeof...(SerieArgs), void>
+implementSetOperation(
+		SerieRet&
+		, std::tuple<SerieArgs...>&
+		, std::vector<bool> const&
+		        ) {
+	/* do nothing */
+}
+
+template <
+		std::size_t I = 0
+		, typename SerieRet
+		, typename... SerieArgs
+		>
+typename std::enable_if_t <(I < sizeof...(SerieArgs)), void>
+implementSetOperation(
+		SerieRet & ret_serie
+		, std::tuple<SerieArgs...> &t
+		, std::vector<bool> const& ascending_flags
+		) {
+	if constexpr (sizeof...(SerieArgs) <= 1) { return; }
+
+	if constexpr (I == 0) {
+		implementSetOperation<I+1, SerieRet, SerieArgs...>(ret_serie, t, ascending_flags);
+	}
+	else if constexpr (I != sizeof...(SerieArgs)) {
+
+//todo: end() for inserter?
+#define CALL_OPERATION(first_cond, second_cond) \
+	auto ret_iter = std::inserter(ret_serie, ret_serie.begin()); \
+	using Serie1 = std::tuple_element_t<I - 1, std::tuple<SerieArgs...>>; \
+	using Serie2 = std::tuple_element_t<I, std::tuple<SerieArgs...>>; \
+	auto [b1, e1] = getIterators<Serie1, first_cond>(std::get<I - 1>(t)); \
+	auto [b2, e2] = getIterators<Serie2, second_cond>(std::get<I>(t)); \
+	std::set_intersection(b1, e1, b2, e2, ret_iter);
+
+		bool const ascending1 { ascending_flags[I - 1] };
+		bool const ascending2 { ascending_flags[I] };
+
+		if 		(ascending1  && ascending2 ) { CALL_OPERATION(true,  true ) }
+		else if (ascending1  && !ascending2) { CALL_OPERATION(true,  false) }
+		else if (!ascending1 && ascending2 ) { CALL_OPERATION(false, true ) }
+		else if (!ascending1 && !ascending2) { CALL_OPERATION(false, false) }
+
+		std::cerr << ret_serie << '\n';
+
+#undef CALL_OPERATION
+		implementSetOperation<I+1, SerieRet, SerieArgs...>(ret_serie, t, ascending_flags);
+		std::cerr << ret_serie << '\n';
+	}
+}
+
+template <
+		typename SerieRet // = Some Default Type
+		, typename... SerieArgs
+>
+auto inner_ (SerieArgs&& ...series) {
+	std::size_t constexpr series_count {sizeof...(SerieArgs)};
+	std::remove_reference_t<SerieRet> ret_serie;
+
+	if constexpr (series_count <= 1) {
+		return ret_serie;
+	}
+	else {
+		std::vector<bool> sorting_order_flags(series_count, false);
+		auto source_data = std::make_tuple(std::forward<SerieArgs>(series)...);
+		getSortingOrder(source_data, sorting_order_flags);
+		implementSetOperation(ret_serie, source_data, sorting_order_flags);
+		std::cerr << ret_serie << '\n';
+		return ret_serie;
+	}
+}
+
 
 int main () {
+	std::map<int, std::string> m {
+			{1, "one"s},
+			{2, "two"s},
+			{3, "three"s},
+			{4, "four"s},
+			{5, "five"s},
+	};
+	std::vector<int> v1 {8, 5, 5, 2};
+	std::vector<int> v2 {1, 2, 3, 4, 5, 5};
+
+	std::cout << std::boolalpha;
+	std::cerr << std::boolalpha;
+
+	std::vector<int> result;
+	std::set_symmetric_difference(v1.rbegin(), v1.rend(), v2.begin(), v2.end(),
+			std::inserter(result, result.begin())
+			);
+	std::cout << "set_symmetric_difference: " << result << '\n';
+
+	result.clear();
+	std::set_difference(v1.rbegin(), v1.rend(), v2.begin(), v2.end(),
+			std::inserter(result, result.begin())
+	);
+	std::cout << "set_difference: "  << result << '\n';
+
+	result.clear();
+	std::set_intersection(v1.rbegin(), v1.rend(), v2.begin(), v2.end(),
+			std::inserter(result, result.begin())
+	);
+	std::cout << "set_intersection: "  << result << '\n';
+	result.clear();
+	result = inner(v1, v2);
+	std::cout << "set_intersection for Serie: "  << result << '\n';
+	result.clear();
+	result = inner_<decltype(result)>(v1, v2);
+	std::cout << "set_intersection for arbitrary Series qty: "  << result << '\n';
+
+	result.clear();
+	std::set_union(v1.rbegin(), v1.rend(), v2.begin(), v2.end(),
+			std::inserter(result, result.begin())
+	);
+	std::cout << "set_union: "  << result << '\n';
+
+
+	std::vector<ValueHolder> v_s {{8}, {5}, {5}, {2}};
+	std::vector<ValueHolder> v_result;
+	v_result = inner(v_s, m);
+	std::cout << "inner join for map and vector: "  << v_result << '\n';
+
+
 
 }
 
