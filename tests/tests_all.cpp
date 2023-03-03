@@ -10,7 +10,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char **argv) {
 //	testing::GTEST_FLAG(filter) = "Ctors*:Assignments*:Constructible*:Compare*:Arithmetics*";
 //	testing::GTEST_FLAG(filter) = "ElementFnApplication*";
 //	testing::GTEST_FLAG(filter) = "ElementFnApplication/1.*";
-	testing::GTEST_FLAG(filter) = "BasicsItertools.GetIterators*";
+	testing::GTEST_FLAG(filter) = "BasicsJoins*";
 	return RUN_ALL_TESTS();
 }
 
@@ -22,6 +22,5 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char **argv) {
 // timestamp works poorly with high_res clock
 
 //todo:
-// iter tools - zip
 // duration cast
 // joins
