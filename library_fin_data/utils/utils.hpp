@@ -9,9 +9,7 @@
 #include <array>
 #include <stdexcept>
 #include <system_error>
-
 #include <tuple>
-
 
 #ifndef BASE_UTILS_H
 #define BASE_UTILS_H
@@ -51,35 +49,6 @@ namespace base::utils {
 #endif
 		return local_result;
 	}
-
-
-  template <typename NewElem, typename... TupleElems>
-  decltype(auto) tuplePushBack(std::tuple<TupleElems...> &&tup, NewElem &&el) {
-	  return std::tuple_cat(
-			  std::forward<std::tuple<TupleElems...>>(tup),
-			  std::make_tuple(std::forward<NewElem>(el)));
-  }
-
-  template <typename NewElem, typename... TupleElems>
-  decltype(auto) tuplePushFront(std::tuple<TupleElems...> &&tup, NewElem &&el) {
-	  return std::tuple_cat(
-			  std::make_tuple(std::forward<NewElem>(el)),
-			  std::forward<std::tuple<TupleElems...>>(tup));
-  }
-
-  template <typename Tuple, std::size_t... Is>
-  decltype(auto) reverseTupleImpl (Tuple && tup, std::index_sequence<Is...>) {
-	  return std::make_tuple(std::get<sizeof...(Is) - Is - 1 >(std::forward<Tuple>(tup))...);
-  }
-
-
-  template <typename Tuple>
-  decltype(auto) reverseTuple (Tuple && tup) {
-	  return reverseTupleImpl(
-			  std::forward<std::remove_reference_t<Tuple>>(tup),
-			  std::make_index_sequence<std::tuple_size_v<std::remove_reference_t<Tuple>>>{});
-  }
-
 
 }//!namespace
 #endif //BASE_UTILS_H

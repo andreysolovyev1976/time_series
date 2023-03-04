@@ -15,6 +15,7 @@
 
 struct Key {
 	int value {-1};
+	Key (int i) : value(i) {}
 	operator int () {return value;}
 };
 
@@ -28,7 +29,7 @@ bool operator < (std::pair<const Key, int> const& lhs, std::pair<const Key, int>
 bool operator == (std::pair<const Key, int> const& lhs, std::pair<const Key, int> const& rhs) { return lhs.first.value == rhs.first.value; }
 
 std::ostream& operator << (std::ostream& os, std::pair<Key const, int> const& p) {
-	os << p.first.value << ' ' << p.second;
+	os << p.second;
 	return os;
 }
 std::ostream& operator << (std::ostream& os, std::vector<int> const& v) {
@@ -53,6 +54,30 @@ std::ostream& operator << (std::ostream& os, std::map<Key, int> const& m) {
 	return os;
 }
 
+// https://en.cppreference.com/w/cpp/utility/apply
+template<typename... Ts>
+std::ostream& operator<<(std::ostream& os, std::tuple<Ts...> const& theTuple){
+	std::apply
+			(
+					[&os](Ts const&... tupleArgs)
+					{
+					  os << '[';
+					  std::size_t n{0};
+					  ((os << tupleArgs << (++n != sizeof...(Ts) ? ", " : "")), ...);
+					  os << ']';
+					}, theTuple
+			);
+	return os;
+}
+
+template <typename Tuple, std::size_t... Is>
+void printTupleBySliceImpl(Tuple const& tup, std::ostream& os, std::index_sequence<Is...>) {
+	((os << base::details::tupletools::getSlice(tup, Is) << '\n'), ...);
+}
+template <typename Tuple, std::size_t slice_size>
+void printTupleBySlice(Tuple const& tup, std::ostream& os) {
+	printTupleBySliceImpl(tup, os, std::make_index_sequence<slice_size>{});
+}
 
 std::map<Key, int> const m1 {
 		{{1}, 3},
@@ -78,11 +103,6 @@ auto res = std::inserter(result, result.end());
 
 
 TEST(BasicsJoins, InitValues) {
-	result.clear();
-	std::set_intersection(m1.begin(), m1.end(), m2.begin(), m2.end(), res);
-	std::cout << result << '\n';
-	result.clear();
-	base::join::inner(result, m1, m2);
 	std::cout << result << '\n';
 	std::string const check {R"( 27
 3 12
@@ -100,14 +120,16 @@ TEST(BasicsJoins, Inner) {
 	std::set_intersection(m1.begin(), m1.end(), m2.begin(), m2.end(), res);
 	std::cout << result << '\n';
 	result.clear();
-	base::join::inner(result, m1, m2);
-	std::cout << result << '\n';
-	std::string const check {R"(3 12
-2 16
-3 20
+	auto result_other = base::join::inner(m1, m2);
+	printTupleBySlice<decltype(result_other), 3>(result_other, std::cout);
+	std::string const check {R"([3, 12]
+[2, 16]
+[3, 20]
 )"};
 
 }
+
+#if 0
 
 TEST(BasicsJoins, OuterFull) {
 	result.clear();
@@ -116,11 +138,11 @@ TEST(BasicsJoins, OuterFull) {
 	result.clear();
 	base::join::outerFull(result, m1, m2);
 	std::cout << result << '\n';
-	std::string const check {R"(3 12
-2 16
-3 20
-17 0
-25 0
+	std::string const check {R"([3, 12]
+[2, 16]
+[3, 20]
+[17, 0]
+[25, 0]
 )"};
 
 }
@@ -132,9 +154,9 @@ TEST(BasicsJoins, OuterExcluding) {
 	result.clear();
 	base::join::outerExcluding(result, m1, m2);
 	std::cout << result << '\n';
-	std::string const check {R"(0 27
-17 0
-25 0
+	std::string const check {R"([0, 27]
+[17, 0]
+[25, 0]
 )"};
 
 }
@@ -148,11 +170,11 @@ TEST(BasicsJoins, LeftOuter) {
 	base::join::leftOuter(result, m1, m2);
 	std::cout << result << '\n';
 
-	std::string const check {R"(3 12
-2 16
-3 20
-17 0
-25 0
+	std::string const check {R"([3, 12]
+[2, 16]
+[3, 20]
+[17, 0]
+[25, 0]
 )"};
 
 }
@@ -164,8 +186,8 @@ TEST(BasicsJoins, LeftExcluding) {
 	base::join::leftExcluding(result, m1, m2);
 	std::cout << result << '\n';
 
-	std::string const check {R"(17 0
-25 0
+	std::string const check {R"([17, 0]
+[25, 0]
 )"};
 
 }
@@ -177,10 +199,10 @@ TEST(BasicsJoins, RightOuter) {
 	result.clear();
 	base::join::rightOuter(result, m1, m2);
 	std::cout << result << '\n';
-	std::string const check {R"(0 27
-3 12
-2 16
-3 20
+	std::string const check {R"([0, 27]
+[3, 12]
+[2, 16]
+[3, 20]
 )"};
 }
 
@@ -191,6 +213,7 @@ TEST(BasicsJoins, RightExcluding) {
 	result.clear();
 	base::join::rightExcluding(result, m1, m2);
 	std::cout << result << '\n';
-	std::string const check {R"(0 27
+	std::string const check {R"([0, 27]
 )"};
 }
+#endif

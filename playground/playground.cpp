@@ -1255,8 +1255,10 @@ int main() {
 #if 1
 
 #include <iostream>
+#include <tuple>
 
 int main () {
-
+	std::tuple t;
+	std::cout << sizeof(t) << '\n';
 }
 #endif
