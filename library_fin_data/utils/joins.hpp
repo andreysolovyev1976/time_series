@@ -13,9 +13,9 @@
 #ifndef DATA_JOINS_H
 #define DATA_JOINS_H
 
-namespace base {
+namespace time_series {
 
-  namespace details {
+  namespace join::details {
 
 	namespace tupletools {
 
@@ -114,6 +114,33 @@ namespace base {
 							>
 					>;
 		};
+
+		template <class _InputIterator1, class _InputIterator2, class _OutputIterator, class _Compare = std::less<>>
+		_OutputIterator
+		__set_difference(_InputIterator1 __first1, _InputIterator1 __last1,
+				_InputIterator2 __first2, _InputIterator2 __last2, _OutputIterator __result, _Compare __comp = std::less<>{})
+		{
+			while (__first1 != __last1)
+			{
+				if (__first2 == __last2)
+					return _VSTD::copy(__first1, __last1, __result);
+
+				if (__comp(*__first1, *__first2))
+				{
+					*__result = *__first1;
+					++__result;
+					++__first1;
+				}
+				else
+				{
+					if (!__comp(*__first2, *__first1))
+						++__first1;
+					++__first2;
+				}
+			}
+			return __result;
+		}
+
 	  }//!namespace
 
 /**
@@ -178,7 +205,7 @@ namespace base {
 #define IMPLEMENT_OPERATION_ON_SETS(c, ...) \
 switch(c) \
 { case 1: std::set_intersection          (__VA_ARGS__); break; \
-  case 2: std::set_difference            (__VA_ARGS__); break; \
+  case 2: itertools::details::__set_difference            (__VA_ARGS__); break; \
   case 3: std::set_symmetric_difference  (__VA_ARGS__); break; \
   case 4: std::set_union                 (__VA_ARGS__); break;  }
 

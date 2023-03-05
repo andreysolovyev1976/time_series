@@ -22,5 +22,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char **argv) {
 // timestamp works poorly with high_res clock
 
 //todo:
+// container check for multiple args is required
 // duration cast
-// joins
+// joins, make joins possible if any of arg is a tuple of args
+// construct series from several series using one index

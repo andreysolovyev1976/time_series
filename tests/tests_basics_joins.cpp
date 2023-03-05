@@ -70,15 +70,6 @@ std::ostream& operator<<(std::ostream& os, std::tuple<Ts...> const& theTuple){
 	return os;
 }
 
-template <typename Tuple, std::size_t... Is>
-void printTupleBySliceImpl(Tuple const& tup, std::ostream& os, std::index_sequence<Is...>) {
-	((os << base::details::tupletools::getSlice(tup, Is) << '\n'), ...);
-}
-template <typename Tuple, std::size_t slice_size>
-void printTupleBySlice(Tuple const& tup, std::ostream& os) {
-	printTupleBySliceImpl(tup, os, std::make_index_sequence<slice_size>{});
-}
-
 std::map<Key, int> const m1 {
 		{{1}, 3},
 		{{2}, 2},
@@ -103,117 +94,91 @@ auto res = std::inserter(result, result.end());
 
 
 TEST(BasicsJoins, InitValues) {
-	std::cout << result << '\n';
-	std::string const check {R"( 27
-3 12
-2 16
-3 20
-17
-25
+	[[maybe_unused]] auto t = std::make_tuple(m1, m2);
+	[[maybe_unused]] std::string const check {R"([ , 27]
+[3, 12]
+[2, 16]
+[3, 20]
+[17,  ]
+[25,  ]
 )"};
-
+//	std::cout << check << '\n';
+//	std::cout << t << '\n';
 }
-
 
 TEST(BasicsJoins, Inner) {
-	result.clear();
-	std::set_intersection(m1.begin(), m1.end(), m2.begin(), m2.end(), res);
-	std::cout << result << '\n';
-	result.clear();
-	auto result_other = base::join::inner(m1, m2);
-	printTupleBySlice<decltype(result_other), 3>(result_other, std::cout);
-	std::string const check {R"([3, 12]
-[2, 16]
-[3, 20]
-)"};
-
+	auto result_other = time_series::join::inner(m1, m2);
+	std::stringstream ss;
+	ss << result_other;
+	std::string const check {R"([{ 3 2 3 }, { 12 16 20 }])"};
+	ASSERT_EQ(check, ss.str());
 }
 
-#if 0
 
 TEST(BasicsJoins, OuterFull) {
-	result.clear();
-	std::set_union(m1.begin(), m1.end(), m2.begin(), m2.end(), res);
-	std::cout << result << '\n';
-	result.clear();
-	base::join::outerFull(result, m1, m2);
-	std::cout << result << '\n';
-	std::string const check {R"([3, 12]
-[2, 16]
-[3, 20]
-[17, 0]
-[25, 0]
-)"};
-
+	auto result_other = time_series::join::outerFull(m1, m2);
+	std::stringstream ss;
+	ss << result_other;
+	std::string const check {R"([{ 27 3 2 3 17 25 }, { 27 12 16 20 }])"};
+	ASSERT_EQ(check, ss.str());
 }
+
 
 TEST(BasicsJoins, OuterExcluding) {
-	result.clear();
-	std::set_symmetric_difference(m1.begin(), m1.end(), m2.begin(), m2.end(), res);
-	std::cout << result << '\n';
-	result.clear();
-	base::join::outerExcluding(result, m1, m2);
-	std::cout << result << '\n';
-	std::string const check {R"([0, 27]
-[17, 0]
-[25, 0]
-)"};
-
+	auto result_other = time_series::join::outerExcluding(m1, m2);
+	std::stringstream ss;
+	ss << result_other << '\n';
+	std::string const check {R"([{ 0 17 25 }, { 27 0 0 }])"};
+	ASSERT_EQ(check, ss.str());
 }
-
 
 TEST(BasicsJoins, LeftOuter) {
 	result.clear();
-	std::set_symmetric_difference(m1.begin(), m1.end(), m2.begin(), m2.end(), res);
-	std::cout << result << '\n';
-	result.clear();
-	base::join::leftOuter(result, m1, m2);
-	std::cout << result << '\n';
-
-	std::string const check {R"([3, 12]
-[2, 16]
-[3, 20]
-[17, 0]
-[25, 0]
-)"};
-
-}
-
-TEST(BasicsJoins, LeftExcluding) {
 	std::set_difference(m1.begin(), m1.end(), m2.begin(), m2.end(), res);
 	std::cout << result << '\n';
 	result.clear();
-	base::join::leftExcluding(result, m1, m2);
+	std::set_difference(m2.begin(), m2.end(), m1.begin(), m1.end(), res);
 	std::cout << result << '\n';
 
-	std::string const check {R"([17, 0]
-[25, 0]
-)"};
-
-}
-
-TEST(BasicsJoins, RightOuter) {
+	result.clear();
+	std::set_symmetric_difference(m1.begin(), m1.end(), m2.begin(), m2.end(), res);
+	std::cout << result << '\n';
 	result.clear();
 	std::set_symmetric_difference(m2.begin(), m2.end(), m1.begin(), m1.end(), res);
 	std::cout << result << '\n';
-	result.clear();
-	base::join::rightOuter(result, m1, m2);
-	std::cout << result << '\n';
+
+
+	auto result_other = time_series::join::leftOuter(m1, m2);
+	std::stringstream ss;
+	ss << result_other << '\n';
+	std::string const check {R"([{ 3 2 3 17 25 }, { 12 16 20 0 0 }])"};
+	ASSERT_EQ(check, ss.str());
+}
+
+TEST(BasicsJoins, LeftExcluding) {
+	auto result_other = time_series::join::leftExcluding(m1, m2);
+	std::stringstream ss;
+	ss << result_other << '\n';
+	std::string const check {R"([{ 17 25 }, { 0 0 }])"};
+	ASSERT_EQ(check, ss.str());
+}
+
+TEST(BasicsJoins, RightOuter) {
+	auto result_other = time_series::join::rightOuter(m1, m2);
+	std::stringstream ss;
+	ss << result_other << '\n';
 	std::string const check {R"([0, 27]
 [3, 12]
 [2, 16]
 [3, 20]
 )"};
+	ASSERT_EQ(check, ss.str());
 }
 
 TEST(BasicsJoins, RightExcluding) {
-	result.clear();
-	std::set_difference(m2.begin(), m2.end(), m1.begin(), m1.end(), res);
-	std::cout << result << '\n';
-	result.clear();
-	base::join::rightExcluding(result, m1, m2);
-	std::cout << result << '\n';
-	std::string const check {R"([0, 27]
-)"};
+	auto result_other = time_series::join::rightExcluding(m1, m2);
+	std::stringstream ss;
+	ss << result_other << '\n';
+	std::string const check {R"([{ 0 }, { 27 }])"};
+	ASSERT_EQ(check, ss.str());
 }
-#endif

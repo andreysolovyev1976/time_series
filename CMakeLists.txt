@@ -12,7 +12,11 @@ set(CMAKE_CXX_FLAGS_DEBUG " -fsanitize=address -g -fno-omit-frame-pointer -fno-o
 set(CMAKE_CXX_FLAGS_DEBUG " -fsanitize=thread -g")
 set(CMAKE_CXX_FLAGS_RELEASE " -O3")
 
-if (APPLE)
+if(UNIX AND NOT APPLE)
+    set(LINUX TRUE)
+endif()
+
+if (APPLE OR LINUX)
     #debug
     add_definitions(-D__GLIBCXX__)
 
@@ -24,7 +28,7 @@ if (APPLE)
         set(CMAKE_USE_PTHREADS_INIT 1)
         set(THREADS_PREFER_PTHREAD_FLAG ON)
     endif()
-endif (APPLE)
+endif ()
 
 include_directories(library_fin_data)
 include_directories(library_fin_data/third_part/date_time/include)
