@@ -10,7 +10,7 @@ if(UNIX AND NOT APPLE)
 endif()
 
 if (APPLE)
-    set(CMAKE_CXX_FLAGS " -Wall -Wextra -Wpedantic -Werror -Wreturn-std-move -Wno-missing-field-initializers -Wno-gnu-zero-variadic-macro-arguments -o")
+    set(CMAKE_CXX_FLAGS " -Wall -Wextra -Wpedantic -Werror -Wreturn-std-move -Wno-missing-field-initializers -o")
     set(CMAKE_CXX_STANDARD 17)
 else()
     set(CMAKE_CXX_FLAGS " -Wall -Wextra -Wpedantic -Werror")
