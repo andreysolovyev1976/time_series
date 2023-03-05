@@ -27,9 +27,5 @@ jobs:
     - name: CMake Lib debug build
       run: cmake --build debug
 
-    - name: CMake Test config
-      run: cmake -S /tests -B build/tests -DCMAKE_CXX_COMPILER=g++-11 -DCMAKE_BUILD_TYPE=Debug
-    - name: CMake Test build
-      run: env CTEST_OUTPUT_ON_FAILURE=1 cmake --build debug/tests --target fin_data_tests
     - name: Run tests
-      run: debug/tests/fin_data_tests
+      run: debug/fin_data_tests
