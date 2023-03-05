@@ -7,7 +7,7 @@ on:
     branches: [ "master" ]
 
 jobs:
-  main:
+  gcc:
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -28,10 +28,27 @@ jobs:
       run: cmake --build debug
 
     - name: Run tests
-      run: |
-        ls -l
-        cd debug 
-        ls -l
-        cd tests
-        ls -l        
-        ./fin_data_tests
+      run: debug/tests/fin_data_tests
+
+  clang:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Install google test and boost, also install g++-11 for ranges
+        run: sudo apt-get install libgtest-dev googletest googletest-tools google-mock libboost-dev clang-11
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: CMake Lib release config
+        run: cmake -S . -B release -DCMAKE_CXX_COMPILER=clang-11 -DCMAKE_BUILD_TYPE=Release
+      - name: CMake Lib release build
+        run: cmake --build release
+      - name: CMake Lib debug config
+        run: cmake -S . -B debug -DCMAKE_CXX_COMPILER=clang-11 -DCMAKE_BUILD_TYPE=Debug
+      - name: CMake Lib debug build
+        run: cmake --build debug
+
+      - name: Run tests
+        run: debug/tests/fin_data_tests
