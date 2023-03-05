@@ -52,3 +52,76 @@ jobs:
 
       - name: Run tests
         run: debug/tests/fin_data_tests
+
+  msvc:
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        config:
+          - { name: 'Debug', build_type: 'Debug' }
+          - { name: 'Release', build_type: 'Release' }
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Set up MSVC
+        uses: microsoft/setup-msbuild@v1.0.2
+      - name: Install Boost
+        run: |
+          $BOOST_VERSION=1.75.0
+          $BOOST_ARCHITECTURE=msvc-14.2
+          Invoke-WebRequest -Uri "https://dl.bintray.com/boostorg/release/$BOOST_VERSION/binaries/$BOOST_ARCHITECTURE/$BOOST_VERSION-msvc-14.2-$BOOST_ARCHITECTURE.zip" -OutFile "boost.zip"
+          Expand-Archive -Path "boost.zip" -DestinationPath "C:\Boost"
+          Remove-Item -Path "boost.zip"
+          echo "::set-env name=BOOST_ROOT::C:\Boost\boost_$BOOST_VERSION"
+          echo "BOOST_ROOT=C:\Boost\boost_$BOOST_VERSION" >> $GITHUB_ENV
+      - name: Install Google Test
+        run: |
+          git clone https://github.com/google/googletest.git
+          cd googletest
+          mkdir build
+          cd build
+          cmake ..
+          cmake --build .
+          cd ../..
+          echo "::set-env name=GTEST_ROOT::$(pwd)/googletest"
+          echo "GTEST_ROOT=$(pwd)/googletest" >> $GITHUB_ENV
+      - name: Build
+        run: msbuild /p:Configuration=$BUILD_TYPE
+      - name: Run tests
+        run: ./bin/$BUILD_TYPE/fin_data_tests.exe
+        env:
+          GTEST_ROOT: ${{ env.GTEST_ROOT }}
+          BOOST_ROOT: ${{ env.BOOST_ROOT }}
+          BUILD_TYPE: ${{ matrix.config.name }}
+
+  gcc_file_from_chat_gpt:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        build_type: [Debug, Release]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup GCC
+        uses: actions/setup-gcc@v1
+        with:
+          compiler-version: latest
+
+      - name: Install Boost and Google Test
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libboost-all-dev libgtest-dev
+
+      - name: Compile
+        run: |
+          mkdir build
+          cd build
+          cmake .. -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
+          make
+
+      - name: Run Tests
+        run: |
+          cd build
+          ./fin_data_tests
