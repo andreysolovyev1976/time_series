@@ -40,7 +40,7 @@ namespace base::utils {
 		local_result = std::stod(str);
 #else
 
-		auto [ptr, ec]{std::from_chars(str_int.data(), str_int.data() + str_int.size(), local_result)};
+		auto [ptr, ec]{std::from_chars(str.data(), str.data() + str.size(), local_result)};
 		if (ec == std::errc::invalid_argument) {
 			throw std::invalid_argument("Attempt to convert not a number; ");
 		} else if (ec == std::errc::result_out_of_range) {
