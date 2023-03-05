@@ -28,4 +28,4 @@ jobs:
       run: cmake --build debug
 
     - name: Run tests
-      run: debug/fin_data_tests
+      run: fin_data_tests
