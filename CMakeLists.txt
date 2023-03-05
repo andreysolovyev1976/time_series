@@ -5,16 +5,24 @@ project(${PROJECT_NAME}
         DESCRIPTION "Financial time series project"
         LANGUAGES CXX)
 
+if(UNIX AND NOT APPLE)
+    set(LINUX TRUE)
+endif()
+
+
 set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_FLAGS " -Wall -Wextra -Wpedantic -Werror -Wreturn-std-move -Wno-c99-extensions -Wno-missing-field-initializers -Wno-gnu-zero-variadic-macro-arguments -o")
+
+if (APPLE)
+    set(CMAKE_CXX_FLAGS " -Wall -Wextra -Wpedantic -Werror -Wreturn-std-move -Wno-c99-extensions -Wno-missing-field-initializers -Wno-gnu-zero-variadic-macro-arguments -o")
+else()
+    set(CMAKE_CXX_FLAGS " -Wall -Wextra -Wpedantic -Werror -o")
+endif()
+
 set(CMAKE_CXX_FLAGS_DEBUG " -fsanitize=undefined -g")
 set(CMAKE_CXX_FLAGS_DEBUG " -fsanitize=address -g -fno-omit-frame-pointer -fno-optimize-sibling-calls")
 set(CMAKE_CXX_FLAGS_DEBUG " -fsanitize=thread -g")
 set(CMAKE_CXX_FLAGS_RELEASE " -O3")
 
-if(UNIX AND NOT APPLE)
-    set(LINUX TRUE)
-endif()
 
 if (APPLE OR LINUX)
     #debug
