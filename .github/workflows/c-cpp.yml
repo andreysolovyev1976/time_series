@@ -32,7 +32,4 @@ jobs:
         ls -l
         cd debug 
         ls -l
-        cd ..
-        cd tests
-        ls -l
         ./fin_data_tests
