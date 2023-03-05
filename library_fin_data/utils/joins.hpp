@@ -115,6 +115,7 @@ namespace time_series {
 					>;
 		};
 
+#ifdef __APPLE__
 		template <class _InputIterator1, class _InputIterator2, class _OutputIterator, class _Compare = std::less<>>
 		_OutputIterator
 		__set_difference(_InputIterator1 __first1, _InputIterator1 __last1,
@@ -140,7 +141,7 @@ namespace time_series {
 			}
 			return __result;
 		}
-
+#endif
 	  }//!namespace
 
 /**
@@ -205,7 +206,7 @@ namespace time_series {
 #define IMPLEMENT_OPERATION_ON_SETS(c, ...) \
 switch(c) \
 { case 1: std::set_intersection          (__VA_ARGS__); break; \
-  case 2: itertools::details::__set_difference            (__VA_ARGS__); break; \
+  case 2: std::set_difference            (__VA_ARGS__); break; \
   case 3: std::set_symmetric_difference  (__VA_ARGS__); break; \
   case 4: std::set_union                 (__VA_ARGS__); break;  }
 
