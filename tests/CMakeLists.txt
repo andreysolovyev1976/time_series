@@ -5,7 +5,15 @@ project(${PROJECT_NAME_TEST}
         DESCRIPTION "Testing Timeseries"
         LANGUAGES CXX)
 
-set(CMAKE_CXX_STANDARD 17)
+if (APPLE)
+    set(CMAKE_CXX_FLAGS " -Wall -Wextra -Wpedantic -Werror -Wreturn-std-move -Wno-c99-extensions -o")
+    set(CMAKE_CXX_STANDARD 17)
+else()
+    set(CMAKE_CXX_FLAGS " -Wall -Wextra -Wpedantic -Werror")
+    set(CMAKE_CXX_STANDARD 23)
+endif()
+
+set(CMAKE_CXX_FLAGS_RELEASE " -O3")
 
 
 find_package (Boost)

@@ -6,8 +6,15 @@ project(${PROJECT_NAME_PLAYGROUND}
         DESCRIPTION "Fin Value temporary playground"
         LANGUAGES CXX)
 
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_FLAGS " -Wall -Wextra -Wpedantic -Werror -Wreturn-std-move -Wno-c99-extensions -o")
+
+if (APPLE)
+    set(CMAKE_CXX_FLAGS " -Wall -Wextra -Wpedantic -Werror -Wreturn-std-move -Wno-c99-extensions -o")
+    set(CMAKE_CXX_STANDARD 17)
+else()
+    set(CMAKE_CXX_FLAGS " -Wall -Wextra -Wpedantic -Werror")
+    set(CMAKE_CXX_STANDARD 23)
+endif()
+
 set(CMAKE_CXX_FLAGS_RELEASE " -O3")
 
 find_package (Boost)
