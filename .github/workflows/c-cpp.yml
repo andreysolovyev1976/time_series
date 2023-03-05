@@ -30,6 +30,8 @@ jobs:
     - name: Run tests
       run: |
         ls -l
-        cd debug/tests 
+        cd debug 
         ls -l
+        cd tests
+        ls -l        
         ./fin_data_tests
