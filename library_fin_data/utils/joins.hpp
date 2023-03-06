@@ -204,20 +204,56 @@ namespace time_series {
 		set_intersection_and_difference(_InputIterator1 __first1, _InputIterator1 __last1,
 				_InputIterator2 __first2, _InputIterator2 __last2, _OutputIterator __result, [[maybe_unused]] _Compare __comp = std::less<>{})
 		{
-			while (__first1 != __last1)
-			{
+			while (__first1 != __last1) {
 				if (__first2 == __last2) {
 					return std::copy(__first1, __last1, __result);
 				}
+				*__result = *__first1;
+				++__result;
+				++__first1;
+				++__first2;
+			}
+			return __result;
+		}
 
+		template <class _InputIterator1, class _InputIterator2, class _OutputIterator, class _Compare = std::less<>>
+		constexpr _OutputIterator
+		set_append_with_zeros(_InputIterator1 __first1, _InputIterator1 __last1,
+				_InputIterator2 __first2, _InputIterator2 __last2, _OutputIterator __result, [[maybe_unused]] _Compare __comp = std::less<>{})
+		{
+
+			while (__first1 != __last1)
+			{
+				if (__first2 == __last2) {
+					while (__first1 != __last1) {
 						*__result = *__first1;
 						++__result;
 						++__first1;
-					++__first2;
+					}
+					return __result;
 				}
 
+				if (__comp(*__first1, *__first2)) {
+//					*__result = zero_value;
+					++__result;
+					++__first1;
+				}
+				else if (*__first1 == *__first2) {
+					*__result = *__first1;
+					++__result;
+					++__first1;
+				}
+				else
+				{
+					if (!__comp(*__first2, *__first1)) {
+						++__first1;
+					}
+					++__first2;
+				}
+			}
 			return __result;
 		}
+
 
 	  }//!namespace
 
@@ -269,6 +305,7 @@ namespace time_series {
 			  SymmetricDifference,
 			  Union,
 			  IntersectionAndDifference,
+			  FillInWithZerosHelper,
 		  };
 		  operator int() { return static_cast<int>(op); }
 
@@ -288,6 +325,7 @@ switch(c) \
   case 3: std::set_symmetric_difference  (__VA_ARGS__); break; \
   case 4: std::set_union				 (__VA_ARGS__); break; \
   case 5: itertools::details::set_intersection_and_difference (__VA_ARGS__); break;  }
+
 
 	  template<typename Serie>
 	  bool isSortedAscending(Serie const& v)
