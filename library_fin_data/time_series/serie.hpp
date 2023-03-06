@@ -84,8 +84,6 @@ namespace time_series {
 	  Serie& applyFunction (Fn &&fn, Iter b = container_type::begin(), Iter e = container_type::end());
   };
 
-
-
 }//!namespace
 
 #endif //TS_SERIE_H

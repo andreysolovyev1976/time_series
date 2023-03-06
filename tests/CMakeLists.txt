@@ -6,7 +6,7 @@ project(${PROJECT_NAME_TEST}
         LANGUAGES CXX)
 
 if (APPLE)
-    set(CMAKE_CXX_FLAGS " -Wall -Wextra -Wpedantic -Werror -Wreturn-std-move -Wno-c99-extensions -o")
+    set(CMAKE_CXX_FLAGS " -Wall -Wextra -Wpedantic -Werror -Wreturn-std-move -Wno-c99-extensions -Wno-gnu-zero-variadic-macro-arguments -o")
     set(CMAKE_CXX_STANDARD 17)
 else()
     set(CMAKE_CXX_FLAGS " -Wall -Wextra -Wpedantic -Werror")

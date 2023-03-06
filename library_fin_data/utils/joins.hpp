@@ -115,7 +115,7 @@ namespace time_series {
 					>;
 		};
 
-#ifdef __APPLE__
+#if 0
 		template <class _InputIterator1, class _InputIterator2, class _OutputIterator, class _Compare = std::less<>>
 		_OutputIterator
 		__set_difference(_InputIterator1 __first1, _InputIterator1 __last1,
@@ -141,7 +141,84 @@ namespace time_series {
 			}
 			return __result;
 		}
+
+
+		template <class _Compare, class _InputIterator1, class _InputIterator2, class _OutputIterator>
+		_LIBCPP_CONSTEXPR_AFTER_CXX17 _OutputIterator
+		__set_intersection(_InputIterator1 __first1, _InputIterator1 __last1,
+				_InputIterator2 __first2, _InputIterator2 __last2, _OutputIterator __result, _Compare __comp)
+		{
+			while (__first1 != __last1 && __first2 != __last2)
+			{
+				if (__comp(*__first1, *__first2))
+					++__first1;
+				else
+				{
+					if (!__comp(*__first2, *__first1))
+					{
+						*__result = *__first1;
+						++__result;
+						++__first1;
+					}
+					++__first2;
+				}
+			}
+			return __result;
+		}
+
+
+		template <class _Compare, class _InputIterator1, class _InputIterator2, class _OutputIterator>
+		_OutputIterator
+		__set_union(_InputIterator1 __first1, _InputIterator1 __last1,
+				_InputIterator2 __first2, _InputIterator2 __last2, _OutputIterator __result, _Compare __comp)
+		{
+			for (; __first1 != __last1; ++__result)
+			{
+				if (__first2 == __last2)
+					return _VSTD::copy(__first1, __last1, __result);
+				if (__comp(*__first2, *__first1))
+				{
+					*__result = *__first2;
+					++__first2;
+				}
+				else
+				{
+					if (!__comp(*__first1, *__first2))
+						++__first2;
+					*__result = *__first1;
+					++__first1;
+				}
+			}
+			return _VSTD::copy(__first2, __last2, __result);
+		}
 #endif
+
+/**
+ * @brief
+ * copy-paste from algorithm
+ * + merge of set_intersection and set_difference
+ * + default param for Comp
+ * */
+		template <class _InputIterator1, class _InputIterator2, class _OutputIterator, class _Compare = std::less<>>
+		constexpr _OutputIterator
+		set_intersection_and_difference(_InputIterator1 __first1, _InputIterator1 __last1,
+				_InputIterator2 __first2, _InputIterator2 __last2, _OutputIterator __result, [[maybe_unused]] _Compare __comp = std::less<>{})
+		{
+			while (__first1 != __last1)
+			{
+				if (__first2 == __last2) {
+					return std::copy(__first1, __last1, __result);
+				}
+
+						*__result = *__first1;
+						++__result;
+						++__first1;
+					++__first2;
+				}
+
+			return __result;
+		}
+
 	  }//!namespace
 
 /**
@@ -191,6 +268,7 @@ namespace time_series {
 			  Difference,
 			  SymmetricDifference,
 			  Union,
+			  IntersectionAndDifference,
 		  };
 		  operator int() { return static_cast<int>(op); }
 
@@ -208,7 +286,8 @@ switch(c) \
 { case 1: std::set_intersection          (__VA_ARGS__); break; \
   case 2: std::set_difference            (__VA_ARGS__); break; \
   case 3: std::set_symmetric_difference  (__VA_ARGS__); break; \
-  case 4: std::set_union                 (__VA_ARGS__); break;  }
+  case 4: std::set_union				 (__VA_ARGS__); break; \
+  case 5: itertools::details::set_intersection_and_difference (__VA_ARGS__); break;  }
 
 	  template<typename Serie>
 	  bool isSortedAscending(Serie const& v)
@@ -333,38 +412,14 @@ switch(c) \
 			  auto args = std::make_tuple(std::forward<SerieArgs>(series)...);
 			  if (order==boiler_plate::SetOperations::Order::RightToLeft) {
 				  args = tupletools::reverseTuple(std::move(args));
+				  auto _ = implementSetOperation(operation, std::move(t), std::move(args));
+				  return tupletools::reverseTuple(std::move(_));
 			  }
 			  return implementSetOperation(operation, std::move(t), std::move(args));
 		  }
 	  }
 	}//!namespace
 
-	namespace set_operations {
-
-	  template<typename... SerieArgs>
-	  auto symmetric_difference(boiler_plate::SetOperations::Order order, SerieArgs&& ...series){
-		  boiler_plate::SetOperations operation{boiler_plate::SetOperations::Operation::SymmetricDifference};
-		  return boiler_plate::callOperation<SerieArgs...>(operation, order, std::forward<SerieArgs>(series)...);
-	  }
-
-	  template<typename... SerieArgs>
-	  auto difference(boiler_plate::SetOperations::Order order, SerieArgs&& ...series) {
-		  boiler_plate::SetOperations operation{boiler_plate::SetOperations::Operation::Difference};
-		  return boiler_plate::callOperation<SerieArgs...>(operation, order, std::forward<SerieArgs>(series)...);
-	  }
-
-	  template<typename... SerieArgs>
-	  auto intersection(boiler_plate::SetOperations::Order order, SerieArgs&& ...series) {
-		  boiler_plate::SetOperations operation{boiler_plate::SetOperations::Operation::Intersection};
-		  return boiler_plate::callOperation<SerieArgs...>(operation, order, std::forward<SerieArgs>(series)...);
-	  }
-
-	  template<typename... SerieArgs>
-	  auto union_(boiler_plate::SetOperations::Order order, SerieArgs&& ...series) {
-		  boiler_plate::SetOperations operation{boiler_plate::SetOperations::Operation::Union};
-		  return boiler_plate::callOperation<SerieArgs...>(operation, order, std::forward<SerieArgs>(series)...);
-	  }
-	}//!namespace
   }//!namespace
 
   namespace join {
@@ -372,57 +427,64 @@ switch(c) \
 	template<typename... SerieArgs>
 	auto outerFull(SerieArgs&& ...series)
 	{
-		using namespace details;
-		auto const order = boiler_plate::SetOperations::Order::LeftToRight;
-		return set_operations::union_(order, std::forward<SerieArgs>(series)...);
+		using namespace details::boiler_plate;
+		auto const order = SetOperations::Order::LeftToRight;
+		SetOperations operation{SetOperations::Operation::Union};
+		return callOperation<SerieArgs...>(operation, order, std::forward<SerieArgs>(series)...);
 	}
 
 	template<typename... SerieArgs>
 	auto outerExcluding(SerieArgs&& ...series)
 	{
-		using namespace details;
-		auto const order = boiler_plate::SetOperations::Order::LeftToRight;
-		return set_operations::symmetric_difference(order, std::forward<SerieArgs>(series)...);
+		using namespace details::boiler_plate;
+		auto const order = SetOperations::Order::LeftToRight;
+		SetOperations operation{SetOperations::Operation::SymmetricDifference};
+		return callOperation<SerieArgs...>(operation, order, std::forward<SerieArgs>(series)...);
 	}
 
 	template<typename... SerieArgs>
 	auto inner(SerieArgs&& ...series)
 	{
-		using namespace details;
-		auto const order = boiler_plate::SetOperations::Order::LeftToRight;
-		return set_operations::intersection(order, std::forward<SerieArgs>(series)...);
+		using namespace details::boiler_plate;
+		auto const order = SetOperations::Order::LeftToRight;
+		SetOperations operation{SetOperations::Operation::Intersection};
+		return callOperation<SerieArgs...>(operation, order, std::forward<SerieArgs>(series)...);
 	}
 
 	template<typename... SerieArgs>
 	auto leftOuter(SerieArgs&& ...series)
 	{
-		using namespace details;
-		auto const order = boiler_plate::SetOperations::Order::LeftToRight;
-		return set_operations::symmetric_difference(order, std::forward<SerieArgs>(series)...);
+		using namespace details::boiler_plate;
+		auto const order = SetOperations::Order::LeftToRight;
+		SetOperations operation{SetOperations::Operation::IntersectionAndDifference};
+		return callOperation<SerieArgs...>(operation, order, std::forward<SerieArgs>(series)...);
 	}
 
 	template<typename... SerieArgs>
 	auto leftExcluding(SerieArgs&& ...series)
 	{
-		using namespace details;
-		auto const order = boiler_plate::SetOperations::Order::LeftToRight;
-		return set_operations::difference(order, std::forward<SerieArgs>(series)...);
+		using namespace details::boiler_plate;
+		auto const order = SetOperations::Order::LeftToRight;
+		SetOperations operation{SetOperations::Operation::Difference};
+		return callOperation<SerieArgs...>(operation, order, std::forward<SerieArgs>(series)...);
 	}
 
 	template<typename... SerieArgs>
 	auto rightOuter(SerieArgs&& ...series)
 	{
-		using namespace details;
-		auto const order = boiler_plate::SetOperations::Order::RightToLeft;
-		return set_operations::symmetric_difference(order, std::forward<SerieArgs>(series)...);
+		using namespace details::boiler_plate;
+		auto const order = SetOperations::Order::RightToLeft;
+		SetOperations operation{SetOperations::Operation::IntersectionAndDifference};
+		return callOperation<SerieArgs...>(operation, order, std::forward<SerieArgs>(series)...);
 	}
 
 	template<typename... SerieArgs>
 	auto rightExcluding(SerieArgs&& ...series)
 	{
-		using namespace details;
-		auto const order = boiler_plate::SetOperations::Order::RightToLeft;
-		return set_operations::difference(order, std::forward<SerieArgs>(series)...);
+		using namespace details::boiler_plate;
+		auto const order = SetOperations::Order::RightToLeft;
+		SetOperations operation{SetOperations::Operation::Difference};
+		return callOperation<SerieArgs...>(operation, order, std::forward<SerieArgs>(series)...);
 	}
 
   }//!namespace

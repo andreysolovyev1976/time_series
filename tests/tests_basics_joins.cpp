@@ -133,21 +133,6 @@ TEST(BasicsJoins, OuterExcluding) {
 }
 
 TEST(BasicsJoins, LeftOuter) {
-	result.clear();
-	std::set_difference(m1.begin(), m1.end(), m2.begin(), m2.end(), res);
-	std::cout << result << '\n';
-	result.clear();
-	std::set_difference(m2.begin(), m2.end(), m1.begin(), m1.end(), res);
-	std::cout << result << '\n';
-
-	result.clear();
-	std::set_symmetric_difference(m1.begin(), m1.end(), m2.begin(), m2.end(), res);
-	std::cout << result << '\n';
-	result.clear();
-	std::set_symmetric_difference(m2.begin(), m2.end(), m1.begin(), m1.end(), res);
-	std::cout << result << '\n';
-
-
 	auto result_other = time_series::join::leftOuter(m1, m2);
 	std::stringstream ss;
 	ss << result_other << '\n';
@@ -167,11 +152,7 @@ TEST(BasicsJoins, RightOuter) {
 	auto result_other = time_series::join::rightOuter(m1, m2);
 	std::stringstream ss;
 	ss << result_other << '\n';
-	std::string const check {R"([0, 27]
-[3, 12]
-[2, 16]
-[3, 20]
-)"};
+	std::string const check {R"([{ 0 3 2 3 }, { 27 12 16 20 }])"};
 	ASSERT_EQ(check, ss.str());
 }
 
