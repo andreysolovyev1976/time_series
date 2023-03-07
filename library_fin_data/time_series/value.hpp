@@ -4,18 +4,18 @@
 
 #pragma once
 
-#include "utils/utils.hpp"
+#include "common_usage_library/utils.hpp"
+#include "common_usage_library/floating_point_comp.hpp"
+#include "common_usage_library/types_requirements/ctor_input.h"
+#include "common_usage_library/types_requirements/operators.h"
 #include "time_series/const_values.h"
 #include "time_series/timestamp.hpp"
-#include "time_series/floating_point_comp.hpp"
 #include "time_series/value_traits.h"
-#include "time_series/types_requirements/ctor_input.h"
-#include "time_series/types_requirements/operators.h"
 
 #ifndef BASE_VALUE_H
 #define BASE_VALUE_H
 
-namespace base {
+namespace time_series {
   
   /**
    * @details
@@ -25,7 +25,7 @@ namespace base {
    * Therefore all the operators are declared and defined as well.
    * */
 
-  template <typename ValueType = traits::ValueTypeDefault>
+  template <typename ValueType = value::traits::ValueTypeDefault>
 //  struct Value : traits::ValueBase<Value<ValueType>> { //excluded CRTP, no need for that
   struct Value {
 	  using value_type = ValueType;
@@ -33,9 +33,9 @@ namespace base {
 	  ValueType value {};
 
 	  Value() = default;
-	  template <typename Input, requirements::ConveribleOrConstructibleFromTo<Input, ValueType> = true>
+	  template <typename Input, culib::requirements::ConveribleOrConstructibleFromTo<Input, ValueType> = true>
 	  Value(Input&& input);
-	  template <typename Input, requirements::ConveribleOrConstructibleFromTo<Input, ValueType> = true>
+	  template <typename Input, culib::requirements::ConveribleOrConstructibleFromTo<Input, ValueType> = true>
 	  Value& operator = (Input&& input);
 
 	  Value (std::string&& input);
@@ -52,33 +52,33 @@ namespace base {
 
   template <typename ValueType>
   template <typename Input,
-		  requirements::ConveribleOrConstructibleFromTo<Input, ValueType>>
+		  culib::requirements::ConveribleOrConstructibleFromTo<Input, ValueType>>
   Value<ValueType>::Value(Input&& input) : value(std::forward<Input>(input)) {}
 
   template <typename ValueType>
-  template <typename Input, requirements::ConveribleOrConstructibleFromTo<Input, ValueType>>
+  template <typename Input, culib::requirements::ConveribleOrConstructibleFromTo<Input, ValueType>>
   Value<ValueType>& Value<ValueType>::operator = (Input&& input) {
 	  value = std::forward<Input>(input);
 	  return *this;
   }
   template <typename ValueType>
   Value<ValueType>::Value (std::string&& input) {
-	  auto input_number = base::utils::fromChars(std::move(input));
+	  auto input_number = culib::utils::fromChars(std::move(input));
 	  using Input = decltype(input_number);
-	  static_assert(requirements::isConveribleOrConstructible<Input, ValueType>());
+	  static_assert(culib::requirements::isConveribleOrConstructible<Input, ValueType>());
 	  value = input_number;
   }
   template <typename ValueType>
   Value<ValueType>::Value (const std::string& input) {
-	  auto input_number = base::utils::fromChars(input);
+	  auto input_number = culib::utils::fromChars(input);
 	  using Input = decltype(input_number);
-	  static_assert(requirements::isConveribleOrConstructible<Input, ValueType>());
+	  static_assert(culib::requirements::isConveribleOrConstructible<Input, ValueType>());
 	  value = input_number;
   }
 
   template <typename ValueType>
   std::string Value<ValueType>::toString () const {
-	  return utils::toChars(value);
+	  return culib::utils::toChars(value);
   }
 
 
@@ -104,7 +104,7 @@ namespace base {
   template <typename ValueType>
   bool operator==(const Value<ValueType>& lhs, const Value<ValueType>& rhs) {
 	  if constexpr (std::is_floating_point_v<ValueType>)
-	  	return comp::eq(lhs.value, rhs.value);
+	  	return culib::comp::eq(lhs.value, rhs.value);
 	  else 
 		  return lhs.value == rhs.value;
   }
@@ -117,82 +117,82 @@ namespace base {
    */
 
   template <typename ValueType, typename Other,
-		  requirements::NotSame<Value<ValueType>, Other> = true,
-		  requirements::BinOperatorsExist<ValueType, Other> = true>
+		  culib::requirements::NotSame<Value<ValueType>, Other> = true,
+		  culib::requirements::BinOperatorsExist<ValueType, Other> = true>
   bool operator==(const Value<ValueType>& lhs, const Other& rhs) {
 	  if constexpr (std::is_floating_point_v<ValueType> && std::is_integral_v<Other>)
-		  return comp::eq(lhs.value, rhs);
+		  return culib::comp::eq(lhs.value, rhs);
 	  else if constexpr (std::is_integral_v<ValueType> && std::is_floating_point_v<Other>)
-		  return comp::eq(lhs.value, rhs);
+		  return culib::comp::eq(lhs.value, rhs);
 	  else
 		  return lhs.value == rhs;
   }
   template <typename ValueType, typename Other,
-		  requirements::NotSame<Value<ValueType>, Other> = true,
-		  requirements::BinOperatorsExist<ValueType, Other> = true>
+		  culib::requirements::NotSame<Value<ValueType>, Other> = true,
+		  culib::requirements::BinOperatorsExist<ValueType, Other> = true>
   bool operator==(const Other& lhs, const Value<ValueType>& rhs) {
 	  if constexpr (std::is_floating_point_v<ValueType> && std::is_integral_v<Other>)
-		  return comp::eq(lhs, rhs.value);
+		  return culib::comp::eq(lhs, rhs.value);
 	  else if constexpr (std::is_integral_v<ValueType> && std::is_floating_point_v<Other>)
-		  return comp::eq(lhs, rhs.value);
+		  return culib::comp::eq(lhs, rhs.value);
 	  else
 		  return lhs == rhs.value;
   }
   template <typename ValueType>
   bool operator!=(const Value<ValueType>& lhs, const Value<ValueType>& rhs) {
 	  if constexpr (std::is_floating_point_v<ValueType>)
-		  return comp::ne(lhs.value, rhs.value);
+		  return culib::comp::ne(lhs.value, rhs.value);
 	  else
 		  return !(lhs.value == rhs.value);
   }
   template <typename ValueType, typename Other,
-		  requirements::NotSame<Value<ValueType>, Other> = true,
-		  requirements::BinOperatorsExist<ValueType, Other> = true>
+		  culib::requirements::NotSame<Value<ValueType>, Other> = true,
+		  culib::requirements::BinOperatorsExist<ValueType, Other> = true>
   bool operator!=(const Value<ValueType>& lhs, const Other& rhs) {
 	  if constexpr (std::is_floating_point_v<ValueType> && std::is_integral_v<Other>)
-		  return comp::ne(lhs.value, rhs);
+		  return culib::comp::ne(lhs.value, rhs);
 	  else if constexpr (std::is_integral_v<ValueType> && std::is_floating_point_v<Other>)
-		  return comp::ne(lhs.value, rhs);
+		  return culib::comp::ne(lhs.value, rhs);
 	  else
 		  return !(lhs.value==rhs);
   }
   template <typename ValueType, typename Other,
-		  requirements::NotSame<Value<ValueType>, Other> = true,
-		  requirements::BinOperatorsExist<ValueType, Other> = true>
+		  culib::requirements::NotSame<Value<ValueType>, Other> = true,
+		  culib::requirements::BinOperatorsExist<ValueType, Other> = true>
   bool operator!=(const Other& lhs, const Value<ValueType>& rhs) {
 	  if constexpr (std::is_floating_point_v<ValueType> && std::is_integral_v<Other>)
-		  return comp::ne(lhs, rhs.value);
+		  return culib::comp::ne(lhs, rhs.value);
 	  else if constexpr (std::is_integral_v<ValueType> && std::is_floating_point_v<Other>)
-		  return comp::ne(lhs, rhs.value);
+		  return culib::comp::ne(lhs, rhs.value);
 	  else
 		  return !(lhs == rhs.value);
   }
   template <typename ValueType>
   bool operator < (const Value<ValueType>& lhs, const Value<ValueType>& rhs) {
 	  if constexpr (std::is_floating_point_v<ValueType>)
-		  return comp::lt(lhs.value, rhs.value);
+		  return culib::comp::lt(lhs.value, rhs.value);
 	  else
 	  return lhs.value < rhs.value;
   }
   template <typename ValueType, typename Other,
-		  requirements::NotSame<Value<ValueType>, Other> = true,
-		  requirements::BinOperatorsExist<ValueType, Other> = true>
+		  culib::requirements::NotSame<Value<ValueType>, Other> = true,
+		  culib::requirements::BinOperatorsExist<ValueType, Other> = true>
   bool operator < (const Value<ValueType>& lhs, const Other& rhs) {
 	  if constexpr (std::is_floating_point_v<ValueType> && std::is_integral_v<Other>)
-		  return comp::lt(lhs.value, rhs);
+		  return culib::comp::lt(lhs.value, rhs);
 	  else if constexpr (std::is_integral_v<ValueType> && std::is_floating_point_v<Other>)
-		  return comp::lt(lhs.value, rhs);
+		  return culib::comp::lt(lhs.value, rhs);
 	  else
 		  return lhs.value < rhs;
   }
   template <typename ValueType, typename Other,
-		  requirements::NotSame<Value<ValueType>, Other> = true,
-		  requirements::BinOperatorsExist<ValueType, Other> = true>
+		  culib::requirements::NotSame<Value<ValueType>, Other> = true,
+		  culib::requirements::BinOperatorsExist<ValueType, Other> = true>
   bool operator < (const Other& lhs, const Value<ValueType>& rhs) {
 	  if constexpr (std::is_floating_point_v<ValueType> && std::is_integral_v<Other>)
-		  return comp::lt(lhs, rhs.value);
+		  return culib::comp::lt(lhs, rhs.value);
 	  else if constexpr (std::is_integral_v<ValueType> && std::is_floating_point_v<Other>)
-		  return comp::lt(lhs, rhs.value);
+		  return culib::comp::lt(lhs, rhs.value);
 	  else
 		  return lhs < rhs.value;
   }
@@ -201,14 +201,14 @@ namespace base {
 	  return (!(rhs == lhs) && !(lhs < rhs));
   }
   template <typename ValueType, typename Other,
-		  requirements::NotSame<Value<ValueType>, Other> = true,
-		  requirements::BinOperatorsExist<ValueType, Other> = true>
+		  culib::requirements::NotSame<Value<ValueType>, Other> = true,
+		  culib::requirements::BinOperatorsExist<ValueType, Other> = true>
   bool operator > (const Value<ValueType>& lhs, const Other& rhs) {
 	  return (!(rhs == lhs) && !(lhs < rhs));
   }
   template <typename ValueType, typename Other,
-		  requirements::NotSame<Value<ValueType>, Other> = true,
-		  requirements::BinOperatorsExist<ValueType, Other> = true>
+		  culib::requirements::NotSame<Value<ValueType>, Other> = true,
+		  culib::requirements::BinOperatorsExist<ValueType, Other> = true>
   bool operator > (const Other& lhs, const Value<ValueType>& rhs) {
 	  return (!(rhs == lhs) && !(lhs < rhs));
   }
@@ -217,14 +217,14 @@ namespace base {
 	  return ((rhs == lhs) || (lhs < rhs));
   }
   template <typename ValueType, typename Other,
-		  requirements::NotSame<Value<ValueType>, Other> = true,
-		  requirements::BinOperatorsExist<ValueType, Other> = true>
+		  culib::requirements::NotSame<Value<ValueType>, Other> = true,
+		  culib::requirements::BinOperatorsExist<ValueType, Other> = true>
   bool operator <= (const Value<ValueType>& lhs, const Other& rhs) {
 	  return ((rhs == lhs) || (lhs < rhs));
   }
   template <typename ValueType, typename Other,
-		  requirements::NotSame<Value<ValueType>, Other> = true,
-		  requirements::BinOperatorsExist<ValueType, Other> = true>
+		  culib::requirements::NotSame<Value<ValueType>, Other> = true,
+		  culib::requirements::BinOperatorsExist<ValueType, Other> = true>
   bool operator <= (const Other& lhs, const Value<ValueType>& rhs) {
 	  return ((rhs == lhs) || (lhs < rhs));
   }
@@ -233,14 +233,14 @@ namespace base {
 	  return ((rhs == lhs) || (lhs > rhs));
   }
   template <typename ValueType, typename Other,
-		  requirements::NotSame<Value<ValueType>, Other> = true,
-		  requirements::BinOperatorsExist<ValueType, Other> = true>
+		  culib::requirements::NotSame<Value<ValueType>, Other> = true,
+		  culib::requirements::BinOperatorsExist<ValueType, Other> = true>
   bool operator >= (const Value<ValueType>& lhs, const Other& rhs){
 	  return ((rhs == lhs) || (lhs > rhs));
   }
   template <typename ValueType, typename Other,
-		  requirements::NotSame<Value<ValueType>, Other> = true,
-		  requirements::BinOperatorsExist<ValueType, Other> = true>
+		  culib::requirements::NotSame<Value<ValueType>, Other> = true,
+		  culib::requirements::BinOperatorsExist<ValueType, Other> = true>
   bool operator >= (const Other& lhs, const Value<ValueType>& rhs){
 	  return ((rhs == lhs) || (lhs > rhs));
   }
@@ -253,16 +253,16 @@ namespace base {
 	  return res;
   }
   template <typename ValueType, typename Other,
-		  requirements::NotSame<Value<ValueType>, Other> = true,
-		  requirements::BinOperatorsExist<ValueType, Other> = true>
+		  culib::requirements::NotSame<Value<ValueType>, Other> = true,
+		  culib::requirements::BinOperatorsExist<ValueType, Other> = true>
   Value<ValueType> operator*(const Value<ValueType>& lhs, Other &&rhs) {
 	  Value<ValueType> res;
 	  res.value = lhs.value * std::forward<Other>(rhs);
 	  return res;
   }
   template <typename ValueType, typename Other,
-		  requirements::NotSame<Value<ValueType>, Other> = true,
-		  requirements::BinOperatorsExist<ValueType, Other> = true>
+		  culib::requirements::NotSame<Value<ValueType>, Other> = true,
+		  culib::requirements::BinOperatorsExist<ValueType, Other> = true>
   Value<ValueType> operator*(Other &&lhs, const Value<ValueType>& rhs) {
 	  Value<ValueType> res;
 	  res.value = std::forward<Other>(lhs) * rhs.value;
@@ -275,16 +275,16 @@ namespace base {
 	  return res;
   }
   template <typename ValueType, typename Other,
-		  requirements::NotSame<Value<ValueType>, Other> = true,
-		  requirements::BinOperatorsExist<ValueType, Other> = true>
+		  culib::requirements::NotSame<Value<ValueType>, Other> = true,
+		  culib::requirements::BinOperatorsExist<ValueType, Other> = true>
   Value<ValueType> operator / (const Value<ValueType>& lhs, Other &&rhs) {
 	  Value<ValueType> res;
 	  res.value = lhs.value / std::forward<Other>(rhs);
 	  return res;
   }
   template <typename ValueType, typename Other,
-		  requirements::NotSame<Value<ValueType>, Other> = true,
-		  requirements::BinOperatorsExist<ValueType, Other> = true>
+		  culib::requirements::NotSame<Value<ValueType>, Other> = true,
+		  culib::requirements::BinOperatorsExist<ValueType, Other> = true>
   Value<ValueType> operator / (Other &&lhs, const Value<ValueType>& rhs) {
 	  Value<ValueType> res;
 	  res.value = std::forward<Other>(lhs) / rhs.value;
@@ -297,8 +297,8 @@ namespace base {
 	  return res;
   }
   template <typename ValueType, typename Other,
-		  requirements::NotSame<Value<ValueType>, Other> = true,
-		  requirements::BinOperatorsExist<ValueType, Other> = true>
+		  culib::requirements::NotSame<Value<ValueType>, Other> = true,
+		  culib::requirements::BinOperatorsExist<ValueType, Other> = true>
   Value<ValueType> operator + (const Value<ValueType>& lhs, Other &&rhs) {
 	  Value<ValueType> res;
 	  res.value = lhs.value + std::forward<Other>(rhs);
@@ -306,8 +306,8 @@ namespace base {
   }
   template <typename ValueType, typename Other,
 		  typename = std::enable_if_t<not std::is_same_v<std::decay_t<Value<ValueType>>, std::decay_t<Other>>>,
-		  requirements::NotSame<Value<ValueType>, Other> = true,
-		  requirements::BinOperatorsExist<ValueType, Other> = true>
+		  culib::requirements::NotSame<Value<ValueType>, Other> = true,
+		  culib::requirements::BinOperatorsExist<ValueType, Other> = true>
   Value<ValueType> operator + (Other &&lhs, const Value<ValueType>& rhs) {
 	  Value<ValueType> res;
 	  res.value = std::forward<Other>(lhs) + rhs.value;
@@ -320,16 +320,16 @@ namespace base {
 	  return res;
   }
   template <typename ValueType, typename Other,
-		  requirements::NotSame<Value<ValueType>, Other> = true,
-		  requirements::BinOperatorsExist<ValueType, Other> = true>
+		  culib::requirements::NotSame<Value<ValueType>, Other> = true,
+		  culib::requirements::BinOperatorsExist<ValueType, Other> = true>
   Value<ValueType> operator - (const Value<ValueType>& lhs, Other &&rhs) {
 	  Value<ValueType> res;
 	  res.value = lhs.value - std::forward<Other>(rhs);
 	  return res;
   }
   template <typename ValueType, typename Other,
-		  requirements::NotSame<Value<ValueType>, Other> = true,
-		  requirements::BinOperatorsExist<ValueType, Other> = true>
+		  culib::requirements::NotSame<Value<ValueType>, Other> = true,
+		  culib::requirements::BinOperatorsExist<ValueType, Other> = true>
   Value<ValueType> operator - (Other &&lhs, const Value<ValueType>& rhs) {
 	  Value<ValueType> res;
 	  res.value = std::forward<Other>(lhs) - rhs.value;
@@ -343,8 +343,8 @@ namespace base {
 	  return lhs;
   }
   template <typename ValueType, typename Other,
-		  requirements::NotSame<Value<ValueType>, Other> = true,
-		  requirements::BinOperatorsExist<ValueType, Other> = true>
+		  culib::requirements::NotSame<Value<ValueType>, Other> = true,
+		  culib::requirements::BinOperatorsExist<ValueType, Other> = true>
   Value<ValueType>& operator += (Value<ValueType>& lhs, Other &&rhs) {
 	  lhs.value += std::forward<Other>(rhs);
 	  return lhs;
@@ -355,8 +355,8 @@ namespace base {
 	  return lhs;
   }
   template <typename ValueType, typename Other,
-		  requirements::NotSame<Value<ValueType>, Other> = true,
-		  requirements::BinOperatorsExist<ValueType, Other> = true>
+		  culib::requirements::NotSame<Value<ValueType>, Other> = true,
+		  culib::requirements::BinOperatorsExist<ValueType, Other> = true>
   Value<ValueType>& operator -= (Value<ValueType>& lhs, Other &&rhs) {
 	  lhs.value -= std::forward<Other>(rhs);
 	  return lhs;
@@ -367,8 +367,8 @@ namespace base {
 	  return lhs;
   }
   template <typename ValueType, typename Other,
-		  requirements::NotSame<Value<ValueType>, Other> = true,
-		  requirements::BinOperatorsExist<ValueType, Other> = true>
+		  culib::requirements::NotSame<Value<ValueType>, Other> = true,
+		  culib::requirements::BinOperatorsExist<ValueType, Other> = true>
   Value<ValueType>& operator *= (Value<ValueType>& lhs, Other &&rhs) {
 	  lhs.value *= std::forward<Other>(rhs);
 	  return lhs;
@@ -379,8 +379,8 @@ namespace base {
 	  return lhs;
   }
   template <typename ValueType, typename Other,
-		  requirements::NotSame<Value<ValueType>, Other> = true,
-		  requirements::BinOperatorsExist<ValueType, Other> = true>
+		  culib::requirements::NotSame<Value<ValueType>, Other> = true,
+		  culib::requirements::BinOperatorsExist<ValueType, Other> = true>
   Value<ValueType>& operator /= (Value<ValueType>& lhs, Other &&rhs) {
 	  lhs.value /= std::forward<Other>(rhs);
 	  return lhs;

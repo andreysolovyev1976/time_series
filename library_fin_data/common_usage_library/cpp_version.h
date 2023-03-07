@@ -12,7 +12,7 @@
 #ifndef CPP_VERSION_H
 #define CPP_VERSION_H
 
-namespace cpp_standard {
+namespace culib::cpp_standard {
 
   enum class version {
 	  unknown,

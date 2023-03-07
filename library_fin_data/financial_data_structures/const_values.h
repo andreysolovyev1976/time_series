@@ -9,7 +9,7 @@
 #ifndef FIN_CONST_VALUES_H
 #define FIN_CONST_VALUES_H
 
-namespace financial {
+namespace time_series::financial {
   namespace const_values {
 	static const std::size_t EXPECTED_ERROR_MESSAGE_LENGTH {256u}; //arbitrary figure
 	static const std::size_t EXPECTED_OHLCV_LENGTH {32u}; //arbitrary figure

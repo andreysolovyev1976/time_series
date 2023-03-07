@@ -13,9 +13,9 @@
 #ifndef FIN_BID_ASK_H
 #define FIN_BID_ASK_H
 
-namespace financial {
+namespace time_series::financial {
 
-  template <typename ValueType = base::traits::ValueTypeDefault>
+  template <typename ValueType = value::traits::ValueTypeDefault>
 //  struct BidAsk final : base::traits::ValueBase<BidAsk<ValueType>> { //excluded CRTP, no need for now
   struct BidAsk final {
 	  using value_type = ValueType;
@@ -28,19 +28,19 @@ namespace financial {
 	  struct Volume{};
 
 	  BidAsk () = default;
-	  BidAsk (std::initializer_list<base::Value<ValueType>> values);
-	  template <typename Input, requirements::ConveribleOrConstructibleFromTo<Input, base::Value<ValueType>> = true>
+	  BidAsk (std::initializer_list<Value<ValueType>> values);
+	  template <typename Input, culib::requirements::ConveribleOrConstructibleFromTo<Input, Value<ValueType>> = true>
 	  BidAsk(const Input &input);
-	  template <typename Input, requirements::ConveribleOrConstructibleFromTo<Input, base::Value<ValueType>> = true>
+	  template <typename Input, culib::requirements::ConveribleOrConstructibleFromTo<Input, Value<ValueType>> = true>
 	  BidAsk& operator = (const Input &input);
 
 	  std::string toString() const;
 
-	  base::Value<ValueType> bid, ask, middle, price, volume {0.0};
+	  Value<ValueType> bid, ask, middle, price, volume {0.0};
   };
 
   template <typename ValueType>
-  BidAsk<ValueType>::BidAsk (std::initializer_list<base::Value<ValueType>> values) {
+  BidAsk<ValueType>::BidAsk (std::initializer_list<Value<ValueType>> values) {
 	  using namespace std::string_literals;
 	  if (values.size() != 5u) {
 		  throw std::invalid_argument (
@@ -56,7 +56,7 @@ namespace financial {
   }
 
   template <typename ValueType>
-  template <typename Input, requirements::ConveribleOrConstructibleFromTo<Input, base::Value<ValueType>>>
+  template <typename Input, culib::requirements::ConveribleOrConstructibleFromTo<Input, Value<ValueType>>>
   BidAsk<ValueType>::BidAsk(const Input &input){
 	  bid = input;
 	  ask = input;
@@ -66,7 +66,7 @@ namespace financial {
   }
 
   template <typename ValueType>
-  template <typename Input, requirements::ConveribleOrConstructibleFromTo<Input, base::Value<ValueType>>>
+  template <typename Input, culib::requirements::ConveribleOrConstructibleFromTo<Input, Value<ValueType>>>
   BidAsk<ValueType>& BidAsk<ValueType>::operator = (const Input &input) {
 	  bid = input;
 	  ask = input;
@@ -97,8 +97,8 @@ namespace financial {
   template <
 		  typename ValueType,
 		  typename Other,
-		  requirements::NotSame<base::Value<ValueType>, Other> = true,
-		  requirements::ComparisonOperationsDefined<base::Value<ValueType>, Other> = true,
+		  culib::requirements::NotSame<Value<ValueType>, Other> = true,
+		  culib::requirements::ComparisonOperationsDefined<Value<ValueType>, Other> = true,
 		  typename CompareBy = typename BidAsk<ValueType>::Price
   >
   bool operator == (const Other& lhs, const BidAsk<ValueType>& rhs) {
@@ -141,8 +141,8 @@ namespace financial {
   template <
 		  typename ValueType,
 		  typename Other,
-		  requirements::NotSame<base::Value<ValueType>, Other> = true,
-		  requirements::ComparisonOperationsDefined<base::Value<ValueType>, Other> = true,
+		  culib::requirements::NotSame<Value<ValueType>, Other> = true,
+		  culib::requirements::ComparisonOperationsDefined<Value<ValueType>, Other> = true,
 		  typename CompareBy = typename BidAsk<ValueType>::Price
   >
   bool operator == (const BidAsk<ValueType>& lhs, const Other& rhs) {
@@ -185,8 +185,8 @@ namespace financial {
   template <
 		  typename ValueType,
 		  typename Other,
-		  requirements::NotSame<base::Value<ValueType>, Other> = true,
-		  requirements::ComparisonOperationsDefined<base::Value<ValueType>, Other> = true,
+		  culib::requirements::NotSame<Value<ValueType>, Other> = true,
+		  culib::requirements::ComparisonOperationsDefined<Value<ValueType>, Other> = true,
 		  typename CompareBy = typename BidAsk<ValueType>::Price
   >
   bool operator != (const BidAsk<ValueType>& lhs, const Other& rhs) {
@@ -195,8 +195,8 @@ namespace financial {
   template <
 		  typename ValueType,
 		  typename Other,
-		  requirements::NotSame<base::Value<ValueType>, Other> = true,
-		  requirements::ComparisonOperationsDefined<base::Value<ValueType>, Other> = true,
+		  culib::requirements::NotSame<Value<ValueType>, Other> = true,
+		  culib::requirements::ComparisonOperationsDefined<Value<ValueType>, Other> = true,
 		  typename CompareBy = typename BidAsk<ValueType>::Price
   >
   bool operator != (const Other& lhs, const BidAsk<ValueType>& rhs) {
@@ -239,8 +239,8 @@ namespace financial {
   template <
 		  typename ValueType,
 		  typename Other,
-		  requirements::NotSame<base::Value<ValueType>, Other> = true,
-		  requirements::ComparisonOperationsDefined<base::Value<ValueType>, Other> = true,
+		  culib::requirements::NotSame<Value<ValueType>, Other> = true,
+		  culib::requirements::ComparisonOperationsDefined<Value<ValueType>, Other> = true,
 		  typename CompareBy = typename BidAsk<ValueType>::Price
   >
   bool operator < (const BidAsk<ValueType>& lhs, const Other& rhs) {
@@ -279,8 +279,8 @@ namespace financial {
   template <
 		  typename ValueType,
 		  typename Other,
-		  requirements::NotSame<base::Value<ValueType>, Other> = true,
-		  requirements::ComparisonOperationsDefined<base::Value<ValueType>, Other> = true,
+		  culib::requirements::NotSame<Value<ValueType>, Other> = true,
+		  culib::requirements::ComparisonOperationsDefined<Value<ValueType>, Other> = true,
 		  typename CompareBy = typename BidAsk<ValueType>::Price
   >
   bool operator < (const Other& lhs, const BidAsk<ValueType>& rhs) {
@@ -294,8 +294,8 @@ namespace financial {
   template <
 		  typename ValueType,
 		  typename Other,
-		  requirements::NotSame<base::Value<ValueType>, Other> = true,
-		  requirements::ComparisonOperationsDefined<base::Value<ValueType>, Other> = true,
+		  culib::requirements::NotSame<Value<ValueType>, Other> = true,
+		  culib::requirements::ComparisonOperationsDefined<Value<ValueType>, Other> = true,
 		  typename CompareBy = typename BidAsk<ValueType>::Price
   >
   bool operator > (const BidAsk<ValueType>& lhs, const Other& rhs) {
@@ -304,8 +304,8 @@ namespace financial {
   template <
 		  typename ValueType,
 		  typename Other,
-		  requirements::NotSame<base::Value<ValueType>, Other> = true,
-		  requirements::ComparisonOperationsDefined<base::Value<ValueType>, Other> = true,
+		  culib::requirements::NotSame<Value<ValueType>, Other> = true,
+		  culib::requirements::ComparisonOperationsDefined<Value<ValueType>, Other> = true,
 		  typename CompareBy = typename BidAsk<ValueType>::Price
   >
   bool operator > (const Other& lhs, const BidAsk<ValueType>& rhs) {
@@ -348,8 +348,8 @@ namespace financial {
   template <
 		  typename ValueType,
 		  typename Other,
-		  requirements::NotSame<base::Value<ValueType>, Other> = true,
-		  requirements::ComparisonOperationsDefined<base::Value<ValueType>, Other> = true,
+		  culib::requirements::NotSame<Value<ValueType>, Other> = true,
+		  culib::requirements::ComparisonOperationsDefined<Value<ValueType>, Other> = true,
 		  typename CompareBy = typename BidAsk<ValueType>::Price
   >
   bool operator <= (const BidAsk<ValueType>& lhs, const Other& rhs) {
@@ -387,8 +387,8 @@ namespace financial {
   template <
 		  typename ValueType,
 		  typename Other,
-		  requirements::NotSame<base::Value<ValueType>, Other> = true,
-		  requirements::ComparisonOperationsDefined<base::Value<ValueType>, Other> = true,
+		  culib::requirements::NotSame<Value<ValueType>, Other> = true,
+		  culib::requirements::ComparisonOperationsDefined<Value<ValueType>, Other> = true,
 		  typename CompareBy = typename BidAsk<ValueType>::Price
   >
   bool operator <= (const Other& lhs, const BidAsk<ValueType>& rhs) {
@@ -460,8 +460,8 @@ namespace financial {
   template <
 		  typename ValueType,
 		  typename Other,
-		  requirements::NotSame<base::Value<ValueType>, Other> = true,
-		  requirements::ComparisonOperationsDefined<base::Value<ValueType>, Other> = true,
+		  culib::requirements::NotSame<Value<ValueType>, Other> = true,
+		  culib::requirements::ComparisonOperationsDefined<Value<ValueType>, Other> = true,
 		  typename CompareBy = typename BidAsk<ValueType>::Price
   >
   bool operator >= (const BidAsk<ValueType>& lhs, const Other& rhs){
@@ -499,8 +499,8 @@ namespace financial {
   template <
 		  typename ValueType,
 		  typename Other,
-		  requirements::NotSame<base::Value<ValueType>, Other> = true,
-		  requirements::ComparisonOperationsDefined<base::Value<ValueType>, Other> = true,
+		  culib::requirements::NotSame<Value<ValueType>, Other> = true,
+		  culib::requirements::ComparisonOperationsDefined<Value<ValueType>, Other> = true,
 		  typename CompareBy = typename BidAsk<ValueType>::Price
   >
   bool operator >= (const Other& lhs, const BidAsk<ValueType>& rhs){
@@ -551,8 +551,8 @@ namespace financial {
 		  typename ValueType,
 		  typename Other,
 		  bool VolumeToo = false,
-		  requirements::NotSame<base::Value<ValueType>, Other> = true,
-		  requirements::BinOperatorsExist<base::Value<ValueType>, Other> = true
+		  culib::requirements::NotSame<Value<ValueType>, Other> = true,
+		  culib::requirements::BinOperatorsExist<Value<ValueType>, Other> = true
   >
   BidAsk<ValueType> operator * (const BidAsk<ValueType>& lhs, const Other &rhs) {
 	  BidAsk<ValueType> res;
@@ -569,8 +569,8 @@ namespace financial {
 		  typename ValueType,
 		  typename Other,
 		  bool VolumeToo = false,
-		  requirements::NotSame<base::Value<ValueType>, Other> = true,
-		  requirements::BinOperatorsExist<base::Value<ValueType>, Other> = true
+		  culib::requirements::NotSame<Value<ValueType>, Other> = true,
+		  culib::requirements::BinOperatorsExist<Value<ValueType>, Other> = true
   >
   BidAsk<ValueType> operator * (const Other &lhs, const BidAsk<ValueType>& rhs) {
 	  BidAsk<ValueType> res;
@@ -598,8 +598,8 @@ namespace financial {
 		  typename ValueType,
 		  typename Other,
 		  bool VolumeToo = false,
-		  requirements::NotSame<base::Value<ValueType>, Other> = true,
-		  requirements::BinOperatorsExist<base::Value<ValueType>, Other> = true
+		  culib::requirements::NotSame<Value<ValueType>, Other> = true,
+		  culib::requirements::BinOperatorsExist<Value<ValueType>, Other> = true
   >
   BidAsk<ValueType> operator / (const BidAsk<ValueType>& lhs, const Other &rhs) {
 	  BidAsk<ValueType> res;
@@ -616,8 +616,8 @@ namespace financial {
 		  typename ValueType,
 		  typename Other,
 		  bool VolumeToo = false,
-		  requirements::NotSame<base::Value<ValueType>, Other> = true,
-		  requirements::BinOperatorsExist<base::Value<ValueType>, Other> = true
+		  culib::requirements::NotSame<Value<ValueType>, Other> = true,
+		  culib::requirements::BinOperatorsExist<Value<ValueType>, Other> = true
   >
   BidAsk<ValueType> operator / (const Other &lhs, const BidAsk<ValueType>& rhs) {
 	  BidAsk<ValueType> res;
@@ -645,8 +645,8 @@ namespace financial {
 		  typename ValueType,
 		  typename Other,
 		  bool VolumeToo = false,
-		  requirements::NotSame<base::Value<ValueType>, Other> = true,
-		  requirements::BinOperatorsExist<base::Value<ValueType>, Other> = true
+		  culib::requirements::NotSame<Value<ValueType>, Other> = true,
+		  culib::requirements::BinOperatorsExist<Value<ValueType>, Other> = true
   >
   BidAsk<ValueType> operator + (const BidAsk<ValueType>& lhs, const Other &rhs) {
 	  BidAsk<ValueType> res;
@@ -663,8 +663,8 @@ namespace financial {
 		  typename ValueType,
 		  typename Other,
 		  bool VolumeToo = false,
-		  requirements::NotSame<base::Value<ValueType>, Other> = true,
-		  requirements::BinOperatorsExist<base::Value<ValueType>, Other> = true
+		  culib::requirements::NotSame<Value<ValueType>, Other> = true,
+		  culib::requirements::BinOperatorsExist<Value<ValueType>, Other> = true
   >
   BidAsk<ValueType> operator + (const Other &lhs, const BidAsk<ValueType>& rhs) {
 	  BidAsk<ValueType> res;
@@ -692,8 +692,8 @@ namespace financial {
 		  typename ValueType,
 		  typename Other,
 		  bool VolumeToo = false,
-		  requirements::NotSame<base::Value<ValueType>, Other> = true,
-		  requirements::BinOperatorsExist<base::Value<ValueType>, Other> = true
+		  culib::requirements::NotSame<Value<ValueType>, Other> = true,
+		  culib::requirements::BinOperatorsExist<Value<ValueType>, Other> = true
   >
   BidAsk<ValueType> operator - (const BidAsk<ValueType>& lhs, const Other &rhs) {
 	  BidAsk<ValueType> res;
@@ -710,8 +710,8 @@ namespace financial {
 		  typename ValueType,
 		  typename Other,
 		  bool VolumeToo = false,
-		  requirements::NotSame<base::Value<ValueType>, Other> = true,
-		  requirements::BinOperatorsExist<base::Value<ValueType>, Other> = true
+		  culib::requirements::NotSame<Value<ValueType>, Other> = true,
+		  culib::requirements::BinOperatorsExist<Value<ValueType>, Other> = true
   >
   BidAsk<ValueType> operator - (const Other &lhs, const BidAsk<ValueType>& rhs) {
 	  BidAsk<ValueType> res;
@@ -739,8 +739,8 @@ namespace financial {
 		  typename ValueType,
 		  typename Other,
 		  bool VolumeToo = false,
-		  requirements::NotSame<base::Value<ValueType>, Other> = true,
-		  requirements::BinOperatorsExist<base::Value<ValueType>, Other> = true
+		  culib::requirements::NotSame<Value<ValueType>, Other> = true,
+		  culib::requirements::BinOperatorsExist<Value<ValueType>, Other> = true
   >
   BidAsk<ValueType>& operator += (BidAsk<ValueType>& lhs, const Other &rhs) {
 	  lhs.bid += rhs;
@@ -766,8 +766,8 @@ namespace financial {
 		  typename ValueType,
 		  typename Other,
 		  bool VolumeToo = false,
-		  requirements::NotSame<base::Value<ValueType>, Other> = true,
-		  requirements::BinOperatorsExist<base::Value<ValueType>, Other> = true
+		  culib::requirements::NotSame<Value<ValueType>, Other> = true,
+		  culib::requirements::BinOperatorsExist<Value<ValueType>, Other> = true
   >
   BidAsk<ValueType>& operator -= (BidAsk<ValueType>& lhs, const Other &rhs) {
 	  lhs.bid -= rhs;
@@ -793,8 +793,8 @@ namespace financial {
 		  typename ValueType,
 		  typename Other,
 		  bool VolumeToo = false,
-		  requirements::NotSame<base::Value<ValueType>, Other> = true,
-		  requirements::BinOperatorsExist<base::Value<ValueType>, Other> = true
+		  culib::requirements::NotSame<Value<ValueType>, Other> = true,
+		  culib::requirements::BinOperatorsExist<Value<ValueType>, Other> = true
   >
   BidAsk<ValueType>& operator *= (BidAsk<ValueType>& lhs, const Other &rhs) {
 	  lhs.bid *= rhs;
@@ -820,8 +820,8 @@ namespace financial {
 		  typename ValueType,
 		  typename Other,
 		  bool VolumeToo = false,
-		  requirements::NotSame<base::Value<ValueType>, Other> = true,
-		  requirements::BinOperatorsExist<base::Value<ValueType>, Other> = true
+		  culib::requirements::NotSame<Value<ValueType>, Other> = true,
+		  culib::requirements::BinOperatorsExist<Value<ValueType>, Other> = true
   >
   BidAsk<ValueType>& operator /= (BidAsk<ValueType>& lhs, const Other &rhs) {
 	  lhs.bid /= rhs;

@@ -24,7 +24,7 @@
 using namespace std::chrono_literals;
 using namespace boost::typeindex;
 using Duration = base::Microseconds;
-using ElemType = base::Value<std::int64_t>;
+using ElemType = time_series::Value<std::int64_t>;
 using Elem = time_series::Element<Duration, ElemType>;
 const auto pause_to_take = 10us;
 

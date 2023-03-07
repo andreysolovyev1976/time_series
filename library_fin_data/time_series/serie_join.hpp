@@ -4,9 +4,8 @@
 
 #pragma once
 
-#include "time_series/types_requirements/serie.h"
-#include "utils/itertools.hpp"
-#include "utils/joins.hpp"
+#include "common_usage_library/itertools.hpp"
+#include "common_usage_library/joins.hpp"
 
 #include <algorithm>
 #include <type_traits>

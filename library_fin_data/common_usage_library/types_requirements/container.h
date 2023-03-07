@@ -7,11 +7,10 @@
 #include <type_traits>
 #include <functional>
 
-
 #ifndef TYPE_REQUIREMENTS_DATA_SERIES_CONTAINER_H
 #define TYPE_REQUIREMENTS_DATA_SERIES_CONTAINER_H
 
-namespace requirements {
+namespace culib::requirements {
   /**
    * @details
    * Requirements to restrict containers only to be used as a serie

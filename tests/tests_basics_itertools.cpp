@@ -3,12 +3,15 @@
 //
 
 #include <gtest/gtest.h>
-#include "utils/itertools.hpp"
+#include "common_usage_library/itertools.hpp"
 #include <vector>
 #include <map>
 #include <string>
 #include <sstream>
 #include <type_traits>
+
+
+using namespace culib;
 
 TEST(BasicsItertools, ZipIter_Vector_String) {
 	std::vector<int> v{ 1,2,3,4,5 };
@@ -16,7 +19,7 @@ TEST(BasicsItertools, ZipIter_Vector_String) {
 
 	std::stringstream ss;
 
-	for (auto const& [first, second] : itertools::zip(s, v)) {
+	for (auto const& [first, second] : culib::itertools::zip(s, v)) {
 		ss << first << ' ' << second << '\n';
 	}
 	std::string check {R"(a 1

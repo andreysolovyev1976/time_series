@@ -5,7 +5,7 @@
 #pragma once
 
 #include "time_series/serie.hpp"
-#include "utils/randomer.hpp"
+#include "common_usage_library/randomer.hpp"
 
 #include <cstddef>
 #include <thread>
@@ -17,7 +17,7 @@ namespace time_series::utils {
 
   template <
 		  typename Duration = base::Microseconds
-		  , typename ElemType = base::Value<int>
+		  , typename ElemType = Value<int>
 		  , template <typename...> typename Container = std::vector
   >
   auto generateSerie (std::size_t required_size = 100u) {
@@ -30,7 +30,7 @@ namespace time_series::utils {
 
 	  for (std::size_t idx = 0; idx != required_size; ++idx) {
 		  std::this_thread::sleep_for(kstep);
-		  serie.insert(serie.end(), {base::utils::randomer(klower_limit, kupper_limit)});
+		  serie.insert(serie.end(), {culib::utils::randomer(klower_limit, kupper_limit)});
 	  }
 
 	  return serie;
@@ -38,7 +38,7 @@ namespace time_series::utils {
 
   template <
 		  typename Duration = base::Microseconds
-		  , typename ElemType = base::Value<int>
+		  , typename ElemType = Value<int>
 		  , template <typename...> typename Container = std::vector
   >
   auto generateSerie (int value, std::size_t required_size = 3u) {

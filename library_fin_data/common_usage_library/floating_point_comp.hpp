@@ -4,13 +4,15 @@
 
 #pragma once
 
-#include "time_series/types_requirements/numerics.h"
-#include "time_series/const_values.h"
+#include "types_requirements/numerics.h"
+#include "const_values.h"
+
+#include <mutex>
 
 #ifndef BASE_VALUE_COMP_H
 #define BASE_VALUE_COMP_H
 
-namespace comp {
+namespace culib::comp {
 /**
  * @details
  * overloads the operators to compare double and floats (floating_point)
@@ -33,13 +35,15 @@ namespace comp {
 		  static CompareWithPrecision cmp(precision);
 		  return cmp;
 	  }
-	  void setEpsilon(T e)
-	  {
+	  void setEpsilon(T e) {
+		  std::lock_guard<std::mutex> lg(mtx);
 		  epsilon = e;
 	  }
   private:
 	  explicit CompareWithPrecision(T precision)
-			  :epsilon(precision) { }
+			  :epsilon(precision)
+	  {}
+	  std::mutex mtx;
   public:
 	  T epsilon;
   };
@@ -55,7 +59,7 @@ namespace comp {
   static
   decltype(auto) floating_comp =
 		  []() -> CompareWithPrecision<double>& {
-			return CompareWithPrecision<double>::getStaticInstance(base::const_values::EPSILON_BY_DEFAULT);
+			return CompareWithPrecision<double>::getStaticInstance(culib::const_values::EPSILON_BY_DEFAULT);
 		  }();
 
 /**
@@ -98,7 +102,7 @@ namespace comp {
   template <typename T, typename U,
 		  requirements::IsFloatinPoint<T> = true,
 		  requirements::IsIntegral<U> = true>
-  static bool ne (U b, T a) noexcept 
+  static bool ne (U b, T a) noexcept
   {
 	  return not eq(a, b);
   }
@@ -112,7 +116,7 @@ namespace comp {
   template <typename T, typename U,
 		  requirements::IsFloatinPoint<T> = true,
 		  requirements::IsIntegral<U> = true>
-  static bool lt (T a, U b) noexcept 
+  static bool lt (T a, U b) noexcept
   {
 	  return a < b - floating_comp.epsilon;
   }
@@ -134,7 +138,7 @@ namespace comp {
   template <typename T, typename U,
 		  requirements::IsFloatinPoint<T> = true,
 		  requirements::IsIntegral<U> = true>
-  static bool gt (T a, U b) noexcept 
+  static bool gt (T a, U b) noexcept
   {
 	  return a > b + floating_comp.epsilon;
   }
@@ -152,7 +156,7 @@ namespace comp {
 	  return a > b + floating_comp.epsilon;
   }
 
-  
+
   template <typename T, typename U,
 		  requirements::IsFloatinPoint<T> = true,
 		  requirements::IsIntegral<U> = true>

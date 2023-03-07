@@ -4,8 +4,8 @@
 
 #include <gtest/gtest.h>
 
-#include "time_series/types_requirements/ctor_input.h"
-#include "time_series/types_requirements/container.h"
+#include "common_usage_library/types_requirements/ctor_input.h"
+#include "common_usage_library/types_requirements/container.h"
 #include "time_series/element.hpp"
 
 #include <functional>
@@ -16,6 +16,8 @@
 #include <string>
 #include <variant>
 
+
+using namespace culib;
 
 template <typename T>
 struct S {
@@ -59,7 +61,7 @@ TEST(BasicsTypesRequirements, CtorInputNotOk) {
 
 TEST(BasicsTypesRequirements, ContainerOk) {
 	using Elem = time_series::Element<base::Seconds, int>;
-	using Map = std::map<base::Timestamp<base::Seconds>, base::Value<base::traits::ValueTypeDefault>>;
+	using Map = std::map<base::Timestamp<base::Seconds>, time_series::Value<time_series::value::traits::ValueTypeDefault>>;
 	ASSERT_TRUE(requirements::isContainer_v<std::string>());
 	ASSERT_TRUE(requirements::isContainer_v<std::vector<Elem>>());
 	ASSERT_TRUE(requirements::isContainer_v<Map>());

@@ -12,7 +12,7 @@
 #ifndef RANDOMER_H
 #define RANDOMER_H
 
-namespace base::utils {
+namespace culib::utils {
 
   class Randomer {
 

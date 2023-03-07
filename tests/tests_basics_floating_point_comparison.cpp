@@ -3,10 +3,10 @@
 //
 
 #include <gtest/gtest.h>
-#include "floating_point_comp.hpp"
+#include "common_usage_library/floating_point_comp.hpp"
 
 
-using namespace comp;
+using namespace culib::comp;
 
 
 TEST (BasicsCompareFloats, EqualSame) {

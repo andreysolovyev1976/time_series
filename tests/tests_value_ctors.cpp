@@ -75,7 +75,7 @@ TYPED_TEST(ValueCtorsSingletons, MoveCtor) {
 TYPED_TEST(ValueCtorsSingletons, CompileError) {
 	struct S {};
 	[[maybe_unused]] S s;
-	// base::Value<base::Seconds> d (s); //todo: make a compile time test
+	// time_series::Value<base::Seconds> d (s); //todo: make a compile time test
 
 }
 
@@ -91,12 +91,12 @@ TYPED_TEST(ValueCtorsMultiField, ValueDefault) {
 }
 TYPED_TEST(ValueCtorsMultiField, CtorInitializerList) {
 	using v_type = typename TypeParam::value_type;
-	base::Value<v_type> one (42.5);
-	base::Value<v_type> two (42.5);
+	time_series::Value<v_type> one (42.5);
+	time_series::Value<v_type> two (42.5);
 	ASSERT_ANY_THROW([[maybe_unused]] TypeParam d ({one, two}));
-	base::Value<v_type> three (42.5);
-	base::Value<v_type> four (42.5);
-	base::Value<v_type> five (42.5);
+	time_series::Value<v_type> three (42.5);
+	time_series::Value<v_type> four (42.5);
+	time_series::Value<v_type> five (42.5);
 	ASSERT_NO_THROW([[maybe_unused]] TypeParam d ({one, two, three, four, five}));
 }
 
@@ -114,7 +114,7 @@ TYPED_TEST(ValueCtorsMultiField, ValueMoveCtor) {
 TYPED_TEST(ValueCtorsMultiField, CompileError) {
 	struct S {};
 	[[maybe_unused]] S s;
-	// base::Value<base::Seconds> d (s); //todo: make a compile time test
+	// time_series::Value<base::Seconds> d (s); //todo: make a compile time test
 }
 
 

@@ -3,7 +3,7 @@
 //
 
 #include <gtest/gtest.h>
-#include "utils/itertools.hpp"
+#include "common_usage_library/itertools.hpp"
 #include "time_series/serie_random_generator.hpp"
 
 #include <vector>
@@ -19,7 +19,7 @@ TEST(SerieItertools, Serie_String) {
 	std::string s { "abcdefghhlk" };
 	std::stringstream ss;
 
-	for (auto const& [first, second] : itertools::zip(s, ts)) {
+	for (auto const& [first, second] : culib::itertools::zip(s, ts)) {
 		ss << first << ' ' << second.value << '\n';
 	}
 	std::string check {R"(a 42
@@ -37,7 +37,7 @@ TEST(SerieItertools, Serie_Serie_Serie) {
 
 	std::stringstream ss;
 
-	for (auto const& [first, second, third] : itertools::zip(ts1, ts2, ts1)) {
+	for (auto const& [first, second, third] : culib::itertools::zip(ts1, ts2, ts1)) {
 		ss << first.value << ' ' << second.value << ' ' << third.value << '\n';
 	}
 	std::string check {R"(42 17 42
@@ -64,7 +64,7 @@ TEST(SerieItertools, Serie_Vector_Map) {
 
 	std::stringstream ss;
 
-	for (auto const& [first, pair, elem] : itertools::zip(v, m, ts)) {
+	for (auto const& [first, pair, elem] : culib::itertools::zip(v, m, ts)) {
 		ss << first << ' ' << pair.first << ' ' << pair.second << ' ' << elem.value << '\n';
 	}
 	std::string check {R"(1 1 one 42
@@ -80,7 +80,7 @@ TEST(SerieItertools, Serie) {
 	auto ts = time_series::utils::generateSerie(value, ksize);
 	std::stringstream ss;
 
-	for (auto const& [first] : itertools::zip(ts)) {
+	for (auto const& [first] : culib::itertools::zip(ts)) {
 		ss << first.value << '\n';
 	}
 	std::string check {R"(42
@@ -99,7 +99,7 @@ TEST(SerieItertools, TwoSeries_OneEmpty) {
 
 	std::stringstream ss;
 
-	for (auto const& [first, second] : itertools::zip(ts1, ts2)) {
+	for (auto const& [first, second] : culib::itertools::zip(ts1, ts2)) {
 		ss << first << ' ' << second << '\n';
 	}
 

@@ -10,7 +10,7 @@
 #ifndef TYPE_REQUIREMENTS_CTORS_H
 #define TYPE_REQUIREMENTS_CTORS_H
 
-namespace requirements {
+namespace culib::requirements {
 
   template <typename Iter>
   using require_input_iterator = std::enable_if_t<std::is_base_of_v<

@@ -10,7 +10,7 @@
 #ifndef TYPE_REQUIREMENTS_OPERATORS_H
 #define TYPE_REQUIREMENTS_OPERATORS_H
 
-namespace requirements {
+namespace culib::requirements {
   /**
    * @details
    * Operators check is based on a SFINAE technic, is copied from this source

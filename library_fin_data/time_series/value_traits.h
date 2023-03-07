@@ -7,9 +7,7 @@
 #ifndef BASE_VALUE_TRAITS_H
 #define BASE_VALUE_TRAITS_H
 
-namespace base {
-
-  namespace traits {
+namespace time_series::value::traits {
 
 	/**
 	 * @details
@@ -34,8 +32,6 @@ namespace base {
 
 	using ValueTypeDefault = double;
 
-
-  }//!namespace
 
 }//!namespace
 #endif //BASE_VALUE_TRAITS_H

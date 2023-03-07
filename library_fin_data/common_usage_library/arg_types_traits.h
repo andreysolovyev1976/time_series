@@ -9,7 +9,8 @@
 #ifndef ARG_TYPES_TRAITS_H
 #define ARG_TYPES_TRAITS_H
 
-namespace arg_traits {
+namespace culib::arg_traits {
+
   template <typename Arg>
   constexpr bool isLValueRefMutable (Arg&& arg) {
 	  return std::is_lvalue_reference_v<decltype(std::forward<Arg>(arg))>;

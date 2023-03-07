@@ -5,8 +5,8 @@
 #pragma once
 
 #include "time_series/element.hpp"
-#include "time_series/types_requirements/container.h"
-#include "time_series/types_requirements/numerics.h"
+#include "common_usage_library/types_requirements/container.h"
+#include "common_usage_library/types_requirements/numerics.h"
 
 #include <deque>
 #include <cstddef>
@@ -18,6 +18,23 @@
 namespace time_series {
 
   namespace details {
+
+	namespace requirements {
+
+	  template<typename Serie, typename = void>
+	  struct MaybeSerie : std::false_type {};
+
+	  template<typename Serie>
+	  struct MaybeSerie<Serie, std::void_t<decltype(Serie::serie_tag)> > : std::true_type {};
+
+	  template<typename Serie>
+	  constexpr bool isSerie_v() { return MaybeSerie<Serie>::value; }
+
+	  template<typename Serie>
+	  using IsSerie = std::enable_if_t<isSerie_v<Serie>(), bool>;
+
+	}//!namespace
+
 
 	/**
 	 * @brief
@@ -39,7 +56,7 @@ namespace time_series {
 	static
 	constexpr auto getContainer()
 	{
-		using namespace requirements;
+		using namespace culib::requirements;
 		using Elem = Element<Duration, ElemType>;
 		using Timestamp = base::Timestamp<Duration>;
 
@@ -67,7 +84,7 @@ namespace time_series {
 
   template <
 		  typename Duration = base::Seconds
-		  , typename ElemType = base::Value<base::traits::ValueTypeDefault>
+		  , typename ElemType = Value<value::traits::ValueTypeDefault>
 		  , template <typename...> typename Container = std::vector
 		  , typename ...Args
   >

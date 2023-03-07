@@ -4,6 +4,10 @@
 
 #include "typed_tests_list.h"
 
+using namespace culib;
+using namespace time_series;
+
+
 TYPED_TEST(ValueArithmeticsSingletons, Addition) {
 	if constexpr (std::is_floating_point_v<typename TypeParam::value_type>) {
 

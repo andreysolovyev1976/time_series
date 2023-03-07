@@ -14,7 +14,7 @@
 #ifndef BASE_UTILS_H
 #define BASE_UTILS_H
 
-namespace base::utils {
+namespace culib::utils {
 
 	template<typename Number, typename = std::enable_if_t<std::is_arithmetic_v<Number>>>
 	std::string toChars(Number input) {

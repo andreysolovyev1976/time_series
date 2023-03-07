@@ -22,17 +22,17 @@
  */
 
 using value_single_field = testing::Types<
-		base::Value<base::traits::ValueTypeDefault>,
-		base::Value<int64_t>,
-		base::Value<long double>,
-		financial::SingleQuote<base::traits::ValueTypeDefault>,
-		financial::SingleQuote<std::int64_t>
+		time_series::Value<time_series::value::traits::ValueTypeDefault>,
+		time_series::Value<int64_t>,
+		time_series::Value<long double>,
+		time_series::financial::SingleQuote<time_series::value::traits::ValueTypeDefault>,
+		time_series::financial::SingleQuote<std::int64_t>
 >;
 using value_multifield = testing::Types<
-		financial::OHLCV<base::traits::ValueTypeDefault>,
-		financial::OHLCV<std::int64_t>,
-		financial::BidAsk<base::traits::ValueTypeDefault>,
-		financial::BidAsk<std::int64_t>
+		time_series::financial::OHLCV<time_series::value::traits::ValueTypeDefault>,
+		time_series::financial::OHLCV<std::int64_t>,
+		time_series::financial::BidAsk<time_series::value::traits::ValueTypeDefault>,
+		time_series::financial::BidAsk<std::int64_t>
 >;
 
 /**
@@ -51,14 +51,14 @@ TYPED_TEST_SUITE(ValueCtorsMultiField, value_multifield);
 using test_value = testing::Types<
 		double,
 		int,
-		base::Value<base::traits::ValueTypeDefault>,
-		base::Value<std::int64_t>,
-		financial::SingleQuote<base::traits::ValueTypeDefault>,
-		financial::SingleQuote<std::int64_t>,
-		financial::OHLCV<base::traits::ValueTypeDefault>,
-		financial::OHLCV<std::int64_t>,
-		financial::BidAsk<base::traits::ValueTypeDefault>,
-		financial::BidAsk<std::int64_t>
+		time_series::Value<time_series::value::traits::ValueTypeDefault>,
+		time_series::Value<std::int64_t>,
+		time_series::financial::SingleQuote<time_series::value::traits::ValueTypeDefault>,
+		time_series::financial::SingleQuote<std::int64_t>,
+		time_series::financial::OHLCV<time_series::value::traits::ValueTypeDefault>,
+		time_series::financial::OHLCV<std::int64_t>,
+		time_series::financial::BidAsk<time_series::value::traits::ValueTypeDefault>,
+		time_series::financial::BidAsk<std::int64_t>
 >;
 
 struct S{};
@@ -104,14 +104,14 @@ TYPED_TEST_SUITE(ValueArithmeticsMultiField, value_multifield);
 using test_element = testing::Types<
 		  time_series::Element<base::Seconds, double>
 		, time_series::Element<base::Seconds, int>
-		, time_series::Element<base::Seconds, base::Value<base::traits::ValueTypeDefault>>
-		, time_series::Element<base::Seconds, base::Value<std::int64_t>>
-		, time_series::Element<base::Seconds, financial::SingleQuote<base::traits::ValueTypeDefault>>
-		, time_series::Element<base::Seconds, financial::SingleQuote<std::int64_t>>
-		, time_series::Element<base::Seconds, financial::OHLCV<base::traits::ValueTypeDefault>>
-		, time_series::Element<base::Seconds, financial::OHLCV<std::int64_t>>
-		, time_series::Element<base::Seconds, financial::BidAsk<base::traits::ValueTypeDefault>>
-		, time_series::Element<base::Seconds, financial::BidAsk<std::int64_t>>
+		, time_series::Element<base::Seconds, time_series::Value<time_series::value::traits::ValueTypeDefault>>
+		, time_series::Element<base::Seconds, time_series::Value<std::int64_t>>
+		, time_series::Element<base::Seconds, time_series::financial::SingleQuote<time_series::value::traits::ValueTypeDefault>>
+		, time_series::Element<base::Seconds, time_series::financial::SingleQuote<std::int64_t>>
+		, time_series::Element<base::Seconds, time_series::financial::OHLCV<time_series::value::traits::ValueTypeDefault>>
+		, time_series::Element<base::Seconds, time_series::financial::OHLCV<std::int64_t>>
+		, time_series::Element<base::Seconds, time_series::financial::BidAsk<time_series::value::traits::ValueTypeDefault>>
+		, time_series::Element<base::Seconds, time_series::financial::BidAsk<std::int64_t>>
 		>;
 
 template<typename T>

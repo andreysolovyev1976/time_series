@@ -15,9 +15,9 @@
 #ifndef FIN_OHLCV_H
 #define FIN_OHLCV_H
 
-namespace financial {
+namespace time_series::financial {
 
-  template <typename ValueType = base::traits::ValueTypeDefault>
+  template <typename ValueType = value::traits::ValueTypeDefault>
 //  struct OHLCV final : base::traits::ValueBase<OHLCV<ValueType>> { //excluded CRTP, no need for now
   struct OHLCV final  {
 	  using value_type = ValueType;
@@ -30,19 +30,19 @@ namespace financial {
 	  struct Volume{};
 
 	  OHLCV () = default;
-	  OHLCV (std::initializer_list<base::Value<ValueType>> values);
-	  template <typename Input, requirements::ConveribleOrConstructibleFromTo<Input, base::Value<ValueType>> = true>
+	  OHLCV (std::initializer_list<Value<ValueType>> values);
+	  template <typename Input, culib::requirements::ConveribleOrConstructibleFromTo<Input, Value<ValueType>> = true>
 	  OHLCV(const Input &input);
-	  template <typename Input, requirements::ConveribleOrConstructibleFromTo<Input, base::Value<ValueType>> = true>
+	  template <typename Input, culib::requirements::ConveribleOrConstructibleFromTo<Input, Value<ValueType>> = true>
 	  OHLCV& operator = (const Input &input);
 
 	  std::string toString() const;
 
-	  base::Value<ValueType> open, high, low, close, volume {0.0};
+	  Value<ValueType> open, high, low, close, volume {0.0};
   };
 
   template <typename ValueType>
-  OHLCV<ValueType>::OHLCV (std::initializer_list<base::Value<ValueType>> values) {
+  OHLCV<ValueType>::OHLCV (std::initializer_list<Value<ValueType>> values) {
 	  using namespace std::string_literals;
 	  if (values.size() != 5u) {
 		  throw std::invalid_argument (
@@ -58,7 +58,7 @@ namespace financial {
   }
 
   template <typename ValueType>
-  template <typename Input, requirements::ConveribleOrConstructibleFromTo<Input, base::Value<ValueType>>>
+  template <typename Input, culib::requirements::ConveribleOrConstructibleFromTo<Input, Value<ValueType>>>
   OHLCV<ValueType>::OHLCV(const Input &input){
 	  open = input;
 	  high = input;
@@ -68,7 +68,7 @@ namespace financial {
   }
 
   template <typename ValueType>
-  template <typename Input, requirements::ConveribleOrConstructibleFromTo<Input, base::Value<ValueType>>>
+  template <typename Input, culib::requirements::ConveribleOrConstructibleFromTo<Input, Value<ValueType>>>
   OHLCV<ValueType>& OHLCV<ValueType>::operator = (const Input &input) {
 	  open = input;
 	  high = input;
@@ -131,8 +131,8 @@ namespace financial {
   template <
 		  typename ValueType,
 		  typename Other,
-		  requirements::NotSame<base::Value<ValueType>, Other> = true,
-		  requirements::ComparisonOperationsDefined<base::Value<ValueType>, Other> = true,
+		  culib::requirements::NotSame<Value<ValueType>, Other> = true,
+		  culib::requirements::ComparisonOperationsDefined<Value<ValueType>, Other> = true,
 		  typename CompareBy = typename OHLCV<ValueType>::Close
   >
   bool operator == (const OHLCV<ValueType>& lhs, const Other& rhs) {
@@ -170,8 +170,8 @@ namespace financial {
   template <
 		  typename ValueType,
 		  typename Other,
-		  requirements::NotSame<base::Value<ValueType>, Other> = true,
-		  requirements::ComparisonOperationsDefined<base::Value<ValueType>, Other> = true,
+		  culib::requirements::NotSame<Value<ValueType>, Other> = true,
+		  culib::requirements::ComparisonOperationsDefined<Value<ValueType>, Other> = true,
 		  typename CompareBy = typename OHLCV<ValueType>::Close
   >
   bool operator == (const Other& lhs, const OHLCV<ValueType>& rhs) {
@@ -185,8 +185,8 @@ namespace financial {
   template <
 		  typename ValueType,
 		  typename Other,
-		  requirements::NotSame<base::Value<ValueType>, Other> = true,
-		  requirements::ComparisonOperationsDefined<base::Value<ValueType>, Other> = true,
+		  culib::requirements::NotSame<Value<ValueType>, Other> = true,
+		  culib::requirements::ComparisonOperationsDefined<Value<ValueType>, Other> = true,
 		  typename CompareBy = typename OHLCV<ValueType>::Close
   >
   bool operator != (const OHLCV<ValueType>& lhs, const Other& rhs) {
@@ -195,8 +195,8 @@ namespace financial {
   template <
 		  typename ValueType,
 		  typename Other,
-		  requirements::NotSame<base::Value<ValueType>, Other> = true,
-		  requirements::ComparisonOperationsDefined<base::Value<ValueType>, Other> = true,
+		  culib::requirements::NotSame<Value<ValueType>, Other> = true,
+		  culib::requirements::ComparisonOperationsDefined<Value<ValueType>, Other> = true,
 		  typename CompareBy = typename OHLCV<ValueType>::Close
   >
   bool operator != (const Other& lhs, const OHLCV<ValueType>& rhs) {
@@ -239,8 +239,8 @@ namespace financial {
   template <
 		  typename ValueType,
 		  typename Other,
-		  requirements::NotSame<base::Value<ValueType>, Other> = true,
-		  requirements::ComparisonOperationsDefined<base::Value<ValueType>, Other> = true,
+		  culib::requirements::NotSame<Value<ValueType>, Other> = true,
+		  culib::requirements::ComparisonOperationsDefined<Value<ValueType>, Other> = true,
 		  typename CompareBy = typename OHLCV<ValueType>::Close
   >
   bool operator < (const OHLCV<ValueType>& lhs, const Other& rhs) {
@@ -279,8 +279,8 @@ namespace financial {
   template <
 		  typename ValueType,
 		  typename Other,
-		  requirements::NotSame<base::Value<ValueType>, Other> = true,
-		  requirements::ComparisonOperationsDefined<base::Value<ValueType>, Other> = true,
+		  culib::requirements::NotSame<Value<ValueType>, Other> = true,
+		  culib::requirements::ComparisonOperationsDefined<Value<ValueType>, Other> = true,
 		  typename CompareBy = typename OHLCV<ValueType>::Close
   >
   bool operator < (const Other& rhs, const OHLCV<ValueType>& lhs) {
@@ -294,8 +294,8 @@ namespace financial {
   template <
 		  typename ValueType,
 		  typename Other,
-		  requirements::NotSame<base::Value<ValueType>, Other> = true,
-		  requirements::ComparisonOperationsDefined<base::Value<ValueType>, Other> = true,
+		  culib::requirements::NotSame<Value<ValueType>, Other> = true,
+		  culib::requirements::ComparisonOperationsDefined<Value<ValueType>, Other> = true,
 		  typename CompareBy = typename OHLCV<ValueType>::Close
   >
   bool operator > (const OHLCV<ValueType>& lhs, const Other& rhs) {
@@ -304,8 +304,8 @@ namespace financial {
   template <
 		  typename ValueType,
 		  typename Other,
-		  requirements::NotSame<base::Value<ValueType>, Other> = true,
-		  requirements::ComparisonOperationsDefined<base::Value<ValueType>, Other> = true,
+		  culib::requirements::NotSame<Value<ValueType>, Other> = true,
+		  culib::requirements::ComparisonOperationsDefined<Value<ValueType>, Other> = true,
 		  typename CompareBy = typename OHLCV<ValueType>::Close
   >
   bool operator > (const Other& lhs, const OHLCV<ValueType>& rhs) {
@@ -348,8 +348,8 @@ namespace financial {
   template <
 		  typename ValueType,
 		  typename Other,
-		  requirements::NotSame<base::Value<ValueType>, Other> = true,
-		  requirements::ComparisonOperationsDefined<base::Value<ValueType>, Other> = true,
+		  culib::requirements::NotSame<Value<ValueType>, Other> = true,
+		  culib::requirements::ComparisonOperationsDefined<Value<ValueType>, Other> = true,
 		  typename CompareBy = typename OHLCV<ValueType>::Close
   >
   bool operator <= (const OHLCV<ValueType>& lhs, const Other& rhs) {
@@ -387,8 +387,8 @@ namespace financial {
   template <
 		  typename ValueType,
 		  typename Other,
-		  requirements::NotSame<base::Value<ValueType>, Other> = true,
-		  requirements::ComparisonOperationsDefined<base::Value<ValueType>, Other> = true,
+		  culib::requirements::NotSame<Value<ValueType>, Other> = true,
+		  culib::requirements::ComparisonOperationsDefined<Value<ValueType>, Other> = true,
 		  typename CompareBy = typename OHLCV<ValueType>::Close
   >
   bool operator <= (const Other& lhs, const OHLCV<ValueType>& rhs) {
@@ -460,8 +460,8 @@ namespace financial {
   template <
 		  typename ValueType,
 		  typename Other,
-		  requirements::NotSame<base::Value<ValueType>, Other> = true,
-		  requirements::ComparisonOperationsDefined<base::Value<ValueType>, Other> = true,
+		  culib::requirements::NotSame<Value<ValueType>, Other> = true,
+		  culib::requirements::ComparisonOperationsDefined<Value<ValueType>, Other> = true,
 		  typename CompareBy = typename OHLCV<ValueType>::Close
   >
   bool operator >= (const OHLCV<ValueType>& lhs, const Other& rhs){
@@ -499,8 +499,8 @@ namespace financial {
   template <
 		  typename ValueType,
 		  typename Other,
-		  requirements::NotSame<base::Value<ValueType>, Other> = true,
-		  requirements::ComparisonOperationsDefined<base::Value<ValueType>, Other> = true,
+		  culib::requirements::NotSame<Value<ValueType>, Other> = true,
+		  culib::requirements::ComparisonOperationsDefined<Value<ValueType>, Other> = true,
 		  typename CompareBy = typename OHLCV<ValueType>::Close
   >
   bool operator >= (const Other& lhs, const OHLCV<ValueType>& rhs){
@@ -551,8 +551,8 @@ namespace financial {
 		  typename ValueType,
 		  typename Other,
 		  bool VolumeToo = false,
-		  requirements::NotSame<base::Value<ValueType>, Other> = true,
-		  requirements::BinOperatorsExist<base::Value<ValueType>, Other> = true
+		  culib::requirements::NotSame<Value<ValueType>, Other> = true,
+		  culib::requirements::BinOperatorsExist<Value<ValueType>, Other> = true
   >
   OHLCV<ValueType> operator * (const OHLCV<ValueType>& lhs, const Other &rhs) {
 	  OHLCV<ValueType> res;
@@ -569,8 +569,8 @@ namespace financial {
 		  typename ValueType,
 		  typename Other,
 		  bool VolumeToo = false,
-		  requirements::NotSame<base::Value<ValueType>, Other> = true,
-		  requirements::BinOperatorsExist<base::Value<ValueType>, Other> = true
+		  culib::requirements::NotSame<Value<ValueType>, Other> = true,
+		  culib::requirements::BinOperatorsExist<Value<ValueType>, Other> = true
   >
   OHLCV<ValueType> operator * (const Other &lhs, const OHLCV<ValueType>& rhs) {
 	  OHLCV<ValueType> res;
@@ -598,8 +598,8 @@ namespace financial {
 		  typename ValueType,
 		  typename Other,
 		  bool VolumeToo = false,
-		  requirements::NotSame<base::Value<ValueType>, Other> = true,
-		  requirements::BinOperatorsExist<base::Value<ValueType>, Other> = true
+		  culib::requirements::NotSame<Value<ValueType>, Other> = true,
+		  culib::requirements::BinOperatorsExist<Value<ValueType>, Other> = true
   >
   OHLCV<ValueType> operator / (const OHLCV<ValueType>& lhs, const Other &rhs) {
 	  OHLCV<ValueType> res;
@@ -616,8 +616,8 @@ namespace financial {
 		  typename ValueType,
 		  typename Other,
 		  bool VolumeToo = false,
-		  requirements::NotSame<base::Value<ValueType>, Other> = true,
-		  requirements::BinOperatorsExist<base::Value<ValueType>, Other> = true
+		  culib::requirements::NotSame<Value<ValueType>, Other> = true,
+		  culib::requirements::BinOperatorsExist<Value<ValueType>, Other> = true
   >
   OHLCV<ValueType> operator / (const Other &lhs, const OHLCV<ValueType>& rhs) {
 	  OHLCV<ValueType> res;
@@ -644,8 +644,8 @@ namespace financial {
 		  typename ValueType,
 		  typename Other,
 		  bool VolumeToo = false,
-		  requirements::NotSame<base::Value<ValueType>, Other> = true,
-		  requirements::BinOperatorsExist<base::Value<ValueType>, Other> = true
+		  culib::requirements::NotSame<Value<ValueType>, Other> = true,
+		  culib::requirements::BinOperatorsExist<Value<ValueType>, Other> = true
   >
   OHLCV<ValueType> operator + (const OHLCV<ValueType>& lhs, const Other &rhs) {
 	  OHLCV<ValueType> res;
@@ -662,8 +662,8 @@ namespace financial {
 		  typename ValueType,
 		  typename Other,
 		  bool VolumeToo = false,
-		  requirements::NotSame<base::Value<ValueType>, Other> = true,
-		  requirements::BinOperatorsExist<base::Value<ValueType>, Other> = true
+		  culib::requirements::NotSame<Value<ValueType>, Other> = true,
+		  culib::requirements::BinOperatorsExist<Value<ValueType>, Other> = true
   >
   OHLCV<ValueType> operator + (const Other &lhs, const OHLCV<ValueType>& rhs) {
 	  OHLCV<ValueType> res;
@@ -690,8 +690,8 @@ namespace financial {
 		  typename ValueType,
 		  typename Other,
 		  bool VolumeToo = false,
-		  requirements::NotSame<base::Value<ValueType>, Other> = true,
-		  requirements::BinOperatorsExist<base::Value<ValueType>, Other> = true
+		  culib::requirements::NotSame<Value<ValueType>, Other> = true,
+		  culib::requirements::BinOperatorsExist<Value<ValueType>, Other> = true
   >
   OHLCV<ValueType> operator - (const OHLCV<ValueType>& lhs, const Other &rhs) {
 	  OHLCV<ValueType> res;
@@ -708,8 +708,8 @@ namespace financial {
 		  typename ValueType,
 		  typename Other,
 		  bool VolumeToo = false,
-		  requirements::NotSame<base::Value<ValueType>, Other> = true,
-		  requirements::BinOperatorsExist<base::Value<ValueType>, Other> = true
+		  culib::requirements::NotSame<Value<ValueType>, Other> = true,
+		  culib::requirements::BinOperatorsExist<Value<ValueType>, Other> = true
   >
   OHLCV<ValueType> operator - (const Other &lhs, const OHLCV<ValueType>& rhs) {
 	  OHLCV<ValueType> res;
@@ -737,8 +737,8 @@ namespace financial {
 		  typename ValueType,
 		  typename Other,
 		  bool VolumeToo = false,
-		  requirements::NotSame<base::Value<ValueType>, Other> = true,
-		  requirements::BinOperatorsExist<base::Value<ValueType>, Other> = true
+		  culib::requirements::NotSame<Value<ValueType>, Other> = true,
+		  culib::requirements::BinOperatorsExist<Value<ValueType>, Other> = true
   >
   OHLCV<ValueType>& operator += (OHLCV<ValueType>& lhs, const Other &rhs) {
 	  lhs.open += rhs;
@@ -764,8 +764,8 @@ namespace financial {
 		  typename ValueType,
 		  typename Other,
 		  bool VolumeToo = false,
-		  requirements::NotSame<base::Value<ValueType>, Other> = true,
-		  requirements::BinOperatorsExist<base::Value<ValueType>, Other> = true
+		  culib::requirements::NotSame<Value<ValueType>, Other> = true,
+		  culib::requirements::BinOperatorsExist<Value<ValueType>, Other> = true
   >
   OHLCV<ValueType>& operator -= (OHLCV<ValueType>& lhs, const Other &rhs) {
 	  lhs.open -= rhs;
@@ -791,8 +791,8 @@ namespace financial {
 		  typename ValueType,
 		  typename Other,
 		  bool VolumeToo = false,
-		  requirements::NotSame<base::Value<ValueType>, Other> = true,
-		  requirements::BinOperatorsExist<base::Value<ValueType>, Other> = true
+		  culib::requirements::NotSame<Value<ValueType>, Other> = true,
+		  culib::requirements::BinOperatorsExist<Value<ValueType>, Other> = true
   >
   OHLCV<ValueType>& operator *= (OHLCV<ValueType>& lhs, const Other &rhs) {
 	  lhs.open *= rhs;
@@ -818,8 +818,8 @@ namespace financial {
 		  typename ValueType,
 		  typename Other,
 		  bool VolumeToo = false,
-		  requirements::NotSame<base::Value<ValueType>, Other> = true,
-		  requirements::BinOperatorsExist<base::Value<ValueType>, Other> = true
+		  culib::requirements::NotSame<Value<ValueType>, Other> = true,
+		  culib::requirements::BinOperatorsExist<Value<ValueType>, Other> = true
   >
   OHLCV<ValueType>& operator /= (OHLCV<ValueType>& lhs, const Other &rhs) {
 	  lhs.open /= rhs;

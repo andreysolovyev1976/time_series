@@ -7,8 +7,8 @@
 #include "time_series/const_values.h"
 #include "time_series/timestamp.hpp"
 #include "time_series/value.hpp"
-#include "time_series/types_requirements/ctor_input.h"
-#include "time_series/types_requirements/operators.h"
+#include "common_usage_library//types_requirements/ctor_input.h"
+#include "common_usage_library/types_requirements/operators.h"
 
 #include <iosfwd>
 #include <string>
@@ -23,7 +23,7 @@ namespace time_series {
   //todo: add requirements on ElemType
   //todo: add requirements for Other - should be an Arithmetic or better - operator is defined?
 
-  template <typename Duration = base::Seconds, typename ElemType = base::Value<base::traits::ValueTypeDefault>>
+  template <typename Duration = base::Seconds, typename ElemType = Value<value::traits::ValueTypeDefault>>
   struct Element final {
 	  using elem_type = ElemType;
 	  using key_type = base::Timestamp<Duration>;
@@ -190,12 +190,12 @@ namespace time_series {
 	  return lhs.timestamp == rhs.timestamp && lhs.value == rhs.value;
   }
   template <typename Duration, typename ElemType, typename Other,
-		  requirements::BinOperatorsExist<Element<Duration, ElemType>, Other> = true>
+		  culib::requirements::BinOperatorsExist<Element<Duration, ElemType>, Other> = true>
   bool operator == (const Element<Duration, ElemType>& lhs, const Other& rhs) {
 	  return lhs.value==rhs;
   }
   template <typename Duration, typename ElemType, typename Other,
-		  requirements::BinOperatorsExist<Element<Duration, ElemType>, Other> = true>
+		  culib::requirements::BinOperatorsExist<Element<Duration, ElemType>, Other> = true>
   bool operator == (const Other& lhs, const Element<Duration, ElemType>& rhs) {
 	  return lhs==rhs.value;
   }
@@ -205,12 +205,12 @@ namespace time_series {
 	  return !(lhs == rhs);
   }
   template <typename Duration, typename ElemType, typename Other,
-		  requirements::BinOperatorsExist<Element<Duration, ElemType>, Other> = true>
+		  culib::requirements::BinOperatorsExist<Element<Duration, ElemType>, Other> = true>
   bool operator != (const Element<Duration, ElemType>& lhs, const Other& rhs) {
 	  return !(lhs==rhs);
   }
   template <typename Duration, typename ElemType, typename Other,
-		  requirements::BinOperatorsExist<Element<Duration, ElemType>, Other> = true>
+		  culib::requirements::BinOperatorsExist<Element<Duration, ElemType>, Other> = true>
   bool operator != (const Other& lhs, const Element<Duration, ElemType>& rhs) {
 	  return !(rhs==lhs);
   }
@@ -220,12 +220,12 @@ namespace time_series {
 	  return lhs.timestamp != rhs.timestamp ? lhs.timestamp < rhs.timestamp : lhs.value < rhs.value;
   }
   template <typename Duration, typename ElemType, typename Other,
-		  requirements::BinOperatorsExist<Element<Duration, ElemType>, Other> = true>
+		  culib::requirements::BinOperatorsExist<Element<Duration, ElemType>, Other> = true>
   bool operator < (const Element<Duration, ElemType>& lhs, const Other& rhs) {
 	  return lhs.value < rhs;
   }
   template <typename Duration, typename ElemType, typename Other,
-		  requirements::BinOperatorsExist<Element<Duration, ElemType>, Other> = true>
+		  culib::requirements::BinOperatorsExist<Element<Duration, ElemType>, Other> = true>
   bool operator < (const Other& lhs, const Element<Duration, ElemType>& rhs) {
 	  return lhs < rhs.value;
   }
@@ -235,12 +235,12 @@ namespace time_series {
 	  return (!(lhs == rhs) && !(lhs < rhs));
   }
   template <typename Duration, typename ElemType, typename Other,
-		  requirements::BinOperatorsExist<Element<Duration, ElemType>, Other> = true>
+		  culib::requirements::BinOperatorsExist<Element<Duration, ElemType>, Other> = true>
   bool operator > (const Element<Duration, ElemType>& lhs, const Other& rhs) {
 	  return (!(lhs == rhs) && !(lhs < rhs));
   }
   template <typename Duration, typename ElemType, typename Other,
-		  requirements::BinOperatorsExist<Element<Duration, ElemType>, Other> = true>
+		  culib::requirements::BinOperatorsExist<Element<Duration, ElemType>, Other> = true>
   bool operator > (const Other& lhs, const Element<Duration, ElemType>& rhs) {
 	  return (!(lhs == rhs) && !(lhs < rhs));
   }
@@ -250,12 +250,12 @@ namespace time_series {
 	  return ((lhs == rhs) || (lhs < rhs));
   }
   template <typename Duration, typename ElemType, typename Other,
-		  requirements::BinOperatorsExist<Element<Duration, ElemType>, Other> = true>
+		  culib::requirements::BinOperatorsExist<Element<Duration, ElemType>, Other> = true>
   bool operator <= (const Element<Duration, ElemType>& lhs, const Other& rhs) {
 	  return ((lhs == rhs) || (lhs < rhs));
   }
   template <typename Duration, typename ElemType, typename Other,
-		  requirements::BinOperatorsExist<Element<Duration, ElemType>, Other> = true>
+		  culib::requirements::BinOperatorsExist<Element<Duration, ElemType>, Other> = true>
   bool operator <= (const Other& lhs, const Element<Duration, ElemType>& rhs) {
 	  return ((lhs == rhs) || (lhs < rhs));
   }
@@ -265,12 +265,12 @@ namespace time_series {
 	  return ((lhs == rhs) || (lhs > rhs));
   }
   template <typename Duration, typename ElemType, typename Other,
-		  requirements::BinOperatorsExist<Element<Duration, ElemType>, Other> = true>
+		  culib::requirements::BinOperatorsExist<Element<Duration, ElemType>, Other> = true>
   bool operator >= (const Element<Duration, ElemType>& lhs, const Other& rhs){
 	  return ((lhs == rhs) || (lhs > rhs));
   }
   template <typename Duration, typename ElemType, typename Other,
-		  requirements::BinOperatorsExist<Element<Duration, ElemType>, Other> = true>
+		  culib::requirements::BinOperatorsExist<Element<Duration, ElemType>, Other> = true>
   bool operator >= (const Other& lhs, const Element<Duration, ElemType>& rhs) {
 	  return ((lhs == rhs) || (lhs > rhs));
   }
@@ -284,14 +284,14 @@ namespace time_series {
 			  .value = lhs.value * rhs.value };
   }
   template <typename Duration, typename ElemType, typename Other,
-		  requirements::BinOperatorsExist<Element<Duration, ElemType>, Other> = true>
+		  culib::requirements::BinOperatorsExist<Element<Duration, ElemType>, Other> = true>
   Element<Duration, ElemType> operator * (const Element<Duration, ElemType>& lhs, Other &&rhs) {
 	  return Element<Duration, ElemType> {
 			  .timestamp = lhs.timestamp,
 			  .value = lhs.value * rhs};
   }
   template <typename Duration, typename ElemType, typename Other,
-		  requirements::BinOperatorsExist<Element<Duration, ElemType>, Other> = true>
+		  culib::requirements::BinOperatorsExist<Element<Duration, ElemType>, Other> = true>
   Element<Duration, ElemType> operator * (Other &&lhs, const Element<Duration, ElemType>& rhs) {
 	  return Element<Duration, ElemType> {
 			  .timestamp = lhs.timestamp,
@@ -304,14 +304,14 @@ namespace time_series {
 			  .value = lhs.value / rhs.value };
   }
   template <typename Duration, typename ElemType, typename Other,
-		  requirements::BinOperatorsExist<Element<Duration, ElemType>, Other> = true>
+		  culib::requirements::BinOperatorsExist<Element<Duration, ElemType>, Other> = true>
   Element<Duration, ElemType> operator / (const Element<Duration, ElemType>& lhs, Other &&rhs) {
 	  return Element<Duration, ElemType> {
 			  .timestamp = lhs.timestamp,
 			  .value = lhs.value / rhs };
   }
   template <typename Duration, typename ElemType, typename Other,
-		  requirements::BinOperatorsExist<Element<Duration, ElemType>, Other> = true>
+		  culib::requirements::BinOperatorsExist<Element<Duration, ElemType>, Other> = true>
   Element<Duration, ElemType> operator / (Other &&lhs, const Element<Duration, ElemType>& rhs) {
 	  return Element<Duration, ElemType> {
 			  .timestamp = lhs.timestamp,
@@ -324,14 +324,14 @@ namespace time_series {
 			  .value = lhs.value + rhs.value };
   }
   template <typename Duration, typename ElemType, typename Other,
-		  requirements::BinOperatorsExist<Element<Duration, ElemType>, Other> = true>
+		  culib::requirements::BinOperatorsExist<Element<Duration, ElemType>, Other> = true>
   Element<Duration, ElemType> operator + (const Element<Duration, ElemType>& lhs, Other &&rhs) {
 	  return Element<Duration, ElemType> {
 			  .timestamp = lhs.timestamp,
 			  .value = lhs.value + rhs };
   }
   template <typename Duration, typename ElemType, typename Other,
-		  requirements::BinOperatorsExist<Element<Duration, ElemType>, Other> = true>
+		  culib::requirements::BinOperatorsExist<Element<Duration, ElemType>, Other> = true>
   Element<Duration, ElemType> operator + (Other &&rhs, const Element<Duration, ElemType>& lhs) {
 	  return Element<Duration, ElemType> {
 			  .timestamp = lhs.timestamp,
@@ -344,14 +344,14 @@ namespace time_series {
 			  .value = lhs.value - rhs.value };
   }
   template <typename Duration, typename ElemType, typename Other,
-		  requirements::BinOperatorsExist<Element<Duration, ElemType>, Other> = true>
+		  culib::requirements::BinOperatorsExist<Element<Duration, ElemType>, Other> = true>
   Element<Duration, ElemType> operator - (const Element<Duration, ElemType>& lhs, Other &&rhs) {
 	  return Element<Duration, ElemType> {
 			  .timestamp = lhs.timestamp,
 			  .value = lhs.value - rhs};
   }
   template <typename Duration, typename ElemType, typename Other,
-		  requirements::BinOperatorsExist<Element<Duration, ElemType>, Other> = true>
+		  culib::requirements::BinOperatorsExist<Element<Duration, ElemType>, Other> = true>
   Element<Duration, ElemType> operator - (Other &&rhs, const Element<Duration, ElemType>& lhs) {
 	  return Element<Duration, ElemType> {
 			  .timestamp = lhs.timestamp,
@@ -366,7 +366,7 @@ namespace time_series {
 	  return lhs;
   }
   template <typename Duration, typename ElemType, typename Other,
-		  requirements::BinOperatorsExist<Element<Duration, ElemType>, Other> = true>
+		  culib::requirements::BinOperatorsExist<Element<Duration, ElemType>, Other> = true>
   Element<Duration, ElemType>& operator += (Element<Duration, ElemType>& lhs, Other &&rhs) {
 	  lhs.value += rhs;
 	  return lhs;
@@ -379,7 +379,7 @@ namespace time_series {
 	  return lhs;
   }
   template <typename Duration, typename ElemType, typename Other,
-		  requirements::BinOperatorsExist<Element<Duration, ElemType>, Other> = true>
+		  culib::requirements::BinOperatorsExist<Element<Duration, ElemType>, Other> = true>
   Element<Duration, ElemType>& operator -= (Element<Duration, ElemType>& lhs, Other &&rhs) {
 	  lhs.value -= rhs;
 	  return lhs;
@@ -392,7 +392,7 @@ namespace time_series {
 	  return lhs;
   }
   template <typename Duration, typename ElemType, typename Other,
-		  requirements::BinOperatorsExist<Element<Duration, ElemType>, Other> = true>
+		  culib::requirements::BinOperatorsExist<Element<Duration, ElemType>, Other> = true>
   Element<Duration, ElemType>& operator *= (Element<Duration, ElemType>& lhs, Other &&rhs) {
 	  lhs.value *= rhs;
 	  return lhs;
@@ -405,7 +405,7 @@ namespace time_series {
 	  return lhs;
   }
   template <typename Duration, typename ElemType, typename Other,
-		  requirements::BinOperatorsExist<Element<Duration, ElemType>, Other> = true>
+		  culib::requirements::BinOperatorsExist<Element<Duration, ElemType>, Other> = true>
   Element<Duration, ElemType>& operator /= (Element<Duration, ElemType>& lhs, Other &&rhs) {
 	  lhs.value /= rhs;
 	  return lhs;

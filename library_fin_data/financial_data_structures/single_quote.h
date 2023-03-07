@@ -9,10 +9,10 @@
 #define FIN_SINGLE_QOUTE_H
 
 
-namespace financial {
+namespace time_series::financial {
 
-  template <typename ValueType = base::traits::ValueTypeDefault>
-  using SingleQuote = base::Value<ValueType>;
+  template <typename ValueType = value::traits::ValueTypeDefault>
+  using SingleQuote = Value<ValueType>;
 
 }
 

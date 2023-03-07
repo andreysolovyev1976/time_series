@@ -49,7 +49,7 @@ Right Outer join
 
 
 #include <gtest/gtest.h>
-#include "utils/joins.hpp"
+#include "common_usage_library/joins.hpp"
 
 #include <iosfwd>
 #include <sstream>
@@ -59,8 +59,9 @@ Right Outer join
 #include <tuple>
 
 struct Key {
-	int value {-1};
+	int value {0};
 	Key (int i) : value(i) {}
+	Key () = default;
 	operator int () {return value;}
 };
 
@@ -139,7 +140,7 @@ auto res = std::inserter(result, result.end());
 
 
 TEST(BasicsJoins, Inner) {
-	auto result_other = time_series::join::inner(m1, m2);
+	auto result_other = culib::join::inner(m1, m2);
 	std::stringstream ss;
 	ss << result_other;
 	std::string const check {R"([{ 3 2 3 }, { 12 16 20 }])"};
@@ -148,50 +149,50 @@ TEST(BasicsJoins, Inner) {
 
 
 TEST(BasicsJoins, OuterFull) {
-	auto result_other = time_series::join::outerFull(m1, m2);
+	auto result_other = culib::join::outerFull(m1, m2);
 	std::stringstream ss;
 	ss << result_other;
-	std::string const check {R"([{ 27 3 2 3 17 25 }, { 27 12 16 20 }])"};
+	std::string const check {R"([{ 0 3 2 3 17 25 }, { 27 12 16 20 0 0 }])"};
 	ASSERT_EQ(check, ss.str());
 }
 
 
 TEST(BasicsJoins, OuterExcluding) {
-	auto result_other = time_series::join::outerExcluding(m1, m2);
+	auto result_other = culib::join::outerExcluding(m1, m2);
 	std::stringstream ss;
 	ss << result_other;
-	std::string const check {R"([{ 17 25 }, { 27 }])"};
+	std::string const check {R"([{ 0 17 25 }, { 27 0 0 }])"};
 	ASSERT_EQ(check, ss.str());
 }
 
 TEST(BasicsJoins, LeftOuter) {
-	auto result_other = time_series::join::leftOuter(m1, m2);
+	auto result_other = culib::join::leftOuter(m1, m2);
 	std::stringstream ss;
 	ss << result_other;
-	std::string const check {R"([{ 3 2 3 17 25 }, { 12 16 20 }])"};
+	std::string const check {R"([{ 3 2 3 17 25 }, { 12 16 20 0 0 }])"};
 	ASSERT_EQ(check, ss.str());
 }
 
 TEST(BasicsJoins, LeftExcluding) {
-	auto result_other = time_series::join::leftExcluding(m1, m2);
+	auto result_other = culib::join::leftExcluding(m1, m2);
 	std::stringstream ss;
 	ss << result_other;
-	std::string const check {R"([{ 17 25 }, { }])"};
+	std::string const check {R"([{ 17 25 }, { 0 0 }])"};
 	ASSERT_EQ(check, ss.str());
 }
 
 TEST(BasicsJoins, RightOuter) {
-	auto result_other = time_series::join::rightOuter(m1, m2);
+	auto result_other = culib::join::rightOuter(m1, m2);
 	std::stringstream ss;
 	ss << result_other;
-	std::string const check {R"([{ 3 2 3 }, { 27 12 16 20 }])"};
+	std::string const check {R"([{ 0 3 2 3 }, { 27 12 16 20 }])"};
 	ASSERT_EQ(check, ss.str());
 }
 
 TEST(BasicsJoins, RightExcluding) {
-	auto result_other = time_series::join::rightExcluding(m1, m2);
+	auto result_other = culib::join::rightExcluding(m1, m2);
 	std::stringstream ss;
 	ss << result_other;
-	std::string const check {R"([{ }, { 27 }])"};
+	std::string const check {R"([{ 0 }, { 27 }])"};
 	ASSERT_EQ(check, ss.str());
 }

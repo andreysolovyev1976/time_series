@@ -12,7 +12,7 @@
 #ifndef ITERTOOLS_H
 #define ITERTOOLS_H
 
-namespace itertools {
+namespace culib::itertools {
 
   /**
  * @brief
