@@ -6,6 +6,8 @@
 
 #include "common_usage_library/types_requirements/ctor_input.h"
 #include "common_usage_library/types_requirements/container.h"
+#include "common_usage_library/types_requirements/hash.h"
+#include "common_usage_library/types_requirements/comparator.h"
 #include "time_series/element.hpp"
 
 #include <functional>

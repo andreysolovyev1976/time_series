@@ -152,7 +152,7 @@ TEST(BasicsJoins, OuterFull) {
 	auto result_other = culib::join::outerFull(m1, m2);
 	std::stringstream ss;
 	ss << result_other;
-	std::string const check {R"([{ 0 3 2 3 17 25 }, { 27 12 16 20 0 0 }])"};
+	std::string const check {R"([{ 3 2 3 17 25 }, { 27 12 16 20 }])"};
 	ASSERT_EQ(check, ss.str());
 }
 
@@ -161,7 +161,7 @@ TEST(BasicsJoins, OuterExcluding) {
 	auto result_other = culib::join::outerExcluding(m1, m2);
 	std::stringstream ss;
 	ss << result_other;
-	std::string const check {R"([{ 0 17 25 }, { 27 0 0 }])"};
+	std::string const check {R"([{ 17 25 }, { 27 }])"};
 	ASSERT_EQ(check, ss.str());
 }
 
@@ -169,7 +169,7 @@ TEST(BasicsJoins, LeftOuter) {
 	auto result_other = culib::join::leftOuter(m1, m2);
 	std::stringstream ss;
 	ss << result_other;
-	std::string const check {R"([{ 3 2 3 17 25 }, { 12 16 20 0 0 }])"};
+	std::string const check {R"([{ 3 2 3 17 25 }, { 12 16 20 }])"};
 	ASSERT_EQ(check, ss.str());
 }
 
@@ -177,7 +177,7 @@ TEST(BasicsJoins, LeftExcluding) {
 	auto result_other = culib::join::leftExcluding(m1, m2);
 	std::stringstream ss;
 	ss << result_other;
-	std::string const check {R"([{ 17 25 }, { 0 0 }])"};
+	std::string const check {R"([{ 17 25 }, { }])"};
 	ASSERT_EQ(check, ss.str());
 }
 
@@ -185,7 +185,7 @@ TEST(BasicsJoins, RightOuter) {
 	auto result_other = culib::join::rightOuter(m1, m2);
 	std::stringstream ss;
 	ss << result_other;
-	std::string const check {R"([{ 0 3 2 3 }, { 27 12 16 20 }])"};
+	std::string const check {R"([{ 3 2 3 }, { 27 12 16 20 }])"};
 	ASSERT_EQ(check, ss.str());
 }
 
@@ -193,6 +193,6 @@ TEST(BasicsJoins, RightExcluding) {
 	auto result_other = culib::join::rightExcluding(m1, m2);
 	std::stringstream ss;
 	ss << result_other;
-	std::string const check {R"([{ 0 }, { 27 }])"};
+	std::string const check {R"([{ }, { 27 }])"};
 	ASSERT_EQ(check, ss.str());
 }

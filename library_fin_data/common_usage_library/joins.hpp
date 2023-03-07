@@ -16,18 +16,20 @@
 #ifndef DATA_JOINS_H
 #define DATA_JOINS_H
 
-namespace culib {
+namespace culib::join {
 
-  namespace join::details {
+  namespace details {
 
 	  struct Set {
 		  enum class Operation {
 			  None = 0,
-			  Intersection,
-			  Difference,
-			  SymmetricDifference,
-			  Union,
-			  IntersectionAndDifference,
+			  Inner,
+			  FullOuter,
+			  ExcludingOuter,
+			  LeftFullOuter,
+			  LeftExcluding,
+			  RightFullOuter,
+			  RightExcluding,
 		  };
 		  operator int() { return static_cast<int>(_); }
 		  Operation _;
@@ -56,6 +58,92 @@ namespace culib {
 			++__first2;
 		}
 		return __result;
+	}
+
+	template <class InputIterator1, class InputIterator2, class OutputIterator, class ResultContainer, class Compare = std::less<>>
+	constexpr OutputIterator
+	inner(InputIterator1 first1, InputIterator1 last1,
+			InputIterator2 first2, InputIterator2 last2,
+			OutputIterator result
+			, [[maybe_unused]] Compare comp = std::less<>{}) {
+		return std::set_intersection(first1, last1, first2, last2, result);
+	}
+
+
+	template <class InputIterator1, class InputIterator2, class OutputIterator, class ResultContainer, class Compare = std::less<>>
+	constexpr OutputIterator
+	outerFull(InputIterator1 first1, InputIterator1 last1,
+			InputIterator2 first2, InputIterator2 last2,
+			OutputIterator result
+			, [[maybe_unused]] Compare comp = std::less<>{}) {
+		return std::set_union(first1, last1, first2, last2, result);
+	}
+
+	template <class InputIterator1, class InputIterator2, class OutputIterator, class ResultContainer, class Compare = std::less<>>
+	constexpr OutputIterator
+	outerExcluding(InputIterator1 first1, InputIterator1 last1,
+			InputIterator2 first2, InputIterator2 last2,
+			OutputIterator result
+			, [[maybe_unused]] Compare comp = std::less<>{}) {
+
+		//intersection
+		ResultContainer temp1;
+		auto temp1_iter = std::inserter(temp1, temp1.begin());
+		std::set_intersection(first1, last1, first2, last2, temp1_iter);
+
+		//union
+		ResultContainer temp2;
+		auto temp2_iter = std::inserter(temp2, temp2.begin());
+		std::set_union(first1, last1, first2, last2, temp2_iter);
+
+		return
+		std::set_symmetric_difference (temp2.begin(), temp2.end(), temp1.begin(), temp1.end(),result);
+	}
+
+	template <class InputIterator1, class InputIterator2, class OutputIterator, class ResultContainer, class Compare = std::less<>>
+	constexpr OutputIterator
+	leftFull(InputIterator1 first1, InputIterator1 last1,
+			InputIterator2 first2, InputIterator2 last2,
+			OutputIterator result
+			, [[maybe_unused]] Compare comp = std::less<>{}) {
+
+	}
+
+	template <class InputIterator1, class InputIterator2, class OutputIterator, class ResultContainer, class Compare = std::less<>>
+	constexpr OutputIterator
+	leftExcluding(InputIterator1 first1, InputIterator1 last1,
+			InputIterator2 first2, InputIterator2 last2,
+			OutputIterator result
+			, [[maybe_unused]] Compare comp = std::less<>{}) {
+		return std::set_difference(first1, last1, first2, last2, result);
+	}
+
+	template <class InputIterator1, class InputIterator2, class OutputIterator, class ResultContainer, class Compare = std::less<>>
+	constexpr OutputIterator
+	rightFull(InputIterator1 first1, InputIterator1 last1,
+			InputIterator2 first2, InputIterator2 last2,
+			OutputIterator result
+			, [[maybe_unused]] Compare comp = std::less<>{}) {
+		//union
+		ResultContainer temp2;
+		auto temp2_iter = std::inserter(temp2, temp2.begin());
+		std::set_union(first1, last1, first2, last2, temp2_iter);
+
+		//intersection
+		ResultContainer temp1;
+		auto temp1_iter = std::inserter(temp1, temp1.begin());
+		std::set_intersection(first1, last1, first2, last2, temp1_iter);
+
+
+	}
+
+	template <class InputIterator1, class InputIterator2, class OutputIterator, class ResultContainer, class Compare = std::less<>>
+	constexpr OutputIterator
+	rightExcluding(InputIterator1 first1, InputIterator1 last1,
+			InputIterator2 first2, InputIterator2 last2,
+			OutputIterator result
+			, [[maybe_unused]] Compare comp = std::less<>{}) {
+		return std::set_difference(first2, last2, first1, last1, result);
 	}
 
 #define IMPLEMENT_OPERATION_ON_SETS(c, ...) \
@@ -160,7 +248,7 @@ switch(c) \
 		  }
 		  else if constexpr (I == sizeof...(SerieArgs)) {
 			  //move is required, as serie_ret is an argument, which is not guaranteed to have RVO
-			  return std::move(curr_result);
+			  return curr_result;
 		  }
 	  }
 
@@ -191,8 +279,6 @@ switch(c) \
 
   }//!namespace
 
-
-	namespace join {
 
 	  template<typename... SerieArgs>
 	  auto outerFull(SerieArgs&& ...series)
@@ -257,7 +343,6 @@ switch(c) \
 		  return callOperation<SerieArgs...>(operation, order, std::forward<SerieArgs>(series)...);
 	  }
 
-	}//!namespace
   }//!namespace
 
 

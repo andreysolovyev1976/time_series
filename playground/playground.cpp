@@ -14,6 +14,8 @@
 //#define TUPLE_EXERCISES
 //#define JOIN_BASICS
 //#define JOIN_SQL_LIKE
+#define SET_OPERATIONS_BASICS
+
 
 #ifdef NESTED_OPERATORS
 #include <iostream>
@@ -1252,13 +1254,109 @@ int main() {
 #endif
 
 
-#if 1
+#if defined(SET_OPERATIONS_BASICS)
 
 #include <iostream>
-#include <tuple>
+#include <algorithm>
+#include <vector>
+#include <string>
+
+
+std::ostream& operator << (std::ostream& os, std::vector<int> const& v) {
+	using namespace std::string_literals;
+	os << "{ "s;
+	for (auto const& elem: v) os << elem << ' ';
+	os << '}';
+	return os;
+}
 
 int main () {
-	std::tuple t;
-	std::cout << sizeof(t) << '\n';
+	std::vector<int> v1{1, 2, 3, 5, 5, 8};
+	std::vector<int> v2{0, 1, 3, 6, 7, 8, 9};
+	std::vector<int> result, result_temp, result_another_temp;
+	std::cout << R"(
+{   1 2 3 5 5 8 }
+{ 0 1   3 6 7 8 9 }
+)";
+
+#if 0
+	//inner
+	result.clear();
+	std::set_intersection(v1.begin(), v1.end(), v2.begin(), v2.end(),
+			std::inserter(result, result.begin())
+			);
+	std::cout << result << '\n';
+#endif
+
+#if 0
+	//full outer
+	result.clear();
+	std::set_union(v1.begin(), v1.end(), v2.begin(), v2.end(),
+			std::inserter(result, result.begin())
+			);
+	std::cout << result << '\n';
+#endif
+
+
+#if 0
+	//outer excluding
+	result.clear();
+	std::set_intersection(v1.begin(), v1.end(), v2.begin(), v2.end(),
+			std::inserter(result, result.begin())
+			);
+	std::cout << result << '\n';
+	result_temp.clear();
+	std::set_union(v2.begin(), v2.end(), v1.begin(), v1.end(),
+			std::inserter(result_temp, result_temp.begin())
+	);
+	std::cout << result_temp << '\n';
+	result_another_temp.clear();
+	std::set_symmetric_difference (result_temp.begin(), result_temp.end(), result.begin(), result.end(),
+			std::inserter(result_another_temp, result_another_temp.begin())
+	);
+	std::cout << result_another_temp << '\n';
+#endif
+
+#if 0
+	//left excluding outer
+	result.clear();
+	std::set_difference(v1.begin(), v1.end(), v2.begin(), v2.end(),
+			std::inserter(result, result.begin())
+	);
+	std::cout << result << '\n';
+#endif
+
+
+#if 0
+	//right excluding outer
+	result.clear();
+	std::set_difference(v2.begin(), v2.end(), v1.begin(), v1.end(),
+			std::inserter(result, result.begin())
+	);
+	std::cout << result << '\n';
+#endif
+
+#if 1
+	//right full outer
+	result.clear();
+	std::set_union(v1.begin(), v1.end(), v2.begin(), v2.end(),
+			std::inserter(result, result.begin())
+			);
+	std::cout << result << '\n';
+	result_temp.clear();
+	std::set_difference(v1.begin(), v1.end(), v2.begin(), v2.end(),
+			std::inserter(result_temp, result_temp.begin())
+	);
+	std::cout << result_temp << '\n';
+	result_another_temp.clear();
+	std::set_difference (result.begin(), result.end(), result_temp.begin(), result_temp.end(),
+			std::inserter(result_another_temp, result_another_temp.begin())
+	);
+	std::cout << result_another_temp << '\n';
+
+
+#endif
+
+
 }
 #endif

@@ -72,7 +72,6 @@ namespace time_series {
 			}
 			return _VSTD::copy(__first2, __last2, __result);
 		}
-#endif
 
 /**
  * @brief
