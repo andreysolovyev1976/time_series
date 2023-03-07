@@ -433,45 +433,45 @@ using namespace requirements;
 
 #if 1
 
-template<typename Container, typename = void>
+template<typename Object, typename = void>
 struct MaybeContainer : std::false_type {};
 
-template<typename Container>
+template<typename Object>
 struct MaybeContainer<
-		Container,
+		Object,
 		std::void_t<
-				decltype(std::declval<Container>().begin()),
-				decltype(std::declval<Container>().end())
+				decltype(std::declval<Object>().begin()),
+				decltype(std::declval<Object>().end())
 		>
 > : std::true_type {};
 
-template<typename Container>
-inline constexpr bool is_container_v { MaybeContainer<Container>::value };
+template<typename Object>
+inline constexpr bool is_container_v { MaybeContainer<Object>::value };
 
-//template<typename Container>
-//using IsContainer = std::enable_if_t<isContainer_v<Container>, bool>;
+//template<typename Object>
+//using IsContainer = std::enable_if_t<isContainer_v<Object>, bool>;
 
 #endif
 
 #if 1
-template <template <typename...> typename Container, typename Arg1, typename = void>
+template <template <typename...> typename Object, typename Arg1, typename = void>
 struct ContainerHasSingleArg : std::false_type {};
-template <template <typename...> typename Container, typename Arg1>
-struct ContainerHasSingleArg <Container,
-		Arg1, std::void_t<std::is_constructible<Container<Arg1>>>
+template <template <typename...> typename Object, typename Arg1>
+struct ContainerHasSingleArg <Object,
+		Arg1, std::void_t<std::is_constructible<Object<Arg1>>>
 > : std::true_type {};
-template <template <typename...> typename Container, typename Arg1>
-constexpr bool ContainerHasSingleArg_v () {return ContainerHasSingleArg<Container, Arg1>::value;}
+template <template <typename...> typename Object, typename Arg1>
+constexpr bool ContainerHasSingleArg_v () {return ContainerHasSingleArg<Object, Arg1>::value;}
 
-template <template <typename...> typename Container, typename Arg1, typename Arg2, typename = void>
+template <template <typename...> typename Object, typename Arg1, typename Arg2, typename = void>
 struct ContainerHasTwoArgs : std::false_type {};
-template <template <typename...> typename Container, typename Arg1, typename Arg2>
-struct ContainerHasTwoArgs <Container,
+template <template <typename...> typename Object, typename Arg1, typename Arg2>
+struct ContainerHasTwoArgs <Object,
 							Arg1, Arg2,
-							std::void_t<std::is_constructible<Container<Arg1, Arg2>>>
+							std::void_t<std::is_constructible<Object<Arg1, Arg2>>>
 > : std::true_type {};
-template <template <typename...> typename Container, typename Arg1, typename Arg2>
-constexpr bool ContainerHasTwoArgs_v () {return ContainerHasTwoArgs<Container, Arg1, Arg2>::value;}
+template <template <typename...> typename Object, typename Arg1, typename Arg2>
+constexpr bool ContainerHasTwoArgs_v () {return ContainerHasTwoArgs<Object, Arg1, Arg2>::value;}
 
 
 
@@ -483,7 +483,7 @@ struct TypeHolder {
 template<
 		typename Duration,
 		typename ElemType,
-		template<typename...> typename Container,
+		template<typename...> typename Object,
 		typename... Args
 >
 static
@@ -493,14 +493,14 @@ constexpr auto getContainer()
 	using Elem = Element<Duration, ElemType>;
 	using Timestamp = base::Timestamp<Duration>;
 
-	if constexpr (ContainerHasSingleArg_v<Container, Elem>()) {
-		if constexpr (is_container_v<Container<Elem, Args...>>) {
-			return TypeHolder<Container<Elem, Args...>>{};
+	if constexpr (ContainerHasSingleArg_v<Object, Elem>()) {
+		if constexpr (is_container_v<Object<Elem, Args...>>) {
+			return TypeHolder<Object<Elem, Args...>>{};
 		}
 	}
-	else if constexpr (ContainerHasTwoArgs_v<Container, Timestamp, ElemType>()) {
-		if constexpr (is_container_v<Container<Timestamp, ElemType, Args...>>) {
-			return TypeHolder<Container<Timestamp, ElemType, Args...>>{};
+	else if constexpr (ContainerHasTwoArgs_v<Object, Timestamp, ElemType>()) {
+		if constexpr (is_container_v<Object<Timestamp, ElemType, Args...>>) {
+			return TypeHolder<Object<Timestamp, ElemType, Args...>>{};
 		}
 	}
 	else {

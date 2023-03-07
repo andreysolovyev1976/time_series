@@ -4,6 +4,8 @@
 
 #pragma once
 
+#include "types_requirements/container.h"
+
 #include <utility>
 #include <tuple>
 #include <iterator>
@@ -173,14 +175,20 @@ namespace culib::itertools {
 	};
   }//!namespace
 
-/**
+  template<typename Container, requirements::IsContainer<Container> = true>
+  bool isSortedAscending(Container const& v) {
+	  return *v.begin() < *std::prev(v.end());
+  }
+
+
+  /**
  * @brief
- * There are two ideas behind this func:
- * 1) avoid having a Serie&& as a param, as if submitted by value then may be lost;
- * 2) using constexpr for runtime func is necessary as it allows to return different types;
- * 3) ascending is a runtime parameter, that can't be used to determine a return type;
- *
- * UI
+ * There are two ideas behind this func:\n
+ * 1) avoid having a Serie&& as a param, as if submitted by value then may be lost;\n
+ * 2) using constexpr for runtime func is necessary as it allows to return different types;\n
+ * 3) ascending is a runtime parameter, that can't be used to determine a return type;\n
+ *\n
+ * UI\n
  * */
   template<typename Serie, bool ascending>
   details::Range<typename details::DetectIter<Serie, ascending>::type>

@@ -6,6 +6,7 @@
 
 #include "time_series/element.hpp"
 #include "common_usage_library/types_requirements/container.h"
+#include "common_usage_library/types_requirements/object_args_count.h"
 #include "common_usage_library/types_requirements/numerics.h"
 
 #include <deque>
