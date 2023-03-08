@@ -1336,7 +1336,7 @@ int main () {
 	std::cout << result << '\n';
 #endif
 
-#if 1
+#if 0
 	//right full outer
 	result.clear();
 	std::set_union(v1.begin(), v1.end(), v2.begin(), v2.end(),
