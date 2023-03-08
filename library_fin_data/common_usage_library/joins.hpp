@@ -20,7 +20,7 @@ namespace culib::join {
 
   namespace details {
 
-	enum class SetOperation {
+	enum class JoinType {
 		None = 0,
 		Inner,
 		OuterFull,
@@ -125,49 +125,49 @@ namespace culib::join {
 
 	template <class InputIterator1, class InputIterator2, class OutputIterator, class ResultContainer, class Compare = std::less<>>
 	constexpr OutputIterator
-	makeJoin (SetOperation operation,
+	makeJoin (JoinType operation,
 			InputIterator1 first1, InputIterator1 last1,
 			InputIterator2 first2, InputIterator2 last2,
 			OutputIterator result
 			, [[maybe_unused]] Compare comp = std::less<>{})
 	{
 		switch (operation) {
-		case SetOperation::Inner : {
+		case JoinType::Inner : {
 			return inner
 					<InputIterator1, InputIterator2, OutputIterator, ResultContainer, Compare>
 					(first1, last1, first2, last2, result, comp);
 		}
-		case SetOperation::OuterFull : {
+		case JoinType::OuterFull : {
 			return outerFull
 					<InputIterator1, InputIterator2, OutputIterator, ResultContainer, Compare>
 					(first1, last1, first2, last2, result, comp);
 		}
-		case SetOperation::OuterExcluding : {
+		case JoinType::OuterExcluding : {
 			return outerExcluding
 					<InputIterator1, InputIterator2, OutputIterator, ResultContainer, Compare>
 					(first1, last1, first2, last2, result, comp);
 		}
-		case SetOperation::LeftFullOuter : {
+		case JoinType::LeftFullOuter : {
 			return sideFull
 					<InputIterator1, InputIterator2, OutputIterator, ResultContainer, Compare>
 					(first1, last1, first2, last2, result, comp);
 		}
-		case SetOperation::LeftExcluding : {
+		case JoinType::LeftExcluding : {
 			return sideExcluding
 					<InputIterator1, InputIterator2, OutputIterator, ResultContainer, Compare>
 					(first1, last1, first2, last2, result, comp);
 		}
-		case SetOperation::RightFullOuter : {
+		case JoinType::RightFullOuter : {
 			return sideFull
 					<InputIterator1, InputIterator2, OutputIterator, ResultContainer, Compare>
 					(first1, last1, first2, last2, result, comp);
 		}
-		case SetOperation::RightExcluding : {
+		case JoinType::RightExcluding : {
 			return sideExcluding
 					<InputIterator1, InputIterator2, OutputIterator, ResultContainer, Compare>
 					(first1, last1, first2, last2, result, comp);
 		}
-		case SetOperation::None: {
+		case JoinType::None: {
 			/* do nothing */
 			//todo: add exception?
 		}
@@ -181,7 +181,7 @@ namespace culib::join {
 
 	template<typename Serie1, typename Serie2>
 	void
-	operationOverPair(SetOperation operation, Serie1 &&serie_1, Serie2 &&serie_2)
+	operationOverPair(JoinType operation, Serie1 &&serie_1, Serie2 &&serie_2)
 	{
 		//there is no guarantee resulting container is empty, therefore it is end(), not begin()
 		using Result = std::remove_reference_t<Serie1>;
@@ -208,7 +208,7 @@ namespace culib::join {
 	template <typename Serie, typename... SerieArgs, std::size_t ...Is>
 	void
 	operationOverTuple (
-			SetOperation operation
+			JoinType operation
 			, std::tuple<SerieArgs...> &curr_result
 			, Serie &serie
 			, std::index_sequence<Is...>
@@ -220,14 +220,14 @@ namespace culib::join {
 
 	template<std::size_t I = 0, typename SerieRet, typename... SerieArgs>
 	auto
-	callOperationImp(SetOperation operation, SerieRet&& curr_result, std::tuple<SerieArgs...>&& args)
+	callOperationImp(JoinType join_type, SerieRet&& curr_result, std::tuple<SerieArgs...>&& args)
 	{
 		if constexpr (I==0) {
 			auto result_new = tupletools::tuplePushBack(
 					std::forward<SerieRet>(curr_result),
 					std::forward<decltype(std::get<I>(args))>(std::get<I>(args)));
 			return callOperationImp<I+1, decltype(result_new), SerieArgs...>(
-					operation
+					join_type
 					, std::move(result_new)
 					, std::forward<std::tuple<SerieArgs...>>(args)
 			);
@@ -236,7 +236,7 @@ namespace culib::join {
 
 			//filter current tuple of results with the Arg[i]
 			operationOverTuple(
-					operation
+					join_type
 					, curr_result
 					, std::get<I>(args)
 					, std::make_index_sequence<std::tuple_size_v<SerieRet>>{}
@@ -247,8 +247,8 @@ namespace culib::join {
 			Serie appending_tuple_with = std::move(std::get<I>(args));
 
 			//filter new element with existing tuple of results
-			SetOperation operation_appending;
-			operation_appending = SetOperation::Inner; //todo: seems like it doesn't work here
+			JoinType operation_appending;
+			operation_appending = JoinType::Inner; //todo: seems like it doesn't work here
 			operationOverPair(
 					operation_appending
 					, appending_tuple_with
@@ -263,7 +263,7 @@ namespace culib::join {
 			//continue recursion
 			using NewSerieRet = decltype(result_new);
 			return callOperationImp<I+1, NewSerieRet, SerieArgs...>(
-					operation
+					join_type
 					, std::move(result_new)
 					, std::forward<std::tuple<SerieArgs...>>(args)
 			);
@@ -275,7 +275,7 @@ namespace culib::join {
 	}
 
 	template<typename... SerieArgs>
-	auto callOperation(SetOperation operation, SerieArgs&& ...series) {
+	auto callOperation(JoinType join_type, SerieArgs&& ...series) {
 		std::tuple t;
 		if constexpr (sizeof...(SerieArgs) == 0u) {
 			return t;
@@ -285,13 +285,13 @@ namespace culib::join {
 		}
 		else {
 			auto args = std::make_tuple(std::forward<SerieArgs>(series)...);
-			if (operation == SetOperation::RightExcluding || operation == SetOperation::RightFullOuter) {
+			if (join_type == JoinType::RightExcluding || join_type == JoinType::RightFullOuter) {
 				args = tupletools::reverseTuple(std::move(args));
-				auto res = callOperationImp(operation, std::move(t), std::move(args));
+				auto res = callOperationImp(join_type, std::move(t), std::move(args));
 				return tupletools::reverseTuple(std::move(res));
 			}
 
-			return callOperationImp(operation, std::move(t), std::move(args));
+			return callOperationImp(join_type, std::move(t), std::move(args));
 		}
 	}
 
@@ -301,50 +301,64 @@ namespace culib::join {
   template<typename... SerieArgs>
   auto outerFull(SerieArgs&& ...series)
   {
-	  details::SetOperation operation {details::SetOperation::OuterFull};
-	  return details::callOperation<SerieArgs...>(operation, std::forward<SerieArgs>(series)...);
+	  return
+			  details::callOperation<SerieArgs...>(
+					  details::JoinType::OuterFull,
+					  std::forward<SerieArgs>(series)...);
   }
 
   template<typename... SerieArgs>
   auto outerExcluding(SerieArgs&& ...series)
   {
-	  details::SetOperation operation {details::SetOperation::OuterExcluding};
-	  return details::callOperation<SerieArgs...>(operation, std::forward<SerieArgs>(series)...);
+	  return
+			  details::callOperation<SerieArgs...>(
+					  details::JoinType::OuterExcluding,
+					  std::forward<SerieArgs>(series)...);
   }
 
   template<typename... SerieArgs>
   auto inner(SerieArgs&& ...series)
   {
-	  details::SetOperation operation {details::SetOperation::Inner};
-	  return details::callOperation<SerieArgs...>(operation, std::forward<SerieArgs>(series)...);
+	  return
+			  details::callOperation<SerieArgs...>(
+					  details::JoinType::Inner,
+					  std::forward<SerieArgs>(series)...);
   }
 
   template<typename... SerieArgs>
   auto leftOuter(SerieArgs&& ...series)
   {
-	  details::SetOperation operation {details::SetOperation::LeftFullOuter};
-	  return details::callOperation<SerieArgs...>(operation, std::forward<SerieArgs>(series)...);
+	  return
+			  details::callOperation<SerieArgs...>(
+					  details::JoinType::LeftFullOuter,
+					  std::forward<SerieArgs>(series)...);
   }
 
   template<typename... SerieArgs>
   auto leftExcluding(SerieArgs&& ...series)
   {
-	  details::SetOperation operation {details::SetOperation::LeftExcluding};
-	  return details::callOperation<SerieArgs...>(operation, std::forward<SerieArgs>(series)...);
+	  return
+			  details::callOperation<SerieArgs...>(
+					  details::JoinType::LeftExcluding,
+					  std::forward<SerieArgs>(series)...);
   }
 
   template<typename... SerieArgs>
   auto rightOuter(SerieArgs&& ...series)
   {
-	  details::SetOperation operation {details::SetOperation::RightFullOuter};
-	  return details::callOperation<SerieArgs...>(operation, std::forward<SerieArgs>(series)...);
+	  return
+			  details::callOperation<SerieArgs...>(
+					  details::JoinType::RightFullOuter,
+					  std::forward<SerieArgs>(series)...);
   }
 
   template<typename... SerieArgs>
   auto rightExcluding(SerieArgs&& ...series)
   {
-	  details::SetOperation operation {details::SetOperation::RightExcluding};
-	  return details::callOperation<SerieArgs...>(operation, std::forward<SerieArgs>(series)...);
+	  return
+			  details::callOperation<SerieArgs...>(
+					  details::JoinType::RightExcluding,
+					  std::forward<SerieArgs>(series)...);
   }
 
 }//!namespace
