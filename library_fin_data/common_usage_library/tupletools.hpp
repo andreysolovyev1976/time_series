@@ -59,5 +59,4 @@ namespace culib::tupletools {
   }
 }//!namespace
 
-
 #endif //TUPLETOOLS_H

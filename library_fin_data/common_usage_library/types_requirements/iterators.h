@@ -12,8 +12,18 @@
 
 namespace culib::requirements {
 
+
   template <typename Iter>
-  using require_input_iterator = std::enable_if_t<std::is_base_of_v<
+  using Iterator = std::enable_if_t<std::conjunction_v<
+		  typename Iter::value_type,
+		  typename Iter::difference_type,
+		  typename Iter::reference,
+		  typename Iter::pointer
+  >, bool>;
+
+
+  template <typename Iter>
+  using InputIterator = std::enable_if_t<std::is_base_of_v<
 		  std::input_iterator_tag, typename std::iterator_traits<Iter>::iterator_category>>;
 
 

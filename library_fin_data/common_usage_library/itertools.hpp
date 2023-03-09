@@ -46,7 +46,13 @@ namespace culib::itertools {
 		using AccessTypeFor = typename SomeIter::reference;
 
 	public:
+		using iterator_type = ZipIterator;
+		using iterator_category = std::bidirectional_iterator_tag;
 		using value_type = typename std::tuple<AccessTypeFor<Iter>...>;
+		using difference_type = int;
+		using pointer = value_type *;
+		using reference = value_type &;
+
 
 		ZipIterator() = delete;
 
