@@ -157,6 +157,20 @@ TEST(BasicsJoins, OuterFull) {
 }
 
 
+TEST(BasicsJoins, OuterFull_2) {
+	std::vector<int>
+	        v1 {1, 2, 3},
+			v2 {2, 2, 4};
+
+	auto result_other = culib::join::outerFull(v1, v2);
+	std::stringstream ss;
+	ss << result_other;
+	std::string const check {R"([{ 1 2 3 }, { 2 2 4 }])"};
+	ASSERT_EQ(check, ss.str());
+}
+
+
+
 TEST(BasicsJoins, OuterExcluding) {
 	auto result_other = culib::join::outerExcluding(m1, m2);
 	std::stringstream ss;

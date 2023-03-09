@@ -60,10 +60,13 @@ namespace culib::join {
 	template <class InputIterator1, class InputIterator2, class OutputIterator, class ResultContainer, class Compare = std::less<>>
 	constexpr OutputIterator
 	outerFull(InputIterator1 first1, InputIterator1 last1,
-			InputIterator2 first2, InputIterator2 last2,
+			[[maybe_unused]] InputIterator2 first2, [[maybe_unused]] InputIterator2 last2,
 			OutputIterator result
 			, [[maybe_unused]] Compare comp = std::less<>{}) {
-		return std::set_union(first1, last1, first2, last2, result);
+
+		//union
+		std::copy(first1, last1, result);
+		return result;
 	}
 
 	template <class InputIterator1, class InputIterator2, class OutputIterator, class ResultContainer, class Compare = std::less<>>
@@ -72,17 +75,6 @@ namespace culib::join {
 			InputIterator2 first2, InputIterator2 last2,
 			OutputIterator result
 			, [[maybe_unused]] Compare comp = std::less<>{}) {
-
-//		//intersection
-//		ResultContainer temp1;
-//		auto temp1_iter = std::inserter(temp1, temp1.begin());
-//		std::set_intersection(first1, last1, first2, last2, temp1_iter);
-//
-//		//union
-//		ResultContainer temp2;
-//		auto temp2_iter = std::inserter(temp2, temp2.begin());
-//		std::set_union(first1, last1, first2, last2, temp2_iter);
-
 
 		ResultContainer temp2;
 		auto temp2_iter = std::inserter(temp2, temp2.begin());
@@ -125,13 +117,13 @@ namespace culib::join {
 
 	template <class InputIterator1, class InputIterator2, class OutputIterator, class ResultContainer, class Compare = std::less<>>
 	constexpr OutputIterator
-	makeJoin (JoinType operation,
+	makeJoin (JoinType join_type,
 			InputIterator1 first1, InputIterator1 last1,
 			InputIterator2 first2, InputIterator2 last2,
 			OutputIterator result
 			, [[maybe_unused]] Compare comp = std::less<>{})
 	{
-		switch (operation) {
+		switch (join_type) {
 		case JoinType::Inner : {
 			return inner
 					<InputIterator1, InputIterator2, OutputIterator, ResultContainer, Compare>
@@ -181,7 +173,7 @@ namespace culib::join {
 
 	template<typename Serie1, typename Serie2>
 	void
-	operationOverPair(JoinType operation, Serie1 &&serie_1, Serie2 &&serie_2)
+	operationOverPair(JoinType join_type, Serie1 &&serie_1, Serie2 &&serie_2)
 	{
 		//there is no guarantee resulting container is empty, therefore it is end(), not begin()
 		using Result = std::remove_reference_t<Serie1>;
@@ -194,7 +186,7 @@ namespace culib::join {
 #define CALL_OPERATION(first_cond, second_cond) \
     auto [b1, e1] = itertools::getIterators<Serie1, first_cond>(serie_1); \
     auto [b2, e2] = itertools::getIterators<Serie2, second_cond>(serie_2); \
-    makeJoin <decltype(b1), decltype(b2), decltype(res_iter), Result> (operation, b1, e1, b2, e2, res_iter);
+    makeJoin <decltype(b1), decltype(b2), decltype(res_iter), Result> (join_type, b1, e1, b2, e2, res_iter);
 
 		if (ascending1 && ascending2) { CALL_OPERATION(true, true) }
 		else if (ascending1 && !ascending2) { CALL_OPERATION(true, false) }
@@ -208,13 +200,13 @@ namespace culib::join {
 	template <typename Serie, typename... SerieArgs, std::size_t ...Is>
 	void
 	operationOverTuple (
-			JoinType operation
+			JoinType join_type
 			, std::tuple<SerieArgs...> &curr_result
 			, Serie &serie
 			, std::index_sequence<Is...>
 	) {
 		(operationOverPair(
-				operation, std::get<Is>(curr_result), std::forward<Serie>(serie)), ...);
+				join_type, std::get<Is>(curr_result), std::forward<Serie>(serie)), ...);
 	}
 
 
@@ -226,6 +218,7 @@ namespace culib::join {
 			auto result_new = tupletools::tuplePushBack(
 					std::forward<SerieRet>(curr_result),
 					std::forward<decltype(std::get<I>(args))>(std::get<I>(args)));
+
 			return callOperationImp<I+1, decltype(result_new), SerieArgs...>(
 					join_type
 					, std::move(result_new)
@@ -242,9 +235,16 @@ namespace culib::join {
 					, std::make_index_sequence<std::tuple_size_v<SerieRet>>{}
 			);
 
+			//append tuple of results with updated new element
+			auto result_new = tupletools::tuplePushBack(
+					std::move(curr_result),
+					std::move(std::get<I>(args)));
+
+#if 0
 			//get new elem of tuple of results
 			using Serie = std::remove_reference_t<decltype(std::get<I>(args))>;
 			Serie appending_tuple_with = std::move(std::get<I>(args));
+
 
 			//filter new element with existing tuple of results
 			JoinType operation_appending;
@@ -259,7 +259,7 @@ namespace culib::join {
 			auto result_new = tupletools::tuplePushBack(
 					std::move(curr_result),
 					std::move(appending_tuple_with));
-
+#endif
 			//continue recursion
 			using NewSerieRet = decltype(result_new);
 			return callOperationImp<I+1, NewSerieRet, SerieArgs...>(
@@ -269,6 +269,14 @@ namespace culib::join {
 			);
 		}
 		else if constexpr (I == sizeof...(SerieArgs)) {
+			//update the last tuple element with the tuple
+			operationOverTuple(
+					join_type
+					, curr_result
+					, std::get<std::tuple_size_v<SerieRet> - 1>(curr_result)
+					, std::make_index_sequence<std::tuple_size_v<SerieRet> - 1>{}
+			);
+
 			//move is required, as serie_ret is an argument, which is not guaranteed to have RVO
 			return std::move(curr_result);
 		}
