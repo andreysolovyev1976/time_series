@@ -14,7 +14,8 @@
 //#define TUPLE_EXERCISES
 //#define JOIN_BASICS
 //#define JOIN_SQL_LIKE
-#define SET_OPERATIONS_BASICS
+//#define SET_OPERATIONS_BASICS
+#define MULTI_ARG_TEMPLATE_CHECK
 
 
 #ifdef NESTED_OPERATORS
@@ -1255,7 +1256,6 @@ int main() {
 
 
 #if defined(SET_OPERATIONS_BASICS)
-
 #include <iostream>
 #include <algorithm>
 #include <vector>
@@ -1359,4 +1359,51 @@ int main () {
 
 
 }
+#endif
+
+#if defined (MULTI_ARG_TEMPLATE_CHECK)
+
+#include <iostream>
+#include <vector>
+
+template<typename Container, typename = void>
+struct MaybeContainer : std::false_type {};
+
+template<typename Container>
+struct MaybeContainer<Container,
+					  std::void_t<
+							  decltype(std::declval<Container>().begin()),
+							  decltype(std::declval<Container>().end())
+					  >
+> : std::true_type {};
+
+template<typename Container>
+constexpr bool isContainer_v() { return MaybeContainer<Container>::value; }
+
+template<typename Container>
+using IsContainer = std::enable_if_t<isContainer_v<Container>(), bool>;
+
+template <typename... Args>
+constexpr bool areAllContainers_v () {
+	bool result {true};
+	return ((result = result && isContainer_v<Args>()),...);
+}
+
+template<typename... MaybeContainer>
+using AreAllContainers = std::enable_if_t<areAllContainers_v<MaybeContainer...>(), bool>;
+
+template <typename... Args, AreAllContainers<Args...> = true>
+void someFunc (Args&&...) {
+	std::cout << "true";
+}
+
+int main () {
+	std::vector<int> v1 {1, 2};
+	std::vector<int> v2 {3};
+	double d {42.};
+
+	someFunc(v1, v2);
+	someFunc(v1, d);
+}
+
 #endif

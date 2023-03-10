@@ -5,7 +5,6 @@
 #pragma once
 
 #include <type_traits>
-#include <functional>
 
 #ifndef TYPE_REQUIREMENTS_CONTAINER_H
 #define TYPE_REQUIREMENTS_CONTAINER_H
@@ -32,6 +31,20 @@ namespace culib::requirements {
 
   template<typename Container>
   using IsContainer = std::enable_if_t<isContainer_v<Container>(), bool>;
+
+  template <typename... Args>
+  constexpr bool areAllContainers_v () {
+	  bool result {true};
+	  return ((result = result && isContainer_v<Args>()),...);
+  }
+
+  template<typename... MaybeContainer>
+  using AreAllContainers = std::enable_if_t<areAllContainers_v<MaybeContainer...>(), bool>;
+
+
+  template<typename Element>
+  using IsDefaultConstructible = std::enable_if_t<std::is_default_constructible_v<Element>, bool>;
+
 
 }//!namespace
 

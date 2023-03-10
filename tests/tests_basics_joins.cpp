@@ -155,7 +155,7 @@ auto res = std::inserter(result, result.end());
 
 
 
-TEST(BasicsJoins, Inner) {
+TEST(BasicsJoins, InnerTwoContainers) {
 	auto result_other = culib::join::inner(m1, m2);
 	std::stringstream ss;
 	ss << result_other;
@@ -163,8 +163,7 @@ TEST(BasicsJoins, Inner) {
 	ASSERT_EQ(check, ss.str());
 }
 
-
-TEST(BasicsJoins, OuterFull) {
+TEST(BasicsJoins, OuterFullTwoContainers) {
 	auto result_other = culib::join::outerFull(m1, m2);
 	std::stringstream ss;
 	ss << result_other;
@@ -172,7 +171,7 @@ TEST(BasicsJoins, OuterFull) {
 	ASSERT_EQ(check, ss.str());
 }
 
-TEST(BasicsJoins, OuterExcluding) {
+TEST(BasicsJoins, OuterExcludingTwoContainers) {
 	auto result_other = culib::join::outerExcluding(m1, m2);
 	std::stringstream ss;
 	ss << result_other;
@@ -180,7 +179,7 @@ TEST(BasicsJoins, OuterExcluding) {
 	ASSERT_EQ(check, ss.str());
 }
 
-TEST(BasicsJoins, LeftOuter) {
+TEST(BasicsJoins, LeftOuterTwoContainers) {
 	auto result_other = culib::join::leftOuter(m1, m2);
 	std::stringstream ss;
 	ss << result_other;
@@ -188,7 +187,7 @@ TEST(BasicsJoins, LeftOuter) {
 	ASSERT_EQ(check, ss.str());
 }
 
-TEST(BasicsJoins, LeftExcluding) {
+TEST(BasicsJoins, LeftExcludingTwoContainers) {
 	auto result_other = culib::join::leftExcluding(m1, m2);
 	std::stringstream ss;
 	ss << result_other;
@@ -196,7 +195,7 @@ TEST(BasicsJoins, LeftExcluding) {
 	ASSERT_EQ(check, ss.str());
 }
 
-TEST(BasicsJoins, RightOuter) {
+TEST(BasicsJoins, RightOuterTwoContainers) {
 	auto result_other = culib::join::rightOuter(m1, m2);
 	std::stringstream ss;
 	ss << result_other;
@@ -204,7 +203,7 @@ TEST(BasicsJoins, RightOuter) {
 	ASSERT_EQ(check, ss.str());
 }
 
-TEST(BasicsJoins, RightExcluding) {
+TEST(BasicsJoins, RightExcludingTwoContainers) {
 	auto result_other = culib::join::rightExcluding(m1, m2);
 	std::stringstream ss;
 	ss << result_other;
@@ -212,8 +211,7 @@ TEST(BasicsJoins, RightExcluding) {
 	ASSERT_EQ(check, ss.str());
 }
 
-
-TEST(BasicsJoins, TestTemplate) {
+TEST(BasicsJoins, InnerMultipleContainers) {
 	std::vector<int>
 			v1 {1, 2, 3},
 			v2 {2, 3, 4, 17};
@@ -224,5 +222,33 @@ TEST(BasicsJoins, TestTemplate) {
 	std::stringstream ss;
 	ss << result_other;
 	std::string const check {R"([{ 2 }, { 2 17 }, { 2 17 }])"};
+	ASSERT_EQ(check, ss.str());
+}
+
+TEST(BasicsJoins, OuterFullMultipleContainers) {
+	std::vector<int>
+			v1 {1, 2, 3},
+			v2 {2, 3, 4, 17};
+
+	std::list<int> l {2, 5, 17};
+
+	auto result_other = culib::join::outerFull(v1, v2, l);
+	std::stringstream ss;
+	ss << result_other;
+	std::string const check {R"([{ 1 2 3 }, { 2 3 4 17 }, { 2 5 17 }])"};
+	ASSERT_EQ(check, ss.str());
+}
+
+TEST(BasicsJoins, OuterExcludingMultipleContainers) {
+	std::vector<int>
+			v1 {1, 2, 3},
+			v2 {2, 3, 4, 17};
+
+	std::list<int> l {2, 5, 17};
+
+	auto result_other = culib::join::outerExcluding(v1, v2, l);
+	std::stringstream ss;
+	ss << result_other;
+	std::string const check {R"([{ 1 3 }, { 4 }, { 5 }])"};
 	ASSERT_EQ(check, ss.str());
 }

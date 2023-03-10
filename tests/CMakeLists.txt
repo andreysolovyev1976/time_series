@@ -28,7 +28,6 @@ else()
     message(STATUS "NOT FOUND Boost")
 endif()
 
-
 find_package(GTest REQUIRED)
 if(GTest_FOUND)
     message(STATUS "FOUND GTest, including and linking...")

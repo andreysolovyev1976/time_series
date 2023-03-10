@@ -14,7 +14,7 @@
 namespace culib::tupletools {
 
   template <typename NewElem, typename... TupleElems>
-  decltype(auto) tuplePushBack(std::tuple<TupleElems...> &&tup, NewElem &&el) {
+  decltype(auto) pushBack(std::tuple<TupleElems...> &&tup, NewElem &&el) {
 	  return std::tuple_cat(
 			  std::forward<std::tuple<TupleElems...>>(tup),
 			  std::make_tuple(std::forward<NewElem>(el)));
@@ -33,7 +33,7 @@ namespace culib::tupletools {
 
 
   template <typename NewElem, typename... TupleElems>
-  decltype(auto) tuplePushFront(std::tuple<TupleElems...> &&tup, NewElem &&el) {
+  decltype(auto) pushFront(std::tuple<TupleElems...> &&tup, NewElem &&el) {
 	  return std::tuple_cat(
 			  std::make_tuple(std::forward<NewElem>(el)),
 			  std::forward<std::tuple<TupleElems...>>(tup));
@@ -59,7 +59,7 @@ namespace culib::tupletools {
 
 
   template <typename Tuple>
-  decltype(auto) reverseTuple (Tuple && tup) {
+  decltype(auto) reverse (Tuple && tup) {
 	  return reverseTupleImpl(
 			  std::forward<std::remove_reference_t<Tuple>>(tup),
 			  std::make_index_sequence<std::tuple_size_v<std::remove_reference_t<Tuple>>>{});
@@ -72,7 +72,7 @@ namespace culib::tupletools {
 		  return ret_tuple;
 	  }
 	  else {
-		  auto new_ret_tuple = tuplePushBack(std::move(ret_tuple), *std::next(std::get<I>(tup).begin(), idx));
+		  auto new_ret_tuple = pushBack(std::move(ret_tuple), *std::next(std::get<I>(tup).begin(), idx));
 		  return getSliceImpl<I+1, decltype(new_ret_tuple), Args...>(tup, std::move(new_ret_tuple), idx);
 	  }
   }
