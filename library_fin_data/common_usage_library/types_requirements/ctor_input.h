@@ -12,10 +12,10 @@
 namespace culib::requirements {
 
   template <typename Input, typename Result, typename = void>
-  struct TestConveribleOrConstructibleFromTo : std::false_type {};
+  struct MaybeConveribleOrConstructibleFromTo : std::false_type {};
 
   template <typename Input, typename Result>
-  struct TestConveribleOrConstructibleFromTo <
+  struct MaybeConveribleOrConstructibleFromTo <
 		  Input, Result,
 		  std::void_t<
 				  std::enable_if_t<
@@ -29,7 +29,7 @@ namespace culib::requirements {
 
   template <typename Input, typename Result>
   constexpr bool isConveribleOrConstructible () {
-	  return TestConveribleOrConstructibleFromTo<Input, Result>::value;
+	  return MaybeConveribleOrConstructibleFromTo<Input, Result>::value;
   }
 
   template <typename Input, typename Result>

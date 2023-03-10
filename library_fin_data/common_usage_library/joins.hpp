@@ -88,12 +88,8 @@ namespace culib {
 			  OutputIterator result
 			  , [[maybe_unused]] Compare comp = std::less<>{}) {
 
-		  ResultContainer temp2;
-		  auto temp2_iter = std::inserter(temp2, temp2.begin());
-		  std::set_symmetric_difference(first1, last1, first2, last2, temp2_iter);
-
 		  return
-				  std::set_difference (temp2.begin(), temp2.end(), first2, last2, result);
+				  std::set_symmetric_difference(first1, last1, first2, last2, result);
 	  }
 
 	  template <class InputIterator1, class InputIterator2, class OutputIterator, class ResultContainer, class Compare = std::less<>>
@@ -114,7 +110,6 @@ namespace culib {
 		  std::set_difference(first2, last2, first1, last1, temp1_iter);
 
 		  return std::set_difference (temp2.begin(), temp2.end(), temp1.begin(), temp1.end(), result);
-
 	  }
 
 	  template <class InputIterator1, class InputIterator2, class OutputIterator, class ResultContainer, class Compare = std::less<>>
@@ -282,25 +277,32 @@ namespace culib {
 			  );
 		  }
 		  else if constexpr (I == sizeof...(SerieArgs)) {
-			  static_assert(
-					  std::tuple_size_v<std::remove_reference_t<decltype(curr_result)>> > 1,
-					  "unexpected size of results tuple while processing a join");
-			  constexpr std::size_t last_elem_idx =
-					  std::tuple_size_v<std::remove_reference_t<decltype(curr_result)>> - 1;
-			  using last_elem_type = decltype(std::get<last_elem_idx>(curr_result)); //todo: check if remove_ref is required
+			  if constexpr (join_type == Job::JoinOuterExcluding) {
+				  return std::forward<decltype(curr_result)>(curr_result);
+			  }
+			  else {
+				  static_assert(
+						  std::tuple_size_v<std::remove_reference_t<decltype(curr_result)>>>1u,
+						  "unexpected size of results tuple while processing a join");
+				  constexpr std::size_t last_elem_idx =
+						  std::tuple_size_v<std::remove_reference_t<decltype(curr_result)>>-1;
+				  using last_elem_type = decltype(std::get<last_elem_idx>(
+						  curr_result)); //todo: check if remove_ref is required
 
-			  constexpr std::size_t prev_elem_idx = last_elem_idx - 1;
-			  using prev_elem_type = decltype(std::get<prev_elem_idx>(curr_result)); //todo: check if remove_ref is required
+				  constexpr std::size_t prev_elem_idx = last_elem_idx-1;
+				  using prev_elem_type = decltype(std::get<prev_elem_idx>(
+						  curr_result)); //todo: check if remove_ref is required
 
-			  //align the last part of a tuple of results along with previously received
-			  operationOverPair
-					  <join_type == Job::JoinOuterFull ? Job::JoinOuterFull : Job::JoinInner> (
-					  std::forward<last_elem_type>(std::get<last_elem_idx>(curr_result))
-					  , std::forward<prev_elem_type>(std::get<prev_elem_idx>(curr_result))
-			  );
+				  //align the last part of a tuple of results along with previously received
+				  operationOverPair
+						  <join_type==Job::JoinOuterFull ? Job::JoinOuterFull : Job::JoinInner>(
+						  std::forward<last_elem_type>(std::get<last_elem_idx>(curr_result)),
+						  std::forward<prev_elem_type>(std::get<prev_elem_idx>(curr_result))
+				  );
 
-			  //move is required, as serie_ret is an argument, which is not guaranteed to have RVO
-			  return std::forward<decltype(curr_result)>(curr_result);
+				  //move is required, as serie_ret is an argument, which is not guaranteed to have RVO
+				  return std::forward<decltype(curr_result)>(curr_result);
+			  }
 		  }
 	  }
 
@@ -315,15 +317,19 @@ namespace culib {
 				  args = tupletools::reverseTuple(std::move(args));
 			  }
 
-			  auto init_value = join_type == Job::JoinOuterExcluding ?
-								callSetOperation<Job::SetUnion>(std::forward<decltype(args)>(args)) :
-								std::make_tuple(std::get<0>(args));
-			  auto tmp = callJoinOperationImp<join_type>(std::move(init_value), std::forward<decltype(args)>(args));
-			  auto res = tupletools::popFront(std::move(tmp));
-			  if constexpr (is_right_to_left_v<join_type>) {
-				  return tupletools::reverseTuple(std::move(res));
-			  } else {
-				  return res;
+			  if constexpr (join_type == Job::JoinOuterExcluding) {
+				  auto init_value = callSetOperation<Job::SetUnion>(std::forward<decltype(args)>(args));
+				  auto tmp = callJoinOperationImp<join_type>(std::forward<decltype(args)>(args), std::move(init_value));
+				  auto res = tupletools::popBack(std::move(tmp));
+				  if constexpr (not is_right_to_left_v<join_type>) return tupletools::reverseTuple(std::move(res));
+				  else return res;
+			  }
+			  else {
+				  auto init_value = std::make_tuple(std::get<0>(args)); //todo: freakin' copy, should think how to avoid
+				  auto tmp = callJoinOperationImp<join_type>(std::move(init_value), std::forward<decltype(args)>(args));
+				  auto res = tupletools::popFront(std::move(tmp));
+				  if constexpr (is_right_to_left_v<join_type>) return tupletools::reverseTuple(std::move(res));
+				  else return res;
 			  }
 		  }
 	  }

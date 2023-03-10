@@ -13,7 +13,7 @@
 namespace culib::requirements {
   /**
    * @details
-   * Operators check is based on a SFINAE technic, is copied from this source
+   * Operators check is based on a SFINAE technic, is copied from this source\n
    * https://stackoverflow.com/questions/6534041/how-to-check-whether-operator-exists
    *
    */

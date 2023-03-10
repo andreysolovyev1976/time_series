@@ -56,6 +56,7 @@ Right Outer join
 #include <map>
 #include <string>
 #include <vector>
+#include <list>
 #include <tuple>
 
 struct Key {
@@ -73,6 +74,10 @@ bool operator < (const int lhs, const Key& rhs) { return lhs < rhs.value; }
 bool operator == (const int lhs, const Key& rhs) { return lhs == rhs.value; }
 bool operator < (std::pair<const Key, int> const& lhs, std::pair<const Key, int> const& rhs) { return lhs.first.value < rhs.first.value; }
 bool operator == (std::pair<const Key, int> const& lhs, std::pair<const Key, int> const& rhs) { return lhs.first.value == rhs.first.value; }
+bool operator < (std::pair<const Key, int> const& lhs, const int rhs) { return lhs.first.value < rhs; }
+bool operator == (std::pair<const Key, int> const& lhs, const int rhs) { return lhs.first.value == rhs; }
+bool operator < (const int lhs, std::pair<const Key, int> const& rhs) { return lhs < rhs.first.value; }
+bool operator == (const int lhs, std::pair<const Key, int> const& rhs) { return lhs == rhs.first.value; }
 
 std::ostream& operator << (std::ostream& os, std::pair<Key const, int> const& p) {
 	os << p.second;
@@ -82,6 +87,13 @@ std::ostream& operator << (std::ostream& os, std::vector<int> const& v) {
 	using namespace std::string_literals;
 	os << "{ "s;
 	for (auto const& elem: v) os << elem << ' ';
+	os << '}';
+	return os;
+}
+std::ostream& operator << (std::ostream& os, std::list<int> const& l) {
+	using namespace std::string_literals;
+	os << "{ "s;
+	for (auto const& elem: l) os << elem << ' ';
 	os << '}';
 	return os;
 }
@@ -152,28 +164,13 @@ TEST(BasicsJoins, Inner) {
 }
 
 
-TEST(BasicsJoins, OuterFull_1) {
+TEST(BasicsJoins, OuterFull) {
 	auto result_other = culib::join::outerFull(m1, m2);
 	std::stringstream ss;
 	ss << result_other;
 	std::string const check {R"([{ 3 2 3 17 25 }, { 27 12 16 20 }])"};
 	ASSERT_EQ(check, ss.str());
 }
-
-
-TEST(BasicsJoins, OuterFull_2) {
-	std::vector<int>
-	        v1 {1, 2, 3},
-			v2 {2, 2, 4, 5};
-
-	auto result_other = culib::join::outerFull(v1, v2);
-	std::stringstream ss;
-	ss << result_other;
-	std::string const check {R"([{ 1 2 3 }, { 2 2 4 5 }])"};
-	ASSERT_EQ(check, ss.str());
-}
-
-
 
 TEST(BasicsJoins, OuterExcluding) {
 	auto result_other = culib::join::outerExcluding(m1, m2);
@@ -212,5 +209,20 @@ TEST(BasicsJoins, RightExcluding) {
 	std::stringstream ss;
 	ss << result_other;
 	std::string const check {R"([{ }, { 27 }])"};
+	ASSERT_EQ(check, ss.str());
+}
+
+
+TEST(BasicsJoins, TestTemplate) {
+	std::vector<int>
+			v1 {1, 2, 3},
+			v2 {2, 3, 4, 17};
+
+	std::list<int> l {2, 5, 17};
+
+	auto result_other = culib::join::inner(v1, v2, l);
+	std::stringstream ss;
+	ss << result_other;
+	std::string const check {R"([{ 2 }, { 2 17 }, { 2 17 }])"};
 	ASSERT_EQ(check, ss.str());
 }

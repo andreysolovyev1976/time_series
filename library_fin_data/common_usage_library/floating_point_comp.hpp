@@ -16,7 +16,7 @@ namespace culib::comp {
 /**
  * @details
  * overloads the operators to compare double and floats (floating_point)
- * with a required precision, that can be changed runtime.
+ * with a required precision, that can be changed runtime.\n
  * Implementation provides strong protection for keeping just one instance of a
  * kValue that is used in comparison - see all deleted ctors.
  */
@@ -44,14 +44,16 @@ namespace culib::comp {
 			  :epsilon(precision)
 	  {}
 	  std::mutex mtx;
+
   public:
 	  T epsilon;
   };
 
 /**
  * @details
- * a beauty of this lambda is that it is a reasonable usage of IILE -
- * Immediately Invoked Lambda Expression, for returning a ref to static,
+ * a beauty of this lambda is that it is a reasonable usage of IILE -\n
+ * Immediately Invoked Lambda Expression,\n
+ * for returning a ref to static,
  * as well as decltype(auto) that prevents loosing a lvalue reference
  * from a return statement, that would be really unpleasant considering
  * all deleted ctors - see that above.
