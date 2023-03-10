@@ -128,23 +128,6 @@ std::ostream& operator<<(std::ostream& os, std::tuple<Ts...> const& theTuple){
 	return os;
 }
 
-std::map<Key, int> const m1 {
-		{{1}, 3},
-		{{2}, 2},
-		{{3}, 3},
-		{{4}, 17},
-		{{5}, 25},
-};
-std::map<Key, int> const m2 {
-		{{0}, 27},
-		{{1}, 12},
-		{{2}, 16},
-		{{3}, 20},
-};
-
-std::map<Key, int> result;
-auto res = std::inserter(result, result.end());
-
 
 //todo: test pointer, refs and values
 //todo: test it moves while joining
@@ -156,6 +139,10 @@ auto res = std::inserter(result, result.end());
 
 
 TEST(BasicsJoins, InnerTwoContainers) {
+	std::map<Key, int> const m1 {{{1}, 3},{{2}, 2},{{3}, 3},{{4}, 17},{{5}, 25},};
+	std::map<Key, int> const m2 {{{0}, 27},{{1}, 12},{{2}, 16},{{3}, 20},};
+	std::map<Key, int> result;
+
 	auto result_other = culib::join::inner(m1, m2);
 	std::stringstream ss;
 	ss << result_other;
@@ -164,6 +151,10 @@ TEST(BasicsJoins, InnerTwoContainers) {
 }
 
 TEST(BasicsJoins, OuterFullTwoContainers) {
+	std::map<Key, int> const m1 {{{1}, 3},{{2}, 2},{{3}, 3},{{4}, 17},{{5}, 25},};
+	std::map<Key, int> const m2 {{{0}, 27},{{1}, 12},{{2}, 16},{{3}, 20},};
+	std::map<Key, int> result;
+
 	auto result_other = culib::join::outerFull(m1, m2);
 	std::stringstream ss;
 	ss << result_other;
@@ -172,6 +163,10 @@ TEST(BasicsJoins, OuterFullTwoContainers) {
 }
 
 TEST(BasicsJoins, OuterExcludingTwoContainers) {
+	std::map<Key, int> const m1 {{{1}, 3},{{2}, 2},{{3}, 3},{{4}, 17},{{5}, 25},};
+	std::map<Key, int> const m2 {{{0}, 27},{{1}, 12},{{2}, 16},{{3}, 20},};
+	std::map<Key, int> result;
+
 	auto result_other = culib::join::outerExcluding(m1, m2);
 	std::stringstream ss;
 	ss << result_other;
@@ -180,6 +175,10 @@ TEST(BasicsJoins, OuterExcludingTwoContainers) {
 }
 
 TEST(BasicsJoins, LeftOuterTwoContainers) {
+	std::map<Key, int> const m1 {{{1}, 3},{{2}, 2},{{3}, 3},{{4}, 17},{{5}, 25},};
+	std::map<Key, int> const m2 {{{0}, 27},{{1}, 12},{{2}, 16},{{3}, 20},};
+	std::map<Key, int> result;
+
 	auto result_other = culib::join::leftOuter(m1, m2);
 	std::stringstream ss;
 	ss << result_other;
@@ -188,6 +187,10 @@ TEST(BasicsJoins, LeftOuterTwoContainers) {
 }
 
 TEST(BasicsJoins, LeftExcludingTwoContainers) {
+	std::map<Key, int> const m1 {{{1}, 3},{{2}, 2},{{3}, 3},{{4}, 17},{{5}, 25},};
+	std::map<Key, int> const m2 {{{0}, 27},{{1}, 12},{{2}, 16},{{3}, 20},};
+	std::map<Key, int> result;
+
 	auto result_other = culib::join::leftExcluding(m1, m2);
 	std::stringstream ss;
 	ss << result_other;
@@ -196,6 +199,10 @@ TEST(BasicsJoins, LeftExcludingTwoContainers) {
 }
 
 TEST(BasicsJoins, RightOuterTwoContainers) {
+	std::map<Key, int> const m1 {{{1}, 3},{{2}, 2},{{3}, 3},{{4}, 17},{{5}, 25},};
+	std::map<Key, int> const m2 {{{0}, 27},{{1}, 12},{{2}, 16},{{3}, 20},};
+	std::map<Key, int> result;
+
 	auto result_other = culib::join::rightOuter(m1, m2);
 	std::stringstream ss;
 	ss << result_other;
@@ -204,6 +211,10 @@ TEST(BasicsJoins, RightOuterTwoContainers) {
 }
 
 TEST(BasicsJoins, RightExcludingTwoContainers) {
+	std::map<Key, int> const m1 {{{1}, 3},{{2}, 2},{{3}, 3},{{4}, 17},{{5}, 25},};
+	std::map<Key, int> const m2 {{{0}, 27},{{1}, 12},{{2}, 16},{{3}, 20},};
+	std::map<Key, int> result;
+
 	auto result_other = culib::join::rightExcluding(m1, m2);
 	std::stringstream ss;
 	ss << result_other;
@@ -239,16 +250,146 @@ TEST(BasicsJoins, OuterFullMultipleContainers) {
 	ASSERT_EQ(check, ss.str());
 }
 
-TEST(BasicsJoins, OuterExcludingMultipleContainers) {
+std::string manuallyCheckOuterExcluding (bool make_cout = false) {
+
 	std::vector<int>
 			v1 {1, 2, 3},
 			v2 {2, 3, 4, 17};
 
 	std::list<int> l {2, 5, 17};
 
+	std::stringstream ss;
+	ss << '[';
+
+	if (make_cout) {
+		std::cout << "v1: ";
+		std::cout << v1 << '\n';
+		std::cout << "v2: ";
+		std::cout << v2 << '\n';
+		std::cout << "l: ";
+		std::cout << l << '\n';
+	}
+
+	std::vector<int> temp1, temp2, temp3;
+	std::set_union(v1.begin(), v1.end(), v2.begin(), v2.end(), std::inserter(temp1, temp1.end()));
+	std::set_union(temp1.begin(), temp1.end(), l.begin(), l.end(), std::inserter(temp2, temp2.end()));
+	if (make_cout) {
+		std::cout << "union of all three: ";
+		std::cout << temp2 << '\n';
+	}
+
+
+	std::set_symmetric_difference(v1.begin(), v1.end(), v2.begin(), v2.end(), std::inserter(temp3, temp3.end()));
+	if (make_cout) {
+		std::cout << "sym_diff of v1 & v2: ";
+		std::cout << temp3 << '\n';
+	}
+	temp3.clear();
+	std::set_symmetric_difference(v1.begin(), v1.end(), temp2.begin(), temp2.end(), std::inserter(temp3, temp3.end()));
+	if (make_cout) {
+		std::cout << "sym_diff of v1 & union: ";
+		std::cout << temp3 << '\n';
+	}
+	ss << temp3 << ", ";
+
+
+	temp3.clear();
+	std::set_symmetric_difference(v1.begin(), v1.end(), l.begin(), l.end(), std::inserter(temp3, temp3.end()));
+	if (make_cout) {
+		std::cout << "sym_diff of v1 & l: ";
+		std::cout << temp3 << '\n';
+	}
+	temp3.clear();
+	std::set_symmetric_difference(l.begin(), l.end(), temp2.begin(), temp2.end(), std::inserter(temp3, temp3.end()));
+	if (make_cout) {
+		std::cout << "sym_diff of l & union: ";
+		std::cout << temp3 << '\n';
+	}
+	ss << temp3 << ", ";
+
+
+	temp3.clear();
+	std::set_symmetric_difference(v2.begin(), v2.end(), l.begin(), l.end(), std::inserter(temp3, temp3.end()));
+	if (make_cout) {
+		std::cout << "sym_diff of v2 & l: ";
+		std::cout << temp3 << '\n';
+	}
+	temp3.clear();
+	std::set_symmetric_difference(v2.begin(), v2.end(), temp2.begin(), temp2.end(), std::inserter(temp3, temp3.end()));
+	if (make_cout) {
+		std::cout << "sym_diff of v2 & union: ";
+		std::cout << temp3 << '\n';
+	}
+	ss << temp3 << ", ";
+
+	ss << ']';
+
+	return ss.str();
+}
+
+TEST(BasicsJoins, OuterExcludingMultipleContainers) {
+	std::vector<int>
+			v1 {1, 2, 3},
+			v2 {2, 3, 4, 17};
+
+	std::list<int> l {2, 5, 17};
 	auto result_other = culib::join::outerExcluding(v1, v2, l);
 	std::stringstream ss;
 	ss << result_other;
-	std::string const check {R"([{ 1 3 }, { 4 }, { 5 }])"};
+//	std::string const check = manuallyCheckOuterExcluding();
+	std::string const check {R"([{ 1 3 4 }, { 1 5 }, { 4 5 17 }])"};
+	ASSERT_EQ(check, ss.str());
+}
+
+
+TEST(BasicsJoins, LeftOuterMultipleContainers) {
+	std::vector<int>
+			v1 {1, 2, 3},
+			v2 {2, 3, 4, 17};
+	std::list<int> l {2, 5, 17};
+
+	auto result_other = culib::join::leftOuter(v1, v2, l);
+	std::stringstream ss;
+	ss << result_other;
+	std::string const check {R"([{ 1 2 3 }, { 2 3 4 }, { 2 17 }])"};
+	ASSERT_EQ(check, ss.str());
+}
+
+TEST(BasicsJoins, LeftExcludingMultipleContainers) {
+	std::vector<int>
+			v1 {1, 2, 3},
+			v2 {2, 3, 4, 17};
+	std::list<int> l {2, 5, 17};
+
+	auto result_other = culib::join::leftExcluding(v1, v2, l);
+	std::stringstream ss;
+	ss << result_other;
+	std::string const check {R"([ ])"};
+	ASSERT_EQ(check, ss.str());
+}
+
+TEST(BasicsJoins, RightOuterMultipleContainers) {
+	std::vector<int>
+			v1 {1, 2, 3},
+			v2 {2, 3, 4, 17};
+	std::list<int> l {2, 5, 17};
+
+	auto result_other = culib::join::rightOuter(v1, v2, l);
+	std::stringstream ss;
+	ss << result_other;
+	std::string const check {R"([{ 3 2 3 }, { 27 12 16 20 }])"};
+	ASSERT_EQ(check, ss.str());
+}
+
+TEST(BasicsJoins, RightExcludingMultipleContainers) {
+	std::vector<int>
+			v1 {1, 2, 3},
+			v2 {2, 3, 4, 17};
+	std::list<int> l {2, 5, 17};
+
+	auto result_other = culib::join::rightExcluding(v1, v2, l);
+	std::stringstream ss;
+	ss << result_other;
+	std::string const check {R"([ ])"};
 	ASSERT_EQ(check, ss.str());
 }

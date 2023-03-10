@@ -39,10 +39,11 @@ namespace culib {
 
 	  template <Job join_type>
 	  inline
-	  constexpr bool requires_reverse {
+	  constexpr bool requiresReverse () {
+		  return
 			  join_type == Job::JoinRightExcluding ||
-			  join_type == Job::JoinRightFullOuter
-	  };
+			  join_type == Job::JoinRightFullOuter;
+	  }
 
 	  template <class _InputIterator1, class _InputIterator2, class _OutputIterator, class _Compare = std::less<>>
 	  constexpr _OutputIterator
@@ -136,8 +137,8 @@ namespace culib {
 		  Result result;
 		  auto res_iter = std::inserter(result, result.end());
 
-		  bool const ascending1{itertools::isSortedAscending(serie_1)};
-		  bool const ascending2{itertools::isSortedAscending(serie_2)};
+		  bool const ascending1 = serie_1.empty() ? true : itertools::isSortedAscending(serie_1);
+		  bool const ascending2 = serie_2.empty() ? true : itertools::isSortedAscending(serie_2);
 
 #define CALL_OPERATION(first_cond, second_cond) \
     auto [b1, e1] = itertools::getIterators<Serie1, first_cond>(serie_1); \
@@ -248,30 +249,53 @@ namespace culib {
 		  }
 	  }
 
+	  /*
+
+
+			  auto init_value = join_type == Job::JoinOuterExcluding ?
+					  callSetOperation<Job::SetUnion>(std::forward<decltype(args)>(args)) :
+					  std::make_tuple(std::get<0>(args)); //todo: freakin' copy, should think how to avoid
+
+			  auto tmp = join_type == Job::JoinOuterExcluding ?
+						 callJoinOperationImpl<join_type>(std::forward<decltype(args)>(args), std::move(init_value)) :
+						 callJoinOperationImpl<join_type>(std::move(init_value), std::forward<decltype(args)>(args));
+			  auto res = join_type == Job::JoinOuterExcluding ?
+						 tupletools::popBack(std::move(tmp)) :
+			  			 tupletools::popFront(std::move(tmp));
+
+
+	   */
+
+
 	  template<Job join_type, typename... SerieArgs>
 	  [[nodiscard]] auto callJoinOperation(SerieArgs&& ...series) {
 		  if constexpr (sizeof...(SerieArgs) <= 1u) {
 			  return std::tuple();
 		  }
 		  else {
-			  auto args = std::make_tuple(std::forward<SerieArgs>(series)...); //todo: add lvalue_ref
-			  if constexpr (requires_reverse<join_type>) {
-				  args = tupletools::reverse(std::move(args));
-			  }
-
 			  if constexpr (join_type == Job::JoinOuterExcluding) { //requires special attention
+				  auto args = std::make_tuple(std::forward<SerieArgs>(series)...); //todo: add lvalue_ref ??
 				  auto init_value = callSetOperation<Job::SetUnion>(std::forward<decltype(args)>(args));
 				  auto tmp = callJoinOperationImpl<join_type>(std::forward<decltype(args)>(args), std::move(init_value));
 				  auto res = tupletools::popBack(std::move(tmp));
-				  if constexpr (requires_reverse<join_type>) return res;
-				  else return tupletools::reverse(std::move(res));
+				  return tupletools::reverse(std::move(res));
 			  }
 			  else {
-				  auto init_value = std::make_tuple(std::get<0>(args)); //todo: freakin' copy, should think how to avoid
-				  auto tmp = callJoinOperationImpl<join_type>(std::move(init_value), std::forward<decltype(args)>(args));
-				  auto res = tupletools::popFront(std::move(tmp));
-				  if constexpr (requires_reverse<join_type>) return tupletools::reverse(std::move(res));
-				  else return res;
+				  if constexpr (requiresReverse<join_type>()) {
+					  auto args = tupletools::reverse(std::make_tuple(std::forward<SerieArgs>(series)...)); //todo: add lvalue_ref ??
+					  auto init_value = std::make_tuple(std::get<0>(args)); //todo: freakin' copy, should think how to avoid
+					  auto tmp = callJoinOperationImpl<join_type>(std::move(init_value), std::forward<decltype(args)>(args));
+					  auto res = tupletools::popFront(std::move(tmp));
+					  return tupletools::reverse(std::move(res));
+
+				  }
+				  else {
+					  auto args = std::make_tuple(std::forward<SerieArgs>(series)...); //todo: add lvalue_ref ??
+					  auto init_value = std::make_tuple(std::get<0>(args)); //todo: freakin' copy, should think how to avoid
+					  auto tmp = callJoinOperationImpl<join_type>(std::move(init_value), std::forward<decltype(args)>(args));
+					  auto res = tupletools::popFront(std::move(tmp));
+					  return res;
+				  }
 			  }
 		  }
 	  }

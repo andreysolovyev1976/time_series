@@ -186,7 +186,6 @@ namespace culib::itertools {
 	  return *v.begin() < *std::prev(v.end());
   }
 
-
   /**
  * @brief
  * There are two ideas behind this func:\n
