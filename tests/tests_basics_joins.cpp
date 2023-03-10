@@ -137,6 +137,10 @@ auto res = std::inserter(result, result.end());
 //todo: test pointer, refs and values
 //todo: test it moves while joining
 //todo: test reverse tuple for move semantics
+//todo: test actual tuples - several values
+//todo: test complicate inputs
+//todo: add containers limitations
+
 
 
 TEST(BasicsJoins, Inner) {
@@ -148,7 +152,7 @@ TEST(BasicsJoins, Inner) {
 }
 
 
-TEST(BasicsJoins, OuterFull) {
+TEST(BasicsJoins, OuterFull_1) {
 	auto result_other = culib::join::outerFull(m1, m2);
 	std::stringstream ss;
 	ss << result_other;
@@ -160,12 +164,12 @@ TEST(BasicsJoins, OuterFull) {
 TEST(BasicsJoins, OuterFull_2) {
 	std::vector<int>
 	        v1 {1, 2, 3},
-			v2 {2, 2, 4};
+			v2 {2, 2, 4, 5};
 
 	auto result_other = culib::join::outerFull(v1, v2);
 	std::stringstream ss;
 	ss << result_other;
-	std::string const check {R"([{ 1 2 3 }, { 2 2 4 }])"};
+	std::string const check {R"([{ 1 2 3 }, { 2 2 4 5 }])"};
 	ASSERT_EQ(check, ss.str());
 }
 

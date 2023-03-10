@@ -22,6 +22,7 @@ namespace time_series {
 
 
 	//todo: add serie requirementes
+	//todo: add default constructible for Value
 /**
  * @brief
  * A Serie must be

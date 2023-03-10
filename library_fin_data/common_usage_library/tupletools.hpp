@@ -20,12 +20,37 @@ namespace culib::tupletools {
 			  std::make_tuple(std::forward<NewElem>(el)));
   }
 
+  template <typename Tuple, std::size_t ... Is>
+  auto popBackImpl(Tuple&& tuple, std::index_sequence<Is...>){
+	  return std::make_tuple(std::move(std::get<Is>(std::forward<Tuple>(tuple)))...);
+  }
+
+  template <typename Tuple>
+  auto popBack(Tuple&& tuple) {
+	  return popBackImpl(std::forward<Tuple>(tuple),
+			  std::make_index_sequence<std::tuple_size_v<Tuple> - 1>{});
+  }
+
+
   template <typename NewElem, typename... TupleElems>
   decltype(auto) tuplePushFront(std::tuple<TupleElems...> &&tup, NewElem &&el) {
 	  return std::tuple_cat(
 			  std::make_tuple(std::forward<NewElem>(el)),
 			  std::forward<std::tuple<TupleElems...>>(tup));
   }
+
+  template <typename Tuple, std::size_t ... Is>
+  auto popFrontImpl(Tuple&& tuple, std::index_sequence<Is...>){
+	  return std::make_tuple(std::move(std::get<Is + 1>(std::forward<Tuple>(tuple)))...);
+  }
+
+  template <typename Tuple>
+  auto popFront(Tuple&& tuple)
+  {
+	  return popFrontImpl(std::forward<Tuple>(tuple),
+			  std::make_index_sequence<std::tuple_size_v<Tuple> - 1>{});
+  }
+
 
   template <typename Tuple, std::size_t... Is>
   decltype(auto) reverseTupleImpl (Tuple && tup, std::index_sequence<Is...>) {
