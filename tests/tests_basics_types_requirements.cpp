@@ -120,3 +120,28 @@ TEST (BasicsTypesRequirements, TypeIsComparator) {
 	result = requirements::isComparator_v<S1, std::less<S1>>();
 	ASSERT_TRUE(result);
 }
+
+
+#ifdef __cpp_concepts
+
+TEST (BasicsTypesRequirements, ConceptsContainerOk) {
+	using Elem = time_series::Element<base::Seconds, int>;
+	using Map = std::map<base::Timestamp<base::Seconds>, time_series::Value<time_series::value::traits::ValueTypeDefault>>;
+	ASSERT_TRUE(requirements::isContainer_v_<std::string>());
+	ASSERT_TRUE(requirements::isContainer_v_<std::vector<Elem>>());
+	ASSERT_TRUE(requirements::isContainer_v_<Map>());
+	ASSERT_TRUE(requirements::isContainer_v_<std::deque<Elem>>());
+	ASSERT_TRUE(requirements::isContainer_v_<std::set<Elem>>());
+	ASSERT_TRUE(requirements::isContainer_v_<Container_ok<Elem>>());
+}
+
+TEST(BasicsTypesRequirements, ConceptsContainerNotOk) {
+	using Elem = time_series::Element<base::Seconds, int>;
+	ASSERT_FALSE(requirements::isContainer_v<double>());
+	ASSERT_FALSE(requirements::isContainer_v<int>());
+	ASSERT_FALSE(requirements::isContainer_v<Container_not_ok<Elem>>());
+	ASSERT_FALSE(requirements::isContainer_v<std::variant<Elem>>());
+}
+
+
+#endif

@@ -52,11 +52,14 @@ namespace culib::cpp_standard {
   constexpr version get_version()
   {
 #if defined(__cplusplus)
-#if __cplusplus==201703L
+#if __cplusplus<=201703L
+#define CPP17_OR_LESS
 	  return version::cpp_17;
-#elif __cplusplus==202002L
+#elif __cplusplus>201703L && __cplusplus<=202002L
+#define CPP20
 	  return version::cpp_20;
-#elif __cplusplus == 202207L
+#elif __cplusplus>202002L &&__cplusplus == 202207L
+#define CPP23
 	  	return version::cpp_23;
 #elif __cplusplus > 202207L
 	  	return version::cpp_future;

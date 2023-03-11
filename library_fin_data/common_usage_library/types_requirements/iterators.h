@@ -26,6 +26,5 @@ namespace culib::requirements {
   using InputIterator = std::enable_if_t<std::is_base_of_v<
 		  std::input_iterator_tag, typename std::iterator_traits<Iter>::iterator_category>>;
 
-
 }//!namespace
 #endif //TYPE_REQUIREMENTS_CTORS_H

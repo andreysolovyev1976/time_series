@@ -6,6 +6,10 @@
 
 #include <type_traits>
 
+#ifdef __cpp_concepts
+#include <concepts>
+#endif
+
 #ifndef TYPE_REQUIREMENTS_CONTAINER_H
 #define TYPE_REQUIREMENTS_CONTAINER_H
 
@@ -15,6 +19,7 @@ namespace culib::requirements {
    * Requirements to restrict containers only to be used as a serie
    * */
 
+//#ifndef __cpp_concepts
   template<typename Container, typename = void>
   struct MaybeContainer : std::false_type {};
 
@@ -44,6 +49,34 @@ namespace culib::requirements {
 
   template<typename Element>
   using IsDefaultConstructible = std::enable_if_t<std::is_default_constructible_v<Element>, bool>;
+
+//#else
+
+  template<typename C>
+  concept Container_ = requires (C c) {
+	  c.begin();
+	  c.end();
+  };
+
+  template<typename C>
+  concept NotContainer_ = requires () {
+	  requires !Container_<C>;
+  };
+
+  template <Container_ C>
+  constexpr bool isContainer_v_ () {return true;}
+
+  template <NotContainer_ C>
+  constexpr bool isContainer_v_ () {return false;}
+
+  template<typename... MaybeContainer>
+  concept AreAllContainers_ = requires () {requires ((Container_<MaybeContainer>),...);};
+
+
+//  template<typename Element>
+//  using IsDefaultConstructible = std::enable_if_t<std::is_default_constructible_v<Element>, bool>;
+
+//#endif
 
 
 }//!namespace
