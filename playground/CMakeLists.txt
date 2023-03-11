@@ -6,10 +6,8 @@ project(${PROJECT_NAME_PLAYGROUND}
         DESCRIPTION "Fin Value temporary playground"
         LANGUAGES CXX)
 
-
 set(CMAKE_CXX_FLAGS " -Wall -Wextra -Wpedantic -Werror")
 set(CMAKE_CXX_STANDARD 23)
-
 set(CMAKE_CXX_FLAGS_RELEASE " -O3")
 
 find_package (Boost)
