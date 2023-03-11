@@ -29,3 +29,4 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char **argv) {
 // add own container using polymorphic allocator (if small then stack else heap)
 // add own unique_ptr on polymorphic allocator
 // Fenvick tree is required instead of accumulate for own container
+// offload to videocard

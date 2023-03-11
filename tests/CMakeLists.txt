@@ -5,14 +5,11 @@ project(${PROJECT_NAME_TEST}
         DESCRIPTION "Testing Timeseries"
         LANGUAGES CXX)
 
+set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CXX_FLAGS "-Wall -Wextra -Wpedantic -Werror")
 if (APPLE)
-    set(CMAKE_CXX_FLAGS " -Wall -Wextra -Wpedantic -Werror -Wreturn-std-move -Wno-c99-extensions -Wno-gnu-zero-variadic-macro-arguments -o")
-    set(CMAKE_CXX_STANDARD 17)
-else()
-    set(CMAKE_CXX_FLAGS " -Wall -Wextra -Wpedantic -Werror")
-    set(CMAKE_CXX_STANDARD 23)
+    set(CMAKE_CXX_FLAGS "-Wno-gnu-zero-variadic-macro-arguments")
 endif()
-
 set(CMAKE_CXX_FLAGS_RELEASE " -O3")
 
 

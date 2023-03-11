@@ -15,8 +15,8 @@
 //#define JOIN_BASICS
 //#define JOIN_SQL_LIKE
 //#define SET_OPERATIONS_BASICS
-#define MULTI_ARG_TEMPLATE_CHECK
-
+//#define MULTI_ARG_TEMPLATE_CHECK
+#define CPP20CHECK
 
 #ifdef NESTED_OPERATORS
 #include <iostream>
@@ -1405,5 +1405,30 @@ int main () {
 	someFunc(v1, v2);
 	someFunc(v1, d);
 }
+
+#endif
+
+#if defined(CPP20CHECK)
+
+#include <iostream>
+#include <filesystem>
+#include <concepts>
+
+template <typename T>
+concept Printable = requires(T x, std::ostream &os) { os << x; };
+
+void print(Printable auto... args) {
+	(..., (std::cout << args << ' '));
+}
+
+
+int main() {
+	std::filesystem::path f = std::filesystem::current_path();
+	print(7.5, 12, "hello, world", f);
+	print();
+
+	return EXIT_SUCCESS;
+}
+
 
 #endif

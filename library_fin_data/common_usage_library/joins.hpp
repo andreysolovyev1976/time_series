@@ -194,7 +194,7 @@ namespace culib {
 					  std::move(t), std::forward<std::tuple<SerieArgs...>>(args)
 			  );
 			  static_assert(std::tuple_size_v<decltype(res)> == 1u, "somehow result is in multi-dimensions...");
-			  return std::move(res);
+			  return res;
 		  }
 	  }
 
@@ -290,6 +290,7 @@ namespace culib {
 
 				  }
 				  else {
+					  //todo: copy is very strong suggestion, none of the STD smart-pointers does this //todo: add lvalue_ref ??
 					  auto args = std::make_tuple(std::forward<SerieArgs>(series)...); //todo: add lvalue_ref ??
 					  auto init_value = std::make_tuple(std::get<0>(args)); //todo: freakin' copy, should think how to avoid
 					  auto tmp = callJoinOperationImpl<join_type>(std::move(init_value), std::forward<decltype(args)>(args));

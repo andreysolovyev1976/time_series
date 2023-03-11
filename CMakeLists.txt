@@ -9,17 +9,12 @@ if(UNIX AND NOT APPLE)
     set(LINUX TRUE)
 endif()
 
-if (APPLE)
-    set(CMAKE_CXX_FLAGS " -Wall -Wextra -Wpedantic -Werror -Wreturn-std-move -Wno-missing-field-initializers -o")
-    set(CMAKE_CXX_STANDARD 17)
-else()
-    set(CMAKE_CXX_FLAGS " -Wall -Wextra -Wpedantic -Werror")
-    set(CMAKE_CXX_STANDARD 23)
-endif()
+set(CMAKE_CXX_FLAGS " -Wall -Wextra -Wpedantic -Werror")
+set(CMAKE_CXX_STANDARD 23)
 
 set(CMAKE_CXX_FLAGS_DEBUG " -fsanitize=undefined -g")
 set(CMAKE_CXX_FLAGS_DEBUG " -fsanitize=address -g -fno-omit-frame-pointer -fno-optimize-sibling-calls")
-set(CMAKE_CXX_FLAGS_DEBUG " -fsanitize=thread -g")
+#set(CMAKE_CXX_FLAGS_DEBUG " -fsanitize=thread -g")
 set(CMAKE_CXX_FLAGS_RELEASE " -O3")
 
 
