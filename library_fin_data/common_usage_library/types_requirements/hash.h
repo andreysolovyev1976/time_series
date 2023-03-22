@@ -50,8 +50,26 @@ namespace culib::requirements {
   using IsHash = std::enable_if_t<isHash_v<Key, Type, HashResult>, bool>;
 
 #else
+  template <typename Key, typename Type, typename HashResult = std::size_t>
+  concept IsHash = (
+		  std::negation_v<std::is_same<HashResult, bool>> &&
+		  std::is_invocable_r_v<std::size_t, Type, std::add_const_t<std::decay_t<Key>>> &&
+		  std::is_copy_constructible_v<Type> &&
+		  std::is_move_constructible_v<Type>
+		          ) ||
+		  std::is_same_v<typename std::hash<Key>, Type>
+  ;
+  template <typename Key, typename Type, typename HashResult = std::size_t>
+  concept IsNotHash = ! IsHash<Key, Type, HashResult>;
 
+  template <typename Key, typename Type, typename HashResult = std::size_t>
+  requires IsHash<Key, Type, HashResult>
+  constexpr bool isHash_v () { return true; }
 
+  template <typename Key, typename Type, typename HashResult = std::size_t>
+  requires IsNotHash<Key, Type, HashResult>
+  constexpr bool isHash_v () { return false; }
+  
 #endif
 
 }//!namespace

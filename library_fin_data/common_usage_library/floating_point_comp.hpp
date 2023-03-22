@@ -12,6 +12,9 @@
 #ifndef BASE_VALUE_COMP_H
 #define BASE_VALUE_COMP_H
 
+
+//#define CONCEPTS
+
 namespace culib::comp {
 /**
  * @details
@@ -20,7 +23,7 @@ namespace culib::comp {
  * Implementation provides strong protection for keeping just one instance of a
  * kValue that is used in comparison - see all deleted ctors.
  */
-#ifndef __cpp_concepts
+#ifndef CONCEPTS
   template<typename Floating, requirements::IsFloatinPoint<Floating> = true>
 #else
   template<requirements::IsFloatinPoint Floating>
@@ -74,7 +77,7 @@ namespace culib::comp {
  * */
 
 
-#ifndef __cpp_concepts
+#ifndef CONCEPTS
   template<typename T, typename U,
 		  requirements::IsFloatinPoint<T> = true,
 		  requirements::IsIntegral<U> = true>
@@ -86,7 +89,7 @@ namespace culib::comp {
 	  return (((a - b) < floating_comp.epsilon) &&
 			  ((b - a) < floating_comp.epsilon));
   }
-#ifndef __cpp_concepts
+#ifndef CONCEPTS
   template<typename T, typename U,
 		  requirements::IsFloatinPoint<T> = true,
 		  requirements::IsIntegral<U> = true>
@@ -97,7 +100,7 @@ namespace culib::comp {
   {
 	  return eq(a, b);
   }
-#ifndef __cpp_concepts
+#ifndef CONCEPTS
   template <typename T,
 		  requirements::IsFloatinPoint<T> = true>
 #else
@@ -110,7 +113,7 @@ namespace culib::comp {
   }
 
 
-#ifndef __cpp_concepts
+#ifndef CONCEPTS
   template<typename T, typename U,
 		  requirements::IsFloatinPoint<T> = true,
 		  requirements::IsIntegral<U> = true>
@@ -121,7 +124,7 @@ namespace culib::comp {
   {
 	  return not eq(a, b);
   }
-#ifndef __cpp_concepts
+#ifndef CONCEPTS
   template<typename T, typename U,
 		  requirements::IsFloatinPoint<T> = true,
 		  requirements::IsIntegral<U> = true>
@@ -132,7 +135,7 @@ namespace culib::comp {
   {
 	  return not eq(a, b);
   }
-#ifndef __cpp_concepts
+#ifndef CONCEPTS
   template <typename T,
 		  requirements::IsFloatinPoint<T> = true>
 #else
@@ -143,7 +146,7 @@ namespace culib::comp {
 	  return not eq(a, b);
   }
 
-#ifndef __cpp_concepts
+#ifndef CONCEPTS
   template<typename T, typename U,
 		  requirements::IsFloatinPoint<T> = true,
 		  requirements::IsIntegral<U> = true>
@@ -154,7 +157,7 @@ namespace culib::comp {
   {
 	  return a < b - floating_comp.epsilon;
   }
-#ifndef __cpp_concepts
+#ifndef CONCEPTS
   template<typename T, typename U,
 		  requirements::IsFloatinPoint<T> = true,
 		  requirements::IsIntegral<U> = true>
@@ -165,7 +168,7 @@ namespace culib::comp {
   {
 	  return b < a - floating_comp.epsilon;;
   }
-#ifndef __cpp_concepts
+#ifndef CONCEPTS
   template <typename T,
 		  requirements::IsFloatinPoint<T> = true>
 #else
@@ -177,7 +180,7 @@ namespace culib::comp {
   }
 
 
-#ifndef __cpp_concepts
+#ifndef CONCEPTS
   template<typename T, typename U,
 		  requirements::IsFloatinPoint<T> = true,
 		  requirements::IsIntegral<U> = true>
@@ -188,7 +191,7 @@ namespace culib::comp {
   {
 	  return a > b + floating_comp.epsilon;
   }
-#ifndef __cpp_concepts
+#ifndef CONCEPTS
   template<typename T, typename U,
 		  requirements::IsFloatinPoint<T> = true,
 		  requirements::IsIntegral<U> = true>
@@ -199,7 +202,7 @@ namespace culib::comp {
   {
 	  return b > a + floating_comp.epsilon;
   }
-#ifndef __cpp_concepts
+#ifndef CONCEPTS
   template <typename T,
 		  requirements::IsFloatinPoint<T> = true>
 #else
@@ -211,7 +214,7 @@ namespace culib::comp {
   }
 
 
-#ifndef __cpp_concepts
+#ifndef CONCEPTS
   template<typename T, typename U,
 		  requirements::IsFloatinPoint<T> = true,
 		  requirements::IsIntegral<U> = true>
@@ -222,7 +225,7 @@ namespace culib::comp {
   {
 	  return a > b - floating_comp.epsilon;
   }
-#ifndef __cpp_concepts
+#ifndef CONCEPTS
   template<typename T, typename U,
 		  requirements::IsFloatinPoint<T> = true,
 		  requirements::IsIntegral<U> = true>
@@ -233,7 +236,7 @@ namespace culib::comp {
   {
 	  return b > a - floating_comp.epsilon;
   }
-#ifndef __cpp_concepts
+#ifndef CONCEPTS
   template <typename T,
 		  requirements::IsFloatinPoint<T> = true>
 #else
@@ -245,7 +248,7 @@ namespace culib::comp {
   }
 
 
-#ifndef __cpp_concepts
+#ifndef CONCEPTS
   template<typename T, typename U,
 		  requirements::IsFloatinPoint<T> = true,
 		  requirements::IsIntegral<U> = true>
@@ -256,7 +259,7 @@ namespace culib::comp {
   {
 	  return a < b + floating_comp.epsilon;
   }
-#ifndef __cpp_concepts
+#ifndef CONCEPTS
   template<typename T, typename U,
 		  requirements::IsFloatinPoint<T> = true,
 		  requirements::IsIntegral<U> = true>
@@ -267,7 +270,7 @@ namespace culib::comp {
   {
 	  return b < a + floating_comp.epsilon;
   }
-#ifndef __cpp_concepts
+#ifndef CONCEPTS
   template <typename T,
 		  requirements::IsFloatinPoint<T> = true>
 #else

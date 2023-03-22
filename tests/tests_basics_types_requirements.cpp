@@ -41,22 +41,22 @@ struct Container_not_ok {
 
 
 TEST(BasicsTypesRequirements, CtorInputOk) {
-	bool ok = requirements::isConveribleOrConstructible<double, int>();
+	bool ok = requirements::isConveribleOrConstructible_v<double, int>();
 	ASSERT_TRUE(ok);
-	ok = requirements::isConveribleOrConstructible<int, double>();
+	ok = requirements::isConveribleOrConstructible_v<int, double>();
 	ASSERT_TRUE(ok);
-	ok = requirements::isConveribleOrConstructible<int, bool>();
+	ok = requirements::isConveribleOrConstructible_v<int, bool>();
 	ASSERT_TRUE(ok);
-	ok = requirements::isConveribleOrConstructible<S<int>, double>();
+	ok = requirements::isConveribleOrConstructible_v<S<int>, double>();
 	ASSERT_TRUE(ok);
 }
 
 TEST(BasicsTypesRequirements, CtorInputNotOk) {
-	bool ok = requirements::isConveribleOrConstructible<std::string, int>();
+	bool ok = requirements::isConveribleOrConstructible_v<std::string, int>();
 	ASSERT_FALSE(ok);
-	ok = requirements::isConveribleOrConstructible<double, S<int>>();
+	ok = requirements::isConveribleOrConstructible_v<double, S<int>>();
 	ASSERT_FALSE(ok);
-	ok = requirements::isConveribleOrConstructible<bool, std::string>();
+	ok = requirements::isConveribleOrConstructible_v<bool, std::string>();
 	ASSERT_FALSE(ok);
 }
 

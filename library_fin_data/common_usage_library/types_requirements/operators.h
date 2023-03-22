@@ -169,31 +169,27 @@ namespace culib::requirements {
 
 
   template <typename L, typename R>
-  concept ComparisonOperationsDefined = requires () {
-	  requires has_equality<std::decay_t<L>, std::decay_t<R>>;
-	  requires has_equality<std::decay_t<R>, std::decay_t<L>>;
-	  requires has_less_than<std::decay_t<L>, std::decay_t<R>>;
-	  requires has_less_than<std::decay_t<R>, std::decay_t<L>>;
-  };
+  concept ComparisonOperationsDefined =
+	   has_equality<std::decay_t<L>, std::decay_t<R>> &&
+	   has_equality<std::decay_t<R>, std::decay_t<L>> &&
+	   has_less_than<std::decay_t<L>, std::decay_t<R>> &&
+	   has_less_than<std::decay_t<R>, std::decay_t<L>>
+  ;
 
   template <typename L, typename R>
-  concept ArithmeticOperationsDefined = requires () {
-			  requires has_plus<std::decay_t<L>, std::decay_t<R>>;
-			  requires has_plus<std::decay_t<R>, std::decay_t<L>>;
-			  requires has_minus<std::decay_t<L>, std::decay_t<R>>;
-			  requires has_minus<std::decay_t<R>, std::decay_t<L>>;
-			  requires has_divides<std::decay_t<L>, std::decay_t<R>>;
-			  requires has_divides<std::decay_t<R>, std::decay_t<L>>;
-			  requires has_multiply<std::decay_t<L>, std::decay_t<R>>;
-			  requires has_multiply<std::decay_t<R>, std::decay_t<L>>;
-  };
+  concept ArithmeticOperationsDefined =
+			  has_plus<std::decay_t<L>, std::decay_t<R>> &&
+			  has_plus<std::decay_t<R>, std::decay_t<L>> &&
+			  has_minus<std::decay_t<L>, std::decay_t<R>> &&
+			  has_minus<std::decay_t<R>, std::decay_t<L>> &&
+			  has_divides<std::decay_t<L>, std::decay_t<R>> &&
+			  has_divides<std::decay_t<R>, std::decay_t<L>> &&
+			  has_multiply<std::decay_t<L>, std::decay_t<R>> &&
+			  has_multiply<std::decay_t<R>, std::decay_t<L>>
+  ;
 
   template <typename L, typename R>
-  concept BinOperatorsExist = requires () {
-	  requires ComparisonOperationsDefined<L, R>;
-	  requires ArithmeticOperationsDefined<L, R>;
-  };
-
+  concept BinOperatorsExist = ComparisonOperationsDefined<L, R> && ArithmeticOperationsDefined<L, R>;
 
   template <typename L, typename R>
   concept NotSame = not std::is_same_v<std::decay_t<L>, std::decay_t<R>>;

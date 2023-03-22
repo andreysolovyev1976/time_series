@@ -44,11 +44,13 @@ namespace culib::requirements {
 #else
 
   template <typename Input, typename Result>
-  concept ConveribleOrConstructibleFromTo = requires () {
-	  std::disjunction_v<
-			  std::is_convertible<Input, Result>,
-			  std::is_constructible<Result, Input>>;
-  };
+  concept ConveribleOrConstructibleFromTo =
+			  std::is_convertible_v<Input, Result> ||
+			  std::is_constructible_v<Result, Input>;
+
+  template <typename Input, typename Result>
+  requires ConveribleOrConstructibleFromTo<Input, Result>
+  constexpr bool isConveribleOrConstructible_v () { return true; }
 
 
 #endif
