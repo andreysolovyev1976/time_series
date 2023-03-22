@@ -4,8 +4,8 @@
 
 #pragma once
 
+#include "const_values.h"
 #include "time_series/value.hpp"
-#include "financial_data_structures/const_values.h"
 
 #include <iosfwd>
 #include <string>
@@ -144,6 +144,7 @@ namespace time_series::financial {
 	  }
 	  return res;
   }
+#ifndef __cpp_concepts
   template <
 		  typename ValueType,
 		  typename Other,
@@ -151,6 +152,16 @@ namespace time_series::financial {
 		  culib::requirements::ComparisonOperationsDefined<Value<ValueType>, Other> = true,
 		  typename CompareBy = typename OHLCV<ValueType>::Close
   >
+#else
+  template <
+		  typename ValueType,
+		  typename Other,
+		  typename CompareBy = typename OHLCV<ValueType>::Close
+  >
+  requires
+  culib::requirements::NotSame<Value<ValueType>, Other> &&
+		  culib::requirements::ComparisonOperationsDefined<Value<ValueType>, Other>
+#endif
   bool operator == (const OHLCV<ValueType>& lhs, const Other& rhs) {
 	  bool res {true};
 	  if constexpr (std::is_same_v<CompareBy, typename OHLCV<ValueType>::AllFields>) {
@@ -183,6 +194,7 @@ namespace time_series::financial {
 	  }
 	  return res;
   }
+#ifndef __cpp_concepts
   template <
 		  typename ValueType,
 		  typename Other,
@@ -190,6 +202,16 @@ namespace time_series::financial {
 		  culib::requirements::ComparisonOperationsDefined<Value<ValueType>, Other> = true,
 		  typename CompareBy = typename OHLCV<ValueType>::Close
   >
+#else
+  template <
+		  typename ValueType,
+		  typename Other,
+		  typename CompareBy = typename OHLCV<ValueType>::Close
+  >
+  requires
+  culib::requirements::NotSame<Value<ValueType>, Other> &&
+		  culib::requirements::ComparisonOperationsDefined<Value<ValueType>, Other>
+#endif
   bool operator == (const Other& lhs, const OHLCV<ValueType>& rhs) {
 	  return rhs == lhs;
   }
@@ -198,6 +220,7 @@ namespace time_series::financial {
   bool operator != (const OHLCV<ValueType>& lhs, const OHLCV<ValueType>& rhs) {
 	  return !(lhs == rhs);
   }
+#ifndef __cpp_concepts
   template <
 		  typename ValueType,
 		  typename Other,
@@ -205,9 +228,20 @@ namespace time_series::financial {
 		  culib::requirements::ComparisonOperationsDefined<Value<ValueType>, Other> = true,
 		  typename CompareBy = typename OHLCV<ValueType>::Close
   >
+#else
+  template <
+		  typename ValueType,
+		  typename Other,
+		  typename CompareBy = typename OHLCV<ValueType>::Close
+  >
+  requires
+  culib::requirements::NotSame<Value<ValueType>, Other> &&
+		  culib::requirements::ComparisonOperationsDefined<Value<ValueType>, Other>
+#endif
   bool operator != (const OHLCV<ValueType>& lhs, const Other& rhs) {
 	  return !(lhs == rhs);
   }
+#ifndef __cpp_concepts
   template <
 		  typename ValueType,
 		  typename Other,
@@ -215,6 +249,16 @@ namespace time_series::financial {
 		  culib::requirements::ComparisonOperationsDefined<Value<ValueType>, Other> = true,
 		  typename CompareBy = typename OHLCV<ValueType>::Close
   >
+#else
+  template <
+		  typename ValueType,
+		  typename Other,
+		  typename CompareBy = typename OHLCV<ValueType>::Close
+  >
+  requires
+  culib::requirements::NotSame<Value<ValueType>, Other> &&
+		  culib::requirements::ComparisonOperationsDefined<Value<ValueType>, Other>
+#endif
   bool operator != (const Other& lhs, const OHLCV<ValueType>& rhs) {
 	  return !(rhs == lhs);
   }
@@ -252,6 +296,7 @@ namespace time_series::financial {
 	  }
 	  return res;
   }
+#ifndef __cpp_concepts
   template <
 		  typename ValueType,
 		  typename Other,
@@ -259,6 +304,16 @@ namespace time_series::financial {
 		  culib::requirements::ComparisonOperationsDefined<Value<ValueType>, Other> = true,
 		  typename CompareBy = typename OHLCV<ValueType>::Close
   >
+#else
+  template <
+		  typename ValueType,
+		  typename Other,
+		  typename CompareBy = typename OHLCV<ValueType>::Close
+  >
+  requires
+  culib::requirements::NotSame<Value<ValueType>, Other> &&
+		  culib::requirements::ComparisonOperationsDefined<Value<ValueType>, Other>
+#endif
   bool operator < (const OHLCV<ValueType>& lhs, const Other& rhs) {
 	  bool res {true};
 	  if constexpr (std::is_same_v<CompareBy, typename OHLCV<ValueType>::AllFields>) {
@@ -292,6 +347,7 @@ namespace time_series::financial {
 	  }
 	  return res;
   }
+#ifndef __cpp_concepts
   template <
 		  typename ValueType,
 		  typename Other,
@@ -299,6 +355,16 @@ namespace time_series::financial {
 		  culib::requirements::ComparisonOperationsDefined<Value<ValueType>, Other> = true,
 		  typename CompareBy = typename OHLCV<ValueType>::Close
   >
+#else
+  template <
+		  typename ValueType,
+		  typename Other,
+		  typename CompareBy = typename OHLCV<ValueType>::Close
+  >
+  requires
+  culib::requirements::NotSame<Value<ValueType>, Other> &&
+		  culib::requirements::ComparisonOperationsDefined<Value<ValueType>, Other>
+#endif
   bool operator < (const Other& rhs, const OHLCV<ValueType>& lhs) {
 	  return (!(lhs < rhs) && !(lhs == rhs));
   }
@@ -307,6 +373,7 @@ namespace time_series::financial {
   bool operator > (const OHLCV<ValueType>& lhs, const OHLCV<ValueType>& rhs) {
 	  return (!(rhs == lhs) && !(lhs < rhs));
   }
+#ifndef __cpp_concepts
   template <
 		  typename ValueType,
 		  typename Other,
@@ -314,9 +381,20 @@ namespace time_series::financial {
 		  culib::requirements::ComparisonOperationsDefined<Value<ValueType>, Other> = true,
 		  typename CompareBy = typename OHLCV<ValueType>::Close
   >
+#else
+  template <
+		  typename ValueType,
+		  typename Other,
+		  typename CompareBy = typename OHLCV<ValueType>::Close
+  >
+  requires
+  culib::requirements::NotSame<Value<ValueType>, Other> &&
+		  culib::requirements::ComparisonOperationsDefined<Value<ValueType>, Other>
+#endif
   bool operator > (const OHLCV<ValueType>& lhs, const Other& rhs) {
 	  return (!(rhs == lhs) && !(lhs < rhs));
   }
+#ifndef __cpp_concepts
   template <
 		  typename ValueType,
 		  typename Other,
@@ -324,6 +402,16 @@ namespace time_series::financial {
 		  culib::requirements::ComparisonOperationsDefined<Value<ValueType>, Other> = true,
 		  typename CompareBy = typename OHLCV<ValueType>::Close
   >
+#else
+  template <
+		  typename ValueType,
+		  typename Other,
+		  typename CompareBy = typename OHLCV<ValueType>::Close
+  >
+  requires
+  culib::requirements::NotSame<Value<ValueType>, Other> &&
+		  culib::requirements::ComparisonOperationsDefined<Value<ValueType>, Other>
+#endif
   bool operator > (const Other& lhs, const OHLCV<ValueType>& rhs) {
 	  return (!(rhs == lhs) && !(lhs < rhs));
   }
@@ -361,6 +449,7 @@ namespace time_series::financial {
 	  }
 	  return res;
   }
+#ifndef __cpp_concepts
   template <
 		  typename ValueType,
 		  typename Other,
@@ -368,6 +457,16 @@ namespace time_series::financial {
 		  culib::requirements::ComparisonOperationsDefined<Value<ValueType>, Other> = true,
 		  typename CompareBy = typename OHLCV<ValueType>::Close
   >
+#else
+  template <
+		  typename ValueType,
+		  typename Other,
+		  typename CompareBy = typename OHLCV<ValueType>::Close
+  >
+  requires
+  culib::requirements::NotSame<Value<ValueType>, Other> &&
+		  culib::requirements::ComparisonOperationsDefined<Value<ValueType>, Other>
+#endif
   bool operator <= (const OHLCV<ValueType>& lhs, const Other& rhs) {
 	  bool res {true};
 	  if constexpr (std::is_same_v<CompareBy, typename OHLCV<ValueType>::AllFields>) {
@@ -400,6 +499,7 @@ namespace time_series::financial {
 	  }
 	  return res;
   }
+#ifndef __cpp_concepts
   template <
 		  typename ValueType,
 		  typename Other,
@@ -407,6 +507,16 @@ namespace time_series::financial {
 		  culib::requirements::ComparisonOperationsDefined<Value<ValueType>, Other> = true,
 		  typename CompareBy = typename OHLCV<ValueType>::Close
   >
+#else
+  template <
+		  typename ValueType,
+		  typename Other,
+		  typename CompareBy = typename OHLCV<ValueType>::Close
+  >
+  requires
+  culib::requirements::NotSame<Value<ValueType>, Other> &&
+		  culib::requirements::ComparisonOperationsDefined<Value<ValueType>, Other>
+#endif
   bool operator <= (const Other& lhs, const OHLCV<ValueType>& rhs) {
 	  bool res {true};
 	  if constexpr (std::is_same_v<CompareBy, typename OHLCV<ValueType>::AllFields>) {
@@ -473,6 +583,7 @@ namespace time_series::financial {
 	  }
 	  return res;
   }
+#ifndef __cpp_concepts
   template <
 		  typename ValueType,
 		  typename Other,
@@ -480,6 +591,16 @@ namespace time_series::financial {
 		  culib::requirements::ComparisonOperationsDefined<Value<ValueType>, Other> = true,
 		  typename CompareBy = typename OHLCV<ValueType>::Close
   >
+#else
+  template <
+		  typename ValueType,
+		  typename Other,
+		  typename CompareBy = typename OHLCV<ValueType>::Close
+  >
+  requires
+  culib::requirements::NotSame<Value<ValueType>, Other> &&
+		  culib::requirements::ComparisonOperationsDefined<Value<ValueType>, Other>
+#endif
   bool operator >= (const OHLCV<ValueType>& lhs, const Other& rhs){
 	  bool res {true};
 	  if constexpr (std::is_same_v<CompareBy, typename OHLCV<ValueType>::AllFields>) {
@@ -512,6 +633,7 @@ namespace time_series::financial {
 	  }
 	  return res;
   }
+#ifndef __cpp_concepts
   template <
 		  typename ValueType,
 		  typename Other,
@@ -519,6 +641,16 @@ namespace time_series::financial {
 		  culib::requirements::ComparisonOperationsDefined<Value<ValueType>, Other> = true,
 		  typename CompareBy = typename OHLCV<ValueType>::Close
   >
+#else
+  template <
+		  typename ValueType,
+		  typename Other,
+		  typename CompareBy = typename OHLCV<ValueType>::Close
+  >
+  requires
+  culib::requirements::NotSame<Value<ValueType>, Other> &&
+		  culib::requirements::ComparisonOperationsDefined<Value<ValueType>, Other>
+#endif
   bool operator >= (const Other& lhs, const OHLCV<ValueType>& rhs){
 	  bool res {true};
 	  if constexpr (std::is_same_v<CompareBy, typename OHLCV<ValueType>::AllFields>) {
@@ -563,6 +695,7 @@ namespace time_series::financial {
 	  res.volume= lhs.volume * rhs.volume;
 	  return res;
   }
+#ifndef __cpp_concepts
   template <
 		  typename ValueType,
 		  typename Other,
@@ -570,6 +703,15 @@ namespace time_series::financial {
 		  culib::requirements::NotSame<Value<ValueType>, Other> = true,
 		  culib::requirements::BinOperatorsExist<Value<ValueType>, Other> = true
   >
+#else
+  template <
+		  typename ValueType,
+		  typename Other,
+		  bool VolumeToo = false>
+  requires
+  culib::requirements::NotSame<Value<ValueType>, Other> &&
+		  culib::requirements::BinOperatorsExist<Value<ValueType>, Other>
+#endif
   OHLCV<ValueType> operator * (const OHLCV<ValueType>& lhs, const Other &rhs) {
 	  OHLCV<ValueType> res;
 	  res.open = lhs.open * rhs;
@@ -581,6 +723,7 @@ namespace time_series::financial {
 	  }
 	  return res;
   }
+#ifndef __cpp_concepts
   template <
 		  typename ValueType,
 		  typename Other,
@@ -588,6 +731,15 @@ namespace time_series::financial {
 		  culib::requirements::NotSame<Value<ValueType>, Other> = true,
 		  culib::requirements::BinOperatorsExist<Value<ValueType>, Other> = true
   >
+#else
+  template <
+		  typename ValueType,
+		  typename Other,
+		  bool VolumeToo = false>
+  requires
+  culib::requirements::NotSame<Value<ValueType>, Other> &&
+		  culib::requirements::BinOperatorsExist<Value<ValueType>, Other>
+#endif
   OHLCV<ValueType> operator * (const Other &lhs, const OHLCV<ValueType>& rhs) {
 	  OHLCV<ValueType> res;
 	  res.open = lhs * rhs.open;
@@ -610,6 +762,7 @@ namespace time_series::financial {
 	  res.volume= lhs.volume / rhs.volume;
 	  return res;
   }
+#ifndef __cpp_concepts
   template <
 		  typename ValueType,
 		  typename Other,
@@ -617,6 +770,15 @@ namespace time_series::financial {
 		  culib::requirements::NotSame<Value<ValueType>, Other> = true,
 		  culib::requirements::BinOperatorsExist<Value<ValueType>, Other> = true
   >
+#else
+  template <
+		  typename ValueType,
+		  typename Other,
+		  bool VolumeToo = false>
+  requires
+  culib::requirements::NotSame<Value<ValueType>, Other> &&
+		  culib::requirements::BinOperatorsExist<Value<ValueType>, Other>
+#endif
   OHLCV<ValueType> operator / (const OHLCV<ValueType>& lhs, const Other &rhs) {
 	  OHLCV<ValueType> res;
 	  res.open = lhs.open / rhs;
@@ -628,6 +790,7 @@ namespace time_series::financial {
 	  }
 	  return res;
   }
+#ifndef __cpp_concepts
   template <
 		  typename ValueType,
 		  typename Other,
@@ -635,6 +798,15 @@ namespace time_series::financial {
 		  culib::requirements::NotSame<Value<ValueType>, Other> = true,
 		  culib::requirements::BinOperatorsExist<Value<ValueType>, Other> = true
   >
+#else
+  template <
+		  typename ValueType,
+		  typename Other,
+		  bool VolumeToo = false>
+  requires
+  culib::requirements::NotSame<Value<ValueType>, Other> &&
+		  culib::requirements::BinOperatorsExist<Value<ValueType>, Other>
+#endif
   OHLCV<ValueType> operator / (const Other &lhs, const OHLCV<ValueType>& rhs) {
 	  OHLCV<ValueType> res;
 	  res.open = lhs / rhs.open;
@@ -656,6 +828,7 @@ namespace time_series::financial {
 	  res.volume= lhs.volume + rhs.volume;
 	  return res;
   }
+#ifndef __cpp_concepts
   template <
 		  typename ValueType,
 		  typename Other,
@@ -663,6 +836,15 @@ namespace time_series::financial {
 		  culib::requirements::NotSame<Value<ValueType>, Other> = true,
 		  culib::requirements::BinOperatorsExist<Value<ValueType>, Other> = true
   >
+#else
+  template <
+		  typename ValueType,
+		  typename Other,
+		  bool VolumeToo = false>
+  requires
+  culib::requirements::NotSame<Value<ValueType>, Other> &&
+		  culib::requirements::BinOperatorsExist<Value<ValueType>, Other>
+#endif
   OHLCV<ValueType> operator + (const OHLCV<ValueType>& lhs, const Other &rhs) {
 	  OHLCV<ValueType> res;
 	  res.open = lhs.open + rhs;
@@ -674,6 +856,7 @@ namespace time_series::financial {
 	  }
 	  return res;
   }
+#ifndef __cpp_concepts
   template <
 		  typename ValueType,
 		  typename Other,
@@ -681,6 +864,15 @@ namespace time_series::financial {
 		  culib::requirements::NotSame<Value<ValueType>, Other> = true,
 		  culib::requirements::BinOperatorsExist<Value<ValueType>, Other> = true
   >
+#else
+  template <
+		  typename ValueType,
+		  typename Other,
+		  bool VolumeToo = false>
+  requires
+  culib::requirements::NotSame<Value<ValueType>, Other> &&
+		  culib::requirements::BinOperatorsExist<Value<ValueType>, Other>
+#endif
   OHLCV<ValueType> operator + (const Other &lhs, const OHLCV<ValueType>& rhs) {
 	  OHLCV<ValueType> res;
 	  res.open = lhs + rhs.open;
@@ -702,6 +894,7 @@ namespace time_series::financial {
 	  res.volume= lhs.volume - rhs.volume;
 	  return res;
   }
+#ifndef __cpp_concepts
   template <
 		  typename ValueType,
 		  typename Other,
@@ -709,6 +902,15 @@ namespace time_series::financial {
 		  culib::requirements::NotSame<Value<ValueType>, Other> = true,
 		  culib::requirements::BinOperatorsExist<Value<ValueType>, Other> = true
   >
+#else
+  template <
+		  typename ValueType,
+		  typename Other,
+		  bool VolumeToo = false>
+  requires
+  culib::requirements::NotSame<Value<ValueType>, Other> &&
+		  culib::requirements::BinOperatorsExist<Value<ValueType>, Other>
+#endif
   OHLCV<ValueType> operator - (const OHLCV<ValueType>& lhs, const Other &rhs) {
 	  OHLCV<ValueType> res;
 	  res.open = lhs.open - rhs;
@@ -720,6 +922,7 @@ namespace time_series::financial {
 	  }
 	  return res;
   }
+#ifndef __cpp_concepts
   template <
 		  typename ValueType,
 		  typename Other,
@@ -727,6 +930,15 @@ namespace time_series::financial {
 		  culib::requirements::NotSame<Value<ValueType>, Other> = true,
 		  culib::requirements::BinOperatorsExist<Value<ValueType>, Other> = true
   >
+#else
+  template <
+		  typename ValueType,
+		  typename Other,
+		  bool VolumeToo = false>
+  requires
+  culib::requirements::NotSame<Value<ValueType>, Other> &&
+		  culib::requirements::BinOperatorsExist<Value<ValueType>, Other>
+#endif
   OHLCV<ValueType> operator - (const Other &lhs, const OHLCV<ValueType>& rhs) {
 	  OHLCV<ValueType> res;
 	  res.open = lhs - rhs.open;
@@ -749,6 +961,7 @@ namespace time_series::financial {
 	  lhs.volume += rhs.volume;
 	  return lhs;
   }
+#ifndef __cpp_concepts
   template <
 		  typename ValueType,
 		  typename Other,
@@ -756,6 +969,15 @@ namespace time_series::financial {
 		  culib::requirements::NotSame<Value<ValueType>, Other> = true,
 		  culib::requirements::BinOperatorsExist<Value<ValueType>, Other> = true
   >
+#else
+  template <
+		  typename ValueType,
+		  typename Other,
+		  bool VolumeToo = false>
+  requires
+  culib::requirements::NotSame<Value<ValueType>, Other> &&
+		  culib::requirements::BinOperatorsExist<Value<ValueType>, Other>
+#endif
   OHLCV<ValueType>& operator += (OHLCV<ValueType>& lhs, const Other &rhs) {
 	  lhs.open += rhs;
 	  lhs.high += rhs;
@@ -776,6 +998,7 @@ namespace time_series::financial {
 	  lhs.volume -= rhs.volume;
 	  return lhs;
   }
+#ifndef __cpp_concepts
   template <
 		  typename ValueType,
 		  typename Other,
@@ -783,6 +1006,15 @@ namespace time_series::financial {
 		  culib::requirements::NotSame<Value<ValueType>, Other> = true,
 		  culib::requirements::BinOperatorsExist<Value<ValueType>, Other> = true
   >
+#else
+  template <
+		  typename ValueType,
+		  typename Other,
+		  bool VolumeToo = false>
+  requires
+  culib::requirements::NotSame<Value<ValueType>, Other> &&
+		  culib::requirements::BinOperatorsExist<Value<ValueType>, Other>
+#endif
   OHLCV<ValueType>& operator -= (OHLCV<ValueType>& lhs, const Other &rhs) {
 	  lhs.open -= rhs;
 	  lhs.high -= rhs;
@@ -803,6 +1035,7 @@ namespace time_series::financial {
 	  lhs.volume *= rhs.volume;
 	  return lhs;
   }
+#ifndef __cpp_concepts
   template <
 		  typename ValueType,
 		  typename Other,
@@ -810,6 +1043,15 @@ namespace time_series::financial {
 		  culib::requirements::NotSame<Value<ValueType>, Other> = true,
 		  culib::requirements::BinOperatorsExist<Value<ValueType>, Other> = true
   >
+#else
+  template <
+		  typename ValueType,
+		  typename Other,
+		  bool VolumeToo = false>
+  requires
+  culib::requirements::NotSame<Value<ValueType>, Other> &&
+		  culib::requirements::BinOperatorsExist<Value<ValueType>, Other>
+#endif
   OHLCV<ValueType>& operator *= (OHLCV<ValueType>& lhs, const Other &rhs) {
 	  lhs.open *= rhs;
 	  lhs.high *= rhs;
@@ -830,6 +1072,7 @@ namespace time_series::financial {
 	  lhs.volume /= rhs.volume;
 	  return lhs;
   }
+#ifndef __cpp_concepts
   template <
 		  typename ValueType,
 		  typename Other,
@@ -837,6 +1080,15 @@ namespace time_series::financial {
 		  culib::requirements::NotSame<Value<ValueType>, Other> = true,
 		  culib::requirements::BinOperatorsExist<Value<ValueType>, Other> = true
   >
+#else
+  template <
+		  typename ValueType,
+		  typename Other,
+		  bool VolumeToo = false>
+  requires
+  culib::requirements::NotSame<Value<ValueType>, Other> &&
+		  culib::requirements::BinOperatorsExist<Value<ValueType>, Other>
+#endif
   OHLCV<ValueType>& operator /= (OHLCV<ValueType>& lhs, const Other &rhs) {
 	  lhs.open /= rhs;
 	  lhs.high /= rhs;

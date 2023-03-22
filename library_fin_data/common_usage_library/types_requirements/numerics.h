@@ -17,7 +17,7 @@
 
 namespace culib::requirements {
 
-#ifndef CONCEPTS___
+#ifndef __cpp_concepts
 
   template <typename Number>
   using IsFloatinPoint = std::enable_if_t<std::is_floating_point_v<Number>, bool>;
