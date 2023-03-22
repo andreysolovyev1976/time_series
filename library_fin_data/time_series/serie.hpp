@@ -113,11 +113,12 @@ namespace time_series {
   struct Serie : public
 					   decltype(details::getContainer<Duration, ElemType, Container, Args...>())::container_type {
 	  using container_type = typename decltype(details::getContainer<Duration, ElemType, Container, Args...>())::container_type;
-	  using container_type::container_type;
+	  using container_type::container_type; //ctors inheritance
+
 	  using duration_type = Duration;
 	  using elem_type = ElemType;
 
-	  struct serie_tag {};
+	  struct serie_tag {}; //tag to identify a container as a TimeSerie
 
 	  template <typename Fn, typename Iter>
 	  Serie& applyFunction (Fn &&fn, Iter b = container_type::begin(), Iter e = container_type::end());

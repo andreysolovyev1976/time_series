@@ -44,22 +44,22 @@ namespace time_series {
 	  Element& operator = (value_type &&p);
 	  Element& operator = (const value_type &p);
 
-	  const value_type& operator () () const;
-	  value_type& operator()();
+	  const value_type& operator () () const &;
+	  value_type& operator()() &;
 	  operator value_type () const;
 	  operator elem_type () const;
 	  operator key_type () const;
 
-	  const key_type& first () const;
-	  key_type& first ();
-	  const elem_type& second () const;
-	  elem_type& second ();
+	  const key_type& first () const &;
+	  key_type& first () &;
+	  const elem_type& second () const &;
+	  elem_type& second () &;
 
 	  std::string toString () const;
 	  operator std::string () const;
 
 	  template <typename Fn, typename... Args>
-	  decltype(auto) applyFunction (Fn&& fn, Args&& ...args);
+	  decltype(auto) applyFunction (Fn&& fn, Args&& ...args) &;
 
 	  base::Timestamp<Duration> timestamp;
 	  ElemType value;
@@ -93,11 +93,11 @@ namespace time_series {
   {}
 
   template <typename Duration, typename ElemType>
-  const typename Element<Duration, ElemType>::value_type& Element<Duration, ElemType>::operator () () const {
+  const typename Element<Duration, ElemType>::value_type& Element<Duration, ElemType>::operator () () const & {
 	  return {timestamp, value}; //todo: check what is a subject for reference - a pair itself or two referencies of the respective fields
   }
   template <typename Duration, typename ElemType>
-  typename Element<Duration, ElemType>::value_type& Element<Duration, ElemType>::operator()(){
+  typename Element<Duration, ElemType>::value_type& Element<Duration, ElemType>::operator()() & {
 	  return {timestamp, value}; //todo: check what is a subject for reference - a pair itself or two referencies of the respective fields
   }
   template <typename Duration, typename ElemType>
@@ -114,19 +114,19 @@ namespace time_series {
   }
 
   template <typename Duration, typename ElemType>
-  const typename Element<Duration, ElemType>::key_type& Element<Duration, ElemType>::first () const {
+  const typename Element<Duration, ElemType>::key_type& Element<Duration, ElemType>::first () const & {
 	  return timestamp;
   }
   template <typename Duration, typename ElemType>
-  typename Element<Duration, ElemType>::key_type& Element<Duration, ElemType>::first () {
+  typename Element<Duration, ElemType>::key_type& Element<Duration, ElemType>::first () & {
 	  return timestamp;
   }
   template <typename Duration, typename ElemType>
-  const typename Element<Duration, ElemType>::elem_type& Element<Duration, ElemType>::second () const {
+  const typename Element<Duration, ElemType>::elem_type& Element<Duration, ElemType>::second () const & {
 	  return value;
   }
   template <typename Duration, typename ElemType>
-  typename Element<Duration, ElemType>::elem_type& Element<Duration, ElemType>::second () {
+  typename Element<Duration, ElemType>::elem_type& Element<Duration, ElemType>::second () & {
 	  return value;
   }
 
@@ -172,7 +172,7 @@ namespace time_series {
 
   template <typename Duration, typename ElemType>
   template <typename Fn, typename... Args>
-  decltype(auto) Element<Duration, ElemType>::applyFunction (Fn&& fn, Args&& ...args) {
+  decltype(auto) Element<Duration, ElemType>::applyFunction (Fn&& fn, Args&& ...args) & {
 	  if constexpr (std::is_same_v<std::invoke_result_t<Fn, ElemType&, Args...>, void>) {
 		  std::invoke(std::forward<Fn>(fn), value, std::forward<Args...>(args...));
 		  return *this;

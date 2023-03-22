@@ -8,6 +8,9 @@
 #include <chrono>
 #include <type_traits>
 #include <stdexcept>
+#ifdef __cpp_concepts
+#include <concepts>
+#endif
 
 #ifndef RANDOMER_H
 #define RANDOMER_H
@@ -30,14 +33,29 @@ namespace culib::utils {
 //	Randomer() : mtre{std::random_device{}()} {}//!ctor
 	  Randomer() { mtre.seed(setSeed()); } //!ctor
 
+#ifdef __cpp_concepts
+	  template <typename T>
+	  requires std::integral<T> || std::floating_point<T>
+#else
 	  template <typename T, IsArithmetic<T> = true>
+#endif
 	  T operator () (T lower_bound, T upper_bound ) {
-		  if constexpr (std::is_same_v<bool, IsIntegral<T>>) {
+#ifdef __cpp_concepts
+		  if constexpr (std::integral<T>) {
 			  return UniformedInt{lower_bound, upper_bound}(mtre);
 		  }
-		  else if constexpr (std::is_same_v<bool, IsFloating<T>>) {
+		  else if constexpr (std::floating_point<T>) {
 			  return UniformedReal{lower_bound, upper_bound}(mtre);
 		  }
+#else
+			  if constexpr (std::is_same_v<bool, IsIntegral<T>>) {
+			  return UniformedInt{lower_bound, upper_bound}(mtre);
+		  }
+			  else if constexpr (std::is_same_v<bool, IsFloating<T>>) {
+			  return UniformedReal{lower_bound, upper_bound}(mtre);
+		  }
+#endif
+
 		  else {
 			  throw std::invalid_argument("Unexpected argument for Randomer::operator()");
 		  }
@@ -48,8 +66,7 @@ namespace culib::utils {
 		  std::chrono::seconds s = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now().time_since_epoch());
 		  double rndBase = s.count() / 13. * 3.141592653589793;
 		  int seed = (rndBase - int(rndBase)) * 1e7;
-		  if (seed < 0) seed = -seed;
-		  return seed;
+		  return (seed < 0) ? -seed : seed;
 	  }//!func
 
   private:

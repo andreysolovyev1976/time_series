@@ -54,8 +54,8 @@ namespace time_series {
 	  operator std::string () const;
 	  operator ValueType () const;
 
-	  ValueType const& operator()() const;
-	  ValueType& operator()();
+	  ValueType const& operator()() const &;
+	  ValueType& operator()() &;
   };
 
   template <typename ValueType>
@@ -107,11 +107,11 @@ namespace time_series {
   }
 
   template <typename ValueType>
-  ValueType const& Value<ValueType>::operator()() const {
+  ValueType const& Value<ValueType>::operator()() const & {
 	  return value;
   }
   template <typename ValueType>
-  ValueType& Value<ValueType>::operator()() {
+  ValueType& Value<ValueType>::operator()() & {
 	  return value;
   }
 
@@ -124,11 +124,10 @@ namespace time_series {
 		  return lhs.value == rhs.value;
   }
   /**
-   *
-   * value_type is floating and other is floating
-   * value_type is floating and other is integral
-   * value_type is integral and other is floating
-   * for everyting else there should be operator
+   * @brief
+   * value_type is floating and other is integral\n
+   * value_type is integral and other is floating\n
+   * for everything else there should be operator\n
    */
 
 #ifndef __cpp_concepts
@@ -575,7 +574,7 @@ namespace time_series {
 
   template <typename ValueType>
   std::istream& operator>>(std::istream& is, Value<ValueType>& single_value) {
-	  typename Value<ValueType>::Type value;
+	  ValueType value;
 	  if (is) {
 		  is >> value;
 		  if (is) {
