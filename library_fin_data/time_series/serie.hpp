@@ -13,6 +13,11 @@
 #include <cstddef>
 #include <stdexcept>
 
+#ifdef __cpp_concepts
+#include <concepts>
+#endif
+
+
 #ifndef TS_SERIE_H
 #define TS_SERIE_H
 
@@ -21,6 +26,8 @@ namespace time_series {
   namespace details {
 
 	namespace requirements {
+
+#ifndef __cpp_concepts
 
 	  template<typename Serie, typename = void>
 	  struct MaybeSerie : std::false_type {};
@@ -33,7 +40,21 @@ namespace time_series {
 
 	  template<typename Serie>
 	  using IsSerie = std::enable_if_t<isSerie_v<Serie>(), bool>;
+#else
 
+	  template <typename S>
+	  concept IsSerie = requires () {S::serie_tag;};
+
+	  template <typename S>
+	  concept IsNotSerie = requires () {!IsSerie<S>;};
+
+	  template<IsSerie>
+	  constexpr bool isSerie_v() { return true; }
+
+	  template<IsNotSerie>
+	  constexpr bool isSerie_v() { return false; }
+
+#endif
 	}//!namespace
 
 

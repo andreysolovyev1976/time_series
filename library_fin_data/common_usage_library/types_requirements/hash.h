@@ -7,6 +7,10 @@
 #include <type_traits>
 #include <functional>
 
+#ifdef __cpp_concepts
+#include <concepts>
+#endif
+
 #ifndef TYPE_REQUIREMENTS_HASH_H
 #define TYPE_REQUIREMENTS_HASH_H
 
@@ -15,6 +19,8 @@ namespace culib::requirements {
  * @brief
  * check that type is a hash for another type
  * */
+#ifndef __cpp_concepts
+
   template<typename Key, typename Type, typename HashResult, typename = void>
   struct MaybeUserDefinedHash : std::false_type { };
   template<typename Key, typename Type, typename HashResult>
@@ -42,6 +48,11 @@ namespace culib::requirements {
   }
   template <typename Key, typename Type, typename HashResult = std::size_t>
   using IsHash = std::enable_if_t<isHash_v<Key, Type, HashResult>, bool>;
+
+#else
+
+
+#endif
 
 }//!namespace
 

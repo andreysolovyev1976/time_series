@@ -303,7 +303,11 @@ namespace culib {
 
 	}//!namespace
 
+#ifndef __cpp_concepts
 	template<typename... SerieArgs, requirements::AreAllContainers<SerieArgs...> = true>
+#else
+	template<requirements::AreAllContainers... SerieArgs>
+#endif
 	auto outerFull(SerieArgs&& ...series)
 	{
 		return
@@ -312,7 +316,11 @@ namespace culib {
 						(std::forward<SerieArgs>(series)...);
 	}
 
+#ifndef __cpp_concepts
 	template<typename... SerieArgs, requirements::AreAllContainers<SerieArgs...> = true>
+#else
+	template<requirements::AreAllContainers... SerieArgs>
+#endif
 	auto outerExcluding(SerieArgs&& ...series)
 	{
 		return
@@ -321,7 +329,11 @@ namespace culib {
 						(std::forward<SerieArgs>(series)...);
 	}
 
+#ifndef __cpp_concepts
 	template<typename... SerieArgs, requirements::AreAllContainers<SerieArgs...> = true>
+#else
+	template<requirements::AreAllContainers... SerieArgs>
+#endif
 	auto inner(SerieArgs&& ...series)
 	{
 		return
@@ -330,7 +342,11 @@ namespace culib {
 						(std::forward<SerieArgs>(series)...);
 	}
 
+#ifndef __cpp_concepts
 	template<typename... SerieArgs, requirements::AreAllContainers<SerieArgs...> = true>
+#else
+	template<requirements::AreAllContainers... SerieArgs>
+#endif
 	auto leftOuter(SerieArgs&& ...series)
 	{
 		return
@@ -339,7 +355,11 @@ namespace culib {
 						(std::forward<SerieArgs>(series)...);
 	}
 
+#ifndef __cpp_concepts
 	template<typename... SerieArgs, requirements::AreAllContainers<SerieArgs...> = true>
+#else
+	template<requirements::AreAllContainers... SerieArgs>
+#endif
 	auto leftExcluding(SerieArgs&& ...series)
 	{
 		return
@@ -348,7 +368,11 @@ namespace culib {
 						(std::forward<SerieArgs>(series)...);
 	}
 
+#ifndef __cpp_concepts
 	template<typename... SerieArgs, requirements::AreAllContainers<SerieArgs...> = true>
+#else
+	template<requirements::AreAllContainers... SerieArgs>
+#endif
 	auto rightOuter(SerieArgs&& ...series)
 	{
 		return
@@ -357,7 +381,11 @@ namespace culib {
 						(std::forward<SerieArgs>(series)...);
 	}
 
+#ifndef __cpp_concepts
 	template<typename... SerieArgs, requirements::AreAllContainers<SerieArgs...> = true>
+#else
+	template<requirements::AreAllContainers... SerieArgs>
+#endif
 	auto rightExcluding(SerieArgs&& ...series)
 	{
 		return
@@ -366,7 +394,11 @@ namespace culib {
 						(std::forward<SerieArgs>(series)...);
 	}
 
+#ifndef __cpp_concepts
 	template<typename... SerieArgs, requirements::AreAllContainers<SerieArgs...> = true>
+#else
+	template<requirements::AreAllContainers... SerieArgs>
+#endif
 	auto setIntersection(SerieArgs&& ...series)
 	{
 		return
@@ -375,7 +407,11 @@ namespace culib {
 						(std::forward<SerieArgs>(series)...);
 	}
 
+#ifndef __cpp_concepts
 	template<typename... SerieArgs, requirements::AreAllContainers<SerieArgs...> = true>
+#else
+	template<requirements::AreAllContainers... SerieArgs>
+#endif
 	auto setUnion(SerieArgs&& ...series)
 	{
 		return
@@ -384,7 +420,11 @@ namespace culib {
 						(std::forward<SerieArgs>(series)...);
 	}
 
+#ifndef __cpp_concepts
 	template<typename... SerieArgs, requirements::AreAllContainers<SerieArgs...> = true>
+#else
+	template<requirements::AreAllContainers... SerieArgs>
+#endif
 	auto setDifference(SerieArgs&& ...series)
 	{
 		return
@@ -393,7 +433,11 @@ namespace culib {
 						(std::forward<SerieArgs>(series)...);
 	}
 
+#ifndef __cpp_concepts
 	template<typename... SerieArgs, requirements::AreAllContainers<SerieArgs...> = true>
+#else
+	template<requirements::AreAllContainers... SerieArgs>
+#endif
 	auto setSymmetricDifference(SerieArgs&& ...series)
 	{
 		return

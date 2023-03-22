@@ -6,6 +6,9 @@
 
 #include <type_traits>
 #include <functional>
+#ifdef __cpp_concepts
+#include <concepts>
+#endif
 
 #ifndef TYPE_REQUIREMENTS_OPERATORS_H
 #define TYPE_REQUIREMENTS_OPERATORS_H
@@ -17,6 +20,7 @@ namespace culib::requirements {
    * https://stackoverflow.com/questions/6534041/how-to-check-whether-operator-exists
    *
    */
+#ifndef __cpp_concepts
   template<class X, class Y, class Op>
   struct op_valid_impl
   {
@@ -113,6 +117,88 @@ namespace culib::requirements {
 
   template <typename L, typename R>
   using NotSame = std::enable_if_t<not std::is_same_v<std::decay_t<L>, std::decay_t<R>>, bool>;
+
+#else
+
+  namespace notstd {
+
+	struct left_shift {
+		template <class L, class R>
+		constexpr auto operator()(L&& l, R&& r) const
+		noexcept(noexcept(std::forward<L>(l) << std::forward<R>(r)))
+		-> decltype(std::forward<L>(l) << std::forward<R>(r))
+		{
+			return std::forward<L>(l) << std::forward<R>(r);
+		}
+	};
+
+	struct right_shift {
+		template <class L, class R>
+		constexpr auto operator()(L&& l, R&& r) const
+		noexcept(noexcept(std::forward<L>(l) >> std::forward<R>(r)))
+		-> decltype(std::forward<L>(l) >> std::forward<R>(r))
+		{
+			return std::forward<L>(l) >> std::forward<R>(r);
+		}
+	};
+  }
+
+  template<class X, class Y> concept has_equality = requires (X x, Y y) {std::equal_to<>{}(x, y);};
+  template<class X, class Y> concept has_inequality = requires (X x, Y y) {std::not_equal_to<>{}(x, y);};
+  template<class X, class Y> concept has_less_than = requires (X x, Y y) {std::less<>{}(x, y);};
+  template<class X, class Y> concept has_less_equal = requires (X x, Y y) {std::less_equal<>{}(x, y);};
+  template<class X, class Y> concept has_greater_than = requires (X x, Y y) {std::greater<>{}(x, y);};
+  template<class X, class Y> concept has_greater_equal = requires (X x, Y y) {std::greater_equal<>{}(x, y);};
+  template<class X, class Y> concept has_bit_xor = requires (X x, Y y) {std::bit_xor<>{}(x, y);};
+  template<class X, class Y> concept has_bit_or = requires (X x, Y y) {std::bit_or<>{}(x, y);};
+  template<class X, class Y> concept has_left_shift = requires (X x, Y y) {notstd::left_shift{}(x, y);};
+  template<class X, class Y> concept has_right_shift = requires (X x, Y y) {notstd::right_shift{}(x, y);};
+
+  template <class X, class Y> concept has_plus = requires (X x, Y y) {std::plus<>{}(x, y);};
+  template <class X, class Y> concept has_minus = requires (X x, Y y) {std::minus<>{}(x, y);};
+  template <class X, class Y> concept has_multiply = requires (X x, Y y) {std::multiplies<>{}(x, y);};
+  template <class X, class Y> concept has_divides = requires (X x, Y y) {std::divides<>{}(x, y);};
+  template <class X, class Y> concept has_modulus = requires (X x, Y y) {std::modulus<>{}(x, y);};
+
+  template <class X, class Y> concept has_logical_and = requires (X x, Y y) {std::logical_and<>{}(x, y);};
+  template <class X, class Y> concept has_logical_or = requires (X x, Y y) {std::logical_or<>{}(x, y);};
+  /**
+   * @details
+   * this is the end of copied fragment
+   */
+
+
+  template <typename L, typename R>
+  concept ComparisonOperationsDefined = requires () {
+	  requires has_equality<std::decay_t<L>, std::decay_t<R>>;
+	  requires has_equality<std::decay_t<R>, std::decay_t<L>>;
+	  requires has_less_than<std::decay_t<L>, std::decay_t<R>>;
+	  requires has_less_than<std::decay_t<R>, std::decay_t<L>>;
+  };
+
+  template <typename L, typename R>
+  concept ArithmeticOperationsDefined = requires () {
+			  requires has_plus<std::decay_t<L>, std::decay_t<R>>;
+			  requires has_plus<std::decay_t<R>, std::decay_t<L>>;
+			  requires has_minus<std::decay_t<L>, std::decay_t<R>>;
+			  requires has_minus<std::decay_t<R>, std::decay_t<L>>;
+			  requires has_divides<std::decay_t<L>, std::decay_t<R>>;
+			  requires has_divides<std::decay_t<R>, std::decay_t<L>>;
+			  requires has_multiply<std::decay_t<L>, std::decay_t<R>>;
+			  requires has_multiply<std::decay_t<R>, std::decay_t<L>>;
+  };
+
+  template <typename L, typename R>
+  concept BinOperatorsExist = requires () {
+	  requires ComparisonOperationsDefined<L, R>;
+	  requires ArithmeticOperationsDefined<L, R>;
+  };
+
+
+  template <typename L, typename R>
+  concept NotSame = not std::is_same_v<std::decay_t<L>, std::decay_t<R>>;
+
+#endif
 
 }//!namespace
 #endif //TYPE_REQUIREMENTS_OPERATORS_H

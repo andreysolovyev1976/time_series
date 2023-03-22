@@ -20,7 +20,11 @@ namespace culib::comp {
  * Implementation provides strong protection for keeping just one instance of a
  * kValue that is used in comparison - see all deleted ctors.
  */
-  template<typename T, requirements::IsFloatinPoint<T> = true>
+#ifndef __cpp_concepts
+  template<typename Floating, requirements::IsFloatinPoint<Floating> = true>
+#else
+  template<requirements::IsFloatinPoint Floating>
+#endif
   struct CompareWithPrecision final {
   public:
 	  CompareWithPrecision() = delete;
@@ -30,23 +34,23 @@ namespace culib::comp {
 	  CompareWithPrecision& operator=(CompareWithPrecision&&) = delete;
 
 	  static
-	  CompareWithPrecision& getStaticInstance(T precision)
+	  CompareWithPrecision& getStaticInstance(Floating precision)
 	  {
 		  static CompareWithPrecision cmp(precision);
 		  return cmp;
 	  }
-	  void setEpsilon(T e) {
+	  void setEpsilon(Floating e) {
 		  std::lock_guard<std::mutex> lg(mtx);
 		  epsilon = e;
 	  }
   private:
-	  explicit CompareWithPrecision(T precision)
+	  explicit CompareWithPrecision(Floating precision)
 			  :epsilon(precision)
 	  {}
 	  std::mutex mtx;
 
   public:
-	  T epsilon;
+	  Floating epsilon;
   };
 
 /**
@@ -70,23 +74,35 @@ namespace culib::comp {
  * */
 
 
+#ifndef __cpp_concepts
   template<typename T, typename U,
 		  requirements::IsFloatinPoint<T> = true,
 		  requirements::IsIntegral<U> = true>
+#else
+  template<requirements::IsFloatinPoint T, requirements::IsIntegral U>
+#endif
   bool eq(T a, U b) noexcept
   {
 	  return (((a - b) < floating_comp.epsilon) &&
 			  ((b - a) < floating_comp.epsilon));
   }
+#ifndef __cpp_concepts
   template<typename T, typename U,
 		  requirements::IsFloatinPoint<T> = true,
 		  requirements::IsIntegral<U> = true>
+#else
+  template<requirements::IsFloatinPoint T, requirements::IsIntegral U>
+#endif
   bool eq(U b, T a) noexcept
   {
 	  return eq(a, b);
   }
-  template<typename T,
+#ifndef __cpp_concepts
+  template <typename T,
 		  requirements::IsFloatinPoint<T> = true>
+#else
+  template<requirements::IsFloatinPoint T>
+#endif
   bool eq(T a, T b) noexcept
   {
 	  return (((a - b) < floating_comp.epsilon) &&
@@ -94,109 +110,169 @@ namespace culib::comp {
   }
 
 
-  template <typename T, typename U,
+#ifndef __cpp_concepts
+  template<typename T, typename U,
 		  requirements::IsFloatinPoint<T> = true,
 		  requirements::IsIntegral<U> = true>
+#else
+  template<requirements::IsFloatinPoint T, requirements::IsIntegral U>
+#endif
   static bool ne (T a, U b) noexcept
   {
 	  return not eq(a, b);
   }
-  template <typename T, typename U,
+#ifndef __cpp_concepts
+  template<typename T, typename U,
 		  requirements::IsFloatinPoint<T> = true,
 		  requirements::IsIntegral<U> = true>
+#else
+  template<requirements::IsFloatinPoint T, requirements::IsIntegral U>
+#endif
   static bool ne (U b, T a) noexcept
   {
 	  return not eq(a, b);
   }
+#ifndef __cpp_concepts
   template <typename T,
 		  requirements::IsFloatinPoint<T> = true>
+#else
+  template<requirements::IsFloatinPoint T>
+#endif
   static bool ne (T a, T b) noexcept
   {
 	  return not eq(a, b);
   }
 
-  template <typename T, typename U,
+#ifndef __cpp_concepts
+  template<typename T, typename U,
 		  requirements::IsFloatinPoint<T> = true,
 		  requirements::IsIntegral<U> = true>
+#else
+  template<requirements::IsFloatinPoint T, requirements::IsIntegral U>
+#endif
   static bool lt (T a, U b) noexcept
   {
 	  return a < b - floating_comp.epsilon;
   }
-  template <typename T, typename U,
+#ifndef __cpp_concepts
+  template<typename T, typename U,
 		  requirements::IsFloatinPoint<T> = true,
 		  requirements::IsIntegral<U> = true>
+#else
+  template<requirements::IsFloatinPoint T, requirements::IsIntegral U>
+#endif
   static bool lt (U b, T a) noexcept
   {
 	  return b < a - floating_comp.epsilon;;
   }
+#ifndef __cpp_concepts
   template <typename T,
 		  requirements::IsFloatinPoint<T> = true>
+#else
+  template<requirements::IsFloatinPoint T>
+#endif
   static bool lt (T a, T b) noexcept
   {
 	  return a < b - floating_comp.epsilon;
   }
 
 
-  template <typename T, typename U,
+#ifndef __cpp_concepts
+  template<typename T, typename U,
 		  requirements::IsFloatinPoint<T> = true,
 		  requirements::IsIntegral<U> = true>
+#else
+  template<requirements::IsFloatinPoint T, requirements::IsIntegral U>
+#endif
   static bool gt (T a, U b) noexcept
   {
 	  return a > b + floating_comp.epsilon;
   }
-  template <typename T, typename U,
+#ifndef __cpp_concepts
+  template<typename T, typename U,
 		  requirements::IsFloatinPoint<T> = true,
 		  requirements::IsIntegral<U> = true>
+#else
+  template<requirements::IsFloatinPoint T, requirements::IsIntegral U>
+#endif
   static bool gt (U b, T a) noexcept
   {
 	  return b > a + floating_comp.epsilon;
   }
+#ifndef __cpp_concepts
   template <typename T,
 		  requirements::IsFloatinPoint<T> = true>
+#else
+  template<requirements::IsFloatinPoint T>
+#endif
   static bool gt (T a, T b) noexcept
   {
 	  return a > b + floating_comp.epsilon;
   }
 
 
-  template <typename T, typename U,
+#ifndef __cpp_concepts
+  template<typename T, typename U,
 		  requirements::IsFloatinPoint<T> = true,
 		  requirements::IsIntegral<U> = true>
+#else
+  template<requirements::IsFloatinPoint T, requirements::IsIntegral U>
+#endif
   static bool ge (T a, U b) noexcept
   {
 	  return a > b - floating_comp.epsilon;
   }
-  template <typename T, typename U,
+#ifndef __cpp_concepts
+  template<typename T, typename U,
 		  requirements::IsFloatinPoint<T> = true,
 		  requirements::IsIntegral<U> = true>
+#else
+  template<requirements::IsFloatinPoint T, requirements::IsIntegral U>
+#endif
   static bool ge (U b, T a) noexcept
   {
 	  return b > a - floating_comp.epsilon;
   }
+#ifndef __cpp_concepts
   template <typename T,
 		  requirements::IsFloatinPoint<T> = true>
+#else
+  template<requirements::IsFloatinPoint T>
+#endif
   static bool ge (T a, T b) noexcept
   {
 	  return a > b - floating_comp.epsilon;
   }
 
 
-  template <typename T, typename U,
+#ifndef __cpp_concepts
+  template<typename T, typename U,
 		  requirements::IsFloatinPoint<T> = true,
 		  requirements::IsIntegral<U> = true>
+#else
+  template<requirements::IsFloatinPoint T, requirements::IsIntegral U>
+#endif
   static bool le (T a, U b) noexcept
   {
 	  return a < b + floating_comp.epsilon;
   }
-  template <typename T, typename U,
+#ifndef __cpp_concepts
+  template<typename T, typename U,
 		  requirements::IsFloatinPoint<T> = true,
 		  requirements::IsIntegral<U> = true>
+#else
+  template<requirements::IsFloatinPoint T, requirements::IsIntegral U>
+#endif
   static bool le (U b, T a) noexcept
   {
 	  return b < a + floating_comp.epsilon;
   }
+#ifndef __cpp_concepts
   template <typename T,
 		  requirements::IsFloatinPoint<T> = true>
+#else
+  template<requirements::IsFloatinPoint T>
+#endif
   static bool le (T a, T b) noexcept
   {
 	  return a < b + floating_comp.epsilon;

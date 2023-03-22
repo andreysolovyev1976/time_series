@@ -6,11 +6,17 @@
 
 #include <type_traits>
 
+#ifdef __cpp_concepts
+#include <concepts>
+#endif
+
 #ifndef TYPE_REQUIREMENTS_CTORS_H
 #define TYPE_REQUIREMENTS_CTORS_H
 
 namespace culib::requirements {
 
+
+#ifndef __cpp_concepts
   template <typename Input, typename Result, typename = void>
   struct MaybeConveribleOrConstructibleFromTo : std::false_type {};
 
@@ -35,5 +41,16 @@ namespace culib::requirements {
   template <typename Input, typename Result>
   using ConveribleOrConstructibleFromTo = std::enable_if_t<isConveribleOrConstructible<Input, Result>(), bool>;
 
+#else
+
+  template <typename Input, typename Result>
+  concept ConveribleOrConstructibleFromTo = requires () {
+	  std::disjunction_v<
+			  std::is_convertible<Input, Result>,
+			  std::is_constructible<Result, Input>>;
+  };
+
+
+#endif
 }//!namespace
 #endif //TYPE_REQUIREMENTS_CTORS_H

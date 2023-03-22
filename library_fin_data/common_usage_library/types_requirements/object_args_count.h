@@ -5,11 +5,16 @@
 #pragma once
 
 #include <type_traits>
+#ifdef __cpp_concepts
+#include <concepts>
+#endif
 
 #ifndef TYPE_REQUIREMENTS_OBJECT_ARGS_COUNT_H
 #define TYPE_REQUIREMENTS_OBJECT_ARGS_COUNT_H
 
 namespace culib::requirements {
+
+#ifndef __cpp_concepts
 
   template <typename Object, typename... Args>
   constexpr std::size_t objectArgsCount () {
@@ -41,6 +46,28 @@ namespace culib::requirements {
   template <template <typename...> typename Object, typename Arg1, typename Arg2>
   constexpr bool objectCanHaveTwoArgs_v () {return objectCanHaveTwoArgs<Object, Arg1, Arg2>::value;}
 
+#else
+
+  template <template <typename...> typename Object, typename Arg1>
+  concept ObjectCanHaveSingleArg = requires () {
+	  std::is_constructible_v<Object<Arg1>>;
+  };
+
+  template <template <typename...> typename Object, typename Arg1>
+  requires ObjectCanHaveSingleArg<Object, Arg1>
+  constexpr bool objectCanHaveSingleArg_v () {return true;}
+
+  template <template <typename...> typename Object, typename Arg1, typename Arg2>
+  concept objectCanHaveTwoArgs = requires () {
+	  std::is_constructible_v<Object<Arg1, Arg2>>;
+  };
+
+  template <template <typename...> typename Object, typename Arg1, typename Arg2>
+  requires objectCanHaveTwoArgs<Object, Arg1, Arg2>
+  constexpr bool objectCanHaveTwoArgs_v () {return true;}
+
+
+#endif
 
 }//!namespace
 

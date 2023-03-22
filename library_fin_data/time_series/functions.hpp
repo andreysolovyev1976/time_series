@@ -25,7 +25,7 @@ namespace time_series {
 	  std::vector<T> temp_;
 	  if (a.size() != b.size())
 	  {
-		  cout << __FUNCTION__ << endl;
+		  std::cout << __FUNCTION__ << std::endl;
 		  throw std::invalid_argument("Error in per element Vector subtraction, two vectors size are not equal");
 	  } else
 	  {

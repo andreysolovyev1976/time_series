@@ -22,11 +22,14 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char **argv) {
 // timestamp works poorly with high_res clock
 
 //todo:
+// decorate methods with ref decorations
+// operator + is to be made in terms of operator +=
+// operator += should be made inside of a class
 // series - make joins for the series
 // duration cast
 // joins, make joins possible if any of arg is a tuple of args
 // construct series from several series using one index
 // add own container using polymorphic allocator (if small then stack else heap)
-// add own unique_ptr on polymorphic allocator
+// add own unique_ptr / shrared_ptr on polymorphic allocator
 // Fenvick tree is required instead of accumulate for own container
 // offload to videocard

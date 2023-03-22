@@ -126,9 +126,13 @@ namespace culib::itertools {
  * @brief
  * UI
  * */
-  template<typename... Container>
-  auto zip(Container&&... container) {
-	  return details::Zipper<Container...> (std::forward<Container>(container)...);
+#ifndef __cpp_concepts
+  template<typename... Containers, requirements::AreAllContainers<Containers...> = true>
+#else
+  template<requirements::AreAllContainers... Containers>
+#endif
+  auto zip(Containers&&... containers) {
+	  return details::Zipper<Containers...> (std::forward<Containers>(containers)...);
   }
 
 
@@ -181,7 +185,11 @@ namespace culib::itertools {
 	};
   }//!namespace
 
+#ifndef __cpp_concepts
   template<typename Container, requirements::IsContainer<Container> = true>
+#else
+  template<requirements::IsContainer Container>
+#endif
   bool isSortedAscending(Container const& v) {
 	  return *v.begin() < *std::prev(v.end());
   }
@@ -195,7 +203,11 @@ namespace culib::itertools {
  *\n
  * UI\n
  * */
-  template<typename Serie, bool ascending>
+#ifndef __cpp_concepts
+  template<typename Serie, bool ascending, requirements::IsContainer<Serie> = true>
+#else
+  template<requirements::IsContainer Serie, bool ascending>
+#endif
   details::Range<typename details::DetectIter<Serie, ascending>::type>
   getIterators(Serie& serie)
   {
