@@ -49,23 +49,30 @@ namespace culib::requirements {
 #else
 
   template <template <typename...> typename Object, typename Arg1>
-  concept ObjectCanHaveSingleArg = requires () {
-	  std::is_constructible_v<Object<Arg1>>;
-  };
+  concept ObjectCanHaveSingleArg = requires () { std::is_constructible_v<Object<Arg1>>; };
+  template <template <typename...> typename Object, typename Arg1>
+  concept NotObjectCanHaveSingleArg = !ObjectCanHaveSingleArg<Object, Arg1> ;
 
   template <template <typename...> typename Object, typename Arg1>
   requires ObjectCanHaveSingleArg<Object, Arg1>
   constexpr bool objectCanHaveSingleArg_v () {return true;}
 
-  template <template <typename...> typename Object, typename Arg1, typename Arg2>
-  concept objectCanHaveTwoArgs = requires () {
-	  std::is_constructible_v<Object<Arg1, Arg2>>;
-  };
+  template <template <typename...> typename Object, typename Arg1>
+  requires NotObjectCanHaveSingleArg<Object, Arg1>
+  constexpr bool objectCanHaveSingleArg_v () {return false;}
 
   template <template <typename...> typename Object, typename Arg1, typename Arg2>
-  requires objectCanHaveTwoArgs<Object, Arg1, Arg2>
+  concept ObjectCanHaveTwoArgs = requires () { std::is_constructible_v<Object<Arg1, Arg2>>; };
+  template <template <typename...> typename Object, typename Arg1, typename Arg2>
+  concept NotObjectCanHaveTwoArgs = !ObjectCanHaveTwoArgs<Object, Arg1, Arg2>;
+
+  template <template <typename...> typename Object, typename Arg1, typename Arg2>
+  requires ObjectCanHaveTwoArgs<Object, Arg1, Arg2>
   constexpr bool objectCanHaveTwoArgs_v () {return true;}
 
+  template <template <typename...> typename Object, typename Arg1, typename Arg2>
+  requires NotObjectCanHaveTwoArgs<Object, Arg1, Arg2>
+  constexpr bool objectCanHaveTwoArgs_v () {return false;}
 
 #endif
 

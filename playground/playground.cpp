@@ -16,7 +16,8 @@
 //#define JOIN_SQL_LIKE
 //#define SET_OPERATIONS_BASICS
 //#define MULTI_ARG_TEMPLATE_CHECK
-#define CPP20CHECK
+//#define CPP20CHECK
+#define CONCEPTS_CIRCULAR_LINK_PROBLEM
 
 #ifdef NESTED_OPERATORS
 #include <iostream>
@@ -1444,6 +1445,34 @@ int main() {
 		std::cout << i << ' ';
 
 	return EXIT_SUCCESS;
+}
+
+
+#endif
+
+
+#ifdef CONCEPTS_CIRCULAR_LINK_PROBLEM
+
+#include <iostream>
+
+#include "common_usage_library/types_requirements/operators.h"
+#include "financial_data_structures/bid_ask.h"
+#include "time_series/element.hpp"
+
+using namespace culib;
+using namespace culib::requirements;
+using namespace time_series;
+using namespace time_series::financial;
+
+int main () {
+	std::cout << std::boolalpha;
+	BidAsk<int> ba;
+	std::cout << (ba != 0) << '\n';
+
+	Element<base::Microseconds, BidAsk<int>> e1;
+	Element<base::Microseconds, BidAsk<int>> e2;
+	std::cout << (e1 != 0) << '\n';
+	std::cout << (e1 != e2) << '\n';
 }
 
 

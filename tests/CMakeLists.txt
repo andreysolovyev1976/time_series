@@ -5,8 +5,6 @@ project(${PROJECT_NAME_TEST}
         DESCRIPTION "Testing Timeseries"
         LANGUAGES CXX)
 
-set(CMAKE_CXX_STANDARD 23)
-set(CMAKE_CXX_FLAGS "-Wall -Wextra -Wpedantic -Werror")
 if (APPLE)
     set(CMAKE_CXX_FLAGS "-Wno-gnu-zero-variadic-macro-arguments")
 endif()

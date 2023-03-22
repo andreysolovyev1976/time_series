@@ -12,9 +12,6 @@
 #ifndef BASE_VALUE_COMP_H
 #define BASE_VALUE_COMP_H
 
-
-//#define CONCEPTS
-
 namespace culib::comp {
 /**
  * @details
@@ -23,10 +20,10 @@ namespace culib::comp {
  * Implementation provides strong protection for keeping just one instance of a
  * kValue that is used in comparison - see all deleted ctors.
  */
-#ifndef CONCEPTS
+#ifndef CONCEPTS___
   template<typename Floating, requirements::IsFloatinPoint<Floating> = true>
 #else
-  template<requirements::IsFloatinPoint Floating>
+  template<std::floating_point Floating>
 #endif
   struct CompareWithPrecision final {
   public:
@@ -77,34 +74,34 @@ namespace culib::comp {
  * */
 
 
-#ifndef CONCEPTS
+#ifndef CONCEPTS___
   template<typename T, typename U,
 		  requirements::IsFloatinPoint<T> = true,
 		  requirements::IsIntegral<U> = true>
 #else
-  template<requirements::IsFloatinPoint T, requirements::IsIntegral U>
+  template<std::floating_point T, std::integral U>
 #endif
   bool eq(T a, U b) noexcept
   {
 	  return (((a - b) < floating_comp.epsilon) &&
 			  ((b - a) < floating_comp.epsilon));
   }
-#ifndef CONCEPTS
+#ifndef CONCEPTS___
   template<typename T, typename U,
 		  requirements::IsFloatinPoint<T> = true,
 		  requirements::IsIntegral<U> = true>
 #else
-  template<requirements::IsFloatinPoint T, requirements::IsIntegral U>
+  template<std::floating_point T, std::integral U>
 #endif
   bool eq(U b, T a) noexcept
   {
 	  return eq(a, b);
   }
-#ifndef CONCEPTS
+#ifndef CONCEPTS___
   template <typename T,
 		  requirements::IsFloatinPoint<T> = true>
 #else
-  template<requirements::IsFloatinPoint T>
+  template<std::floating_point T>
 #endif
   bool eq(T a, T b) noexcept
   {
@@ -113,66 +110,66 @@ namespace culib::comp {
   }
 
 
-#ifndef CONCEPTS
+#ifndef CONCEPTS___
   template<typename T, typename U,
 		  requirements::IsFloatinPoint<T> = true,
 		  requirements::IsIntegral<U> = true>
 #else
-  template<requirements::IsFloatinPoint T, requirements::IsIntegral U>
+  template<std::floating_point T, std::integral U>
 #endif
   static bool ne (T a, U b) noexcept
   {
 	  return not eq(a, b);
   }
-#ifndef CONCEPTS
+#ifndef CONCEPTS___
   template<typename T, typename U,
 		  requirements::IsFloatinPoint<T> = true,
 		  requirements::IsIntegral<U> = true>
 #else
-  template<requirements::IsFloatinPoint T, requirements::IsIntegral U>
+  template<std::floating_point T, std::integral U>
 #endif
   static bool ne (U b, T a) noexcept
   {
 	  return not eq(a, b);
   }
-#ifndef CONCEPTS
+#ifndef CONCEPTS___
   template <typename T,
 		  requirements::IsFloatinPoint<T> = true>
 #else
-  template<requirements::IsFloatinPoint T>
+  template<std::floating_point T>
 #endif
   static bool ne (T a, T b) noexcept
   {
 	  return not eq(a, b);
   }
 
-#ifndef CONCEPTS
+#ifndef CONCEPTS___
   template<typename T, typename U,
 		  requirements::IsFloatinPoint<T> = true,
 		  requirements::IsIntegral<U> = true>
 #else
-  template<requirements::IsFloatinPoint T, requirements::IsIntegral U>
+  template<std::floating_point T, std::integral U>
 #endif
   static bool lt (T a, U b) noexcept
   {
 	  return a < b - floating_comp.epsilon;
   }
-#ifndef CONCEPTS
+#ifndef CONCEPTS___
   template<typename T, typename U,
 		  requirements::IsFloatinPoint<T> = true,
 		  requirements::IsIntegral<U> = true>
 #else
-  template<requirements::IsFloatinPoint T, requirements::IsIntegral U>
+  template<std::floating_point T, std::integral U>
 #endif
   static bool lt (U b, T a) noexcept
   {
 	  return b < a - floating_comp.epsilon;;
   }
-#ifndef CONCEPTS
+#ifndef CONCEPTS___
   template <typename T,
 		  requirements::IsFloatinPoint<T> = true>
 #else
-  template<requirements::IsFloatinPoint T>
+  template<std::floating_point T>
 #endif
   static bool lt (T a, T b) noexcept
   {
@@ -180,33 +177,33 @@ namespace culib::comp {
   }
 
 
-#ifndef CONCEPTS
+#ifndef CONCEPTS___
   template<typename T, typename U,
 		  requirements::IsFloatinPoint<T> = true,
 		  requirements::IsIntegral<U> = true>
 #else
-  template<requirements::IsFloatinPoint T, requirements::IsIntegral U>
+  template<std::floating_point T, std::integral U>
 #endif
   static bool gt (T a, U b) noexcept
   {
 	  return a > b + floating_comp.epsilon;
   }
-#ifndef CONCEPTS
+#ifndef CONCEPTS___
   template<typename T, typename U,
 		  requirements::IsFloatinPoint<T> = true,
 		  requirements::IsIntegral<U> = true>
 #else
-  template<requirements::IsFloatinPoint T, requirements::IsIntegral U>
+  template<std::floating_point T, std::integral U>
 #endif
   static bool gt (U b, T a) noexcept
   {
 	  return b > a + floating_comp.epsilon;
   }
-#ifndef CONCEPTS
+#ifndef CONCEPTS___
   template <typename T,
 		  requirements::IsFloatinPoint<T> = true>
 #else
-  template<requirements::IsFloatinPoint T>
+  template<std::floating_point T>
 #endif
   static bool gt (T a, T b) noexcept
   {
@@ -214,33 +211,33 @@ namespace culib::comp {
   }
 
 
-#ifndef CONCEPTS
+#ifndef CONCEPTS___
   template<typename T, typename U,
 		  requirements::IsFloatinPoint<T> = true,
 		  requirements::IsIntegral<U> = true>
 #else
-  template<requirements::IsFloatinPoint T, requirements::IsIntegral U>
+  template<std::floating_point T, std::integral U>
 #endif
   static bool ge (T a, U b) noexcept
   {
 	  return a > b - floating_comp.epsilon;
   }
-#ifndef CONCEPTS
+#ifndef CONCEPTS___
   template<typename T, typename U,
 		  requirements::IsFloatinPoint<T> = true,
 		  requirements::IsIntegral<U> = true>
 #else
-  template<requirements::IsFloatinPoint T, requirements::IsIntegral U>
+  template<std::floating_point T, std::integral U>
 #endif
   static bool ge (U b, T a) noexcept
   {
 	  return b > a - floating_comp.epsilon;
   }
-#ifndef CONCEPTS
+#ifndef CONCEPTS___
   template <typename T,
 		  requirements::IsFloatinPoint<T> = true>
 #else
-  template<requirements::IsFloatinPoint T>
+  template<std::floating_point T>
 #endif
   static bool ge (T a, T b) noexcept
   {
@@ -248,33 +245,33 @@ namespace culib::comp {
   }
 
 
-#ifndef CONCEPTS
+#ifndef CONCEPTS___
   template<typename T, typename U,
 		  requirements::IsFloatinPoint<T> = true,
 		  requirements::IsIntegral<U> = true>
 #else
-  template<requirements::IsFloatinPoint T, requirements::IsIntegral U>
+  template<std::floating_point T, std::integral U>
 #endif
   static bool le (T a, U b) noexcept
   {
 	  return a < b + floating_comp.epsilon;
   }
-#ifndef CONCEPTS
+#ifndef CONCEPTS___
   template<typename T, typename U,
 		  requirements::IsFloatinPoint<T> = true,
 		  requirements::IsIntegral<U> = true>
 #else
-  template<requirements::IsFloatinPoint T, requirements::IsIntegral U>
+  template<std::floating_point T, std::integral U>
 #endif
   static bool le (U b, T a) noexcept
   {
 	  return b < a + floating_comp.epsilon;
   }
-#ifndef CONCEPTS
+#ifndef CONCEPTS___
   template <typename T,
 		  requirements::IsFloatinPoint<T> = true>
 #else
-  template<requirements::IsFloatinPoint T>
+  template<std::floating_point T>
 #endif
   static bool le (T a, T b) noexcept
   {

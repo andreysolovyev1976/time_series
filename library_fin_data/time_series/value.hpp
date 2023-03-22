@@ -131,16 +131,9 @@ namespace time_series {
    * for everyting else there should be operator
    */
 
-#ifndef __cpp_concepts
   template <typename ValueType, typename Other,
 		  culib::requirements::NotSame<Value<ValueType>, Other> = true,
 		  culib::requirements::BinOperatorsExist<ValueType, Other> = true>
-#else
-  template <typename ValueType, typename Other>
-  requires
-		  culib::requirements::NotSame<Value<ValueType>, Other> &&
-		  culib::requirements::BinOperatorsExist<ValueType, Other>
-#endif	
   bool operator==(const Value<ValueType>& lhs, const Other& rhs) {
 	  if constexpr (std::is_floating_point_v<ValueType> && std::is_integral_v<Other>)
 		  return culib::comp::eq(lhs.value, rhs);
@@ -149,16 +142,9 @@ namespace time_series {
 	  else
 		  return lhs.value == rhs;
   }
-#ifndef __cpp_concepts
   template <typename ValueType, typename Other,
 		  culib::requirements::NotSame<Value<ValueType>, Other> = true,
 		  culib::requirements::BinOperatorsExist<ValueType, Other> = true>
-#else
-  template <typename ValueType, typename Other>
-  requires
-		  culib::requirements::NotSame<Value<ValueType>, Other> &&
-		  culib::requirements::BinOperatorsExist<ValueType, Other>
-#endif
   bool operator==(const Other& lhs, const Value<ValueType>& rhs) {
 	  if constexpr (std::is_floating_point_v<ValueType> && std::is_integral_v<Other>)
 		  return culib::comp::eq(lhs, rhs.value);
@@ -174,16 +160,9 @@ namespace time_series {
 	  else
 		  return !(lhs.value == rhs.value);
   }
-#ifndef __cpp_concepts
   template <typename ValueType, typename Other,
 		  culib::requirements::NotSame<Value<ValueType>, Other> = true,
 		  culib::requirements::BinOperatorsExist<ValueType, Other> = true>
-#else
-  template <typename ValueType, typename Other>
-  requires
-		  culib::requirements::NotSame<Value<ValueType>, Other> &&
-		  culib::requirements::BinOperatorsExist<ValueType, Other>
-#endif	
   bool operator!=(const Value<ValueType>& lhs, const Other& rhs) {
 	  if constexpr (std::is_floating_point_v<ValueType> && std::is_integral_v<Other>)
 		  return culib::comp::ne(lhs.value, rhs);
@@ -192,16 +171,9 @@ namespace time_series {
 	  else
 		  return !(lhs.value==rhs);
   }
-#ifndef __cpp_concepts
   template <typename ValueType, typename Other,
 		  culib::requirements::NotSame<Value<ValueType>, Other> = true,
 		  culib::requirements::BinOperatorsExist<ValueType, Other> = true>
-#else
-  template <typename ValueType, typename Other>
-  requires
-		  culib::requirements::NotSame<Value<ValueType>, Other> &&
-		  culib::requirements::BinOperatorsExist<ValueType, Other>
-#endif	
   bool operator!=(const Other& lhs, const Value<ValueType>& rhs) {
 	  if constexpr (std::is_floating_point_v<ValueType> && std::is_integral_v<Other>)
 		  return culib::comp::ne(lhs, rhs.value);
@@ -217,16 +189,9 @@ namespace time_series {
 	  else
 	  return lhs.value < rhs.value;
   }
-#ifndef __cpp_concepts
   template <typename ValueType, typename Other,
 		  culib::requirements::NotSame<Value<ValueType>, Other> = true,
 		  culib::requirements::BinOperatorsExist<ValueType, Other> = true>
-#else
-  template <typename ValueType, typename Other>
-  requires
-		  culib::requirements::NotSame<Value<ValueType>, Other> &&
-		  culib::requirements::BinOperatorsExist<ValueType, Other>
-#endif	
   bool operator < (const Value<ValueType>& lhs, const Other& rhs) {
 	  if constexpr (std::is_floating_point_v<ValueType> && std::is_integral_v<Other>)
 		  return culib::comp::lt(lhs.value, rhs);
@@ -235,16 +200,9 @@ namespace time_series {
 	  else
 		  return lhs.value < rhs;
   }
-#ifndef __cpp_concepts
   template <typename ValueType, typename Other,
 		  culib::requirements::NotSame<Value<ValueType>, Other> = true,
 		  culib::requirements::BinOperatorsExist<ValueType, Other> = true>
-#else
-  template <typename ValueType, typename Other>
-  requires
-		  culib::requirements::NotSame<Value<ValueType>, Other> &&
-		  culib::requirements::BinOperatorsExist<ValueType, Other>
-#endif	
   bool operator < (const Other& lhs, const Value<ValueType>& rhs) {
 	  if constexpr (std::is_floating_point_v<ValueType> && std::is_integral_v<Other>)
 		  return culib::comp::lt(lhs, rhs.value);
@@ -257,29 +215,15 @@ namespace time_series {
   bool operator > (const Value<ValueType>& lhs, const Value<ValueType>& rhs) {
 	  return (!(rhs == lhs) && !(lhs < rhs));
   }
-#ifndef __cpp_concepts
   template <typename ValueType, typename Other,
 		  culib::requirements::NotSame<Value<ValueType>, Other> = true,
 		  culib::requirements::BinOperatorsExist<ValueType, Other> = true>
-#else
-  template <typename ValueType, typename Other>
-  requires
-		  culib::requirements::NotSame<Value<ValueType>, Other> &&
-		  culib::requirements::BinOperatorsExist<ValueType, Other>
-#endif	
   bool operator > (const Value<ValueType>& lhs, const Other& rhs) {
 	  return (!(rhs == lhs) && !(lhs < rhs));
   }
-#ifndef __cpp_concepts
   template <typename ValueType, typename Other,
 		  culib::requirements::NotSame<Value<ValueType>, Other> = true,
 		  culib::requirements::BinOperatorsExist<ValueType, Other> = true>
-#else
-  template <typename ValueType, typename Other>
-  requires
-		  culib::requirements::NotSame<Value<ValueType>, Other> &&
-		  culib::requirements::BinOperatorsExist<ValueType, Other>
-#endif	
   bool operator > (const Other& lhs, const Value<ValueType>& rhs) {
 	  return (!(rhs == lhs) && !(lhs < rhs));
   }
@@ -287,29 +231,15 @@ namespace time_series {
   bool operator <= (const Value<ValueType>& lhs, const Value<ValueType>& rhs) {
 	  return ((rhs == lhs) || (lhs < rhs));
   }
-#ifndef __cpp_concepts
   template <typename ValueType, typename Other,
 		  culib::requirements::NotSame<Value<ValueType>, Other> = true,
 		  culib::requirements::BinOperatorsExist<ValueType, Other> = true>
-#else
-  template <typename ValueType, typename Other>
-  requires
-		  culib::requirements::NotSame<Value<ValueType>, Other> &&
-		  culib::requirements::BinOperatorsExist<ValueType, Other>
-#endif	
   bool operator <= (const Value<ValueType>& lhs, const Other& rhs) {
 	  return ((rhs == lhs) || (lhs < rhs));
   }
-#ifndef __cpp_concepts
   template <typename ValueType, typename Other,
 		  culib::requirements::NotSame<Value<ValueType>, Other> = true,
 		  culib::requirements::BinOperatorsExist<ValueType, Other> = true>
-#else
-  template <typename ValueType, typename Other>
-  requires
-		  culib::requirements::NotSame<Value<ValueType>, Other> &&
-		  culib::requirements::BinOperatorsExist<ValueType, Other>
-#endif	
   bool operator <= (const Other& lhs, const Value<ValueType>& rhs) {
 	  return ((rhs == lhs) || (lhs < rhs));
   }
@@ -317,29 +247,15 @@ namespace time_series {
   bool operator >= (const Value<ValueType>& lhs, const Value<ValueType>& rhs){
 	  return ((rhs == lhs) || (lhs > rhs));
   }
-#ifndef __cpp_concepts
   template <typename ValueType, typename Other,
 		  culib::requirements::NotSame<Value<ValueType>, Other> = true,
 		  culib::requirements::BinOperatorsExist<ValueType, Other> = true>
-#else
-  template <typename ValueType, typename Other>
-  requires
-		  culib::requirements::NotSame<Value<ValueType>, Other> &&
-		  culib::requirements::BinOperatorsExist<ValueType, Other>
-#endif	
   bool operator >= (const Value<ValueType>& lhs, const Other& rhs){
 	  return ((rhs == lhs) || (lhs > rhs));
   }
-#ifndef __cpp_concepts
   template <typename ValueType, typename Other,
 		  culib::requirements::NotSame<Value<ValueType>, Other> = true,
 		  culib::requirements::BinOperatorsExist<ValueType, Other> = true>
-#else
-  template <typename ValueType, typename Other>
-  requires
-		  culib::requirements::NotSame<Value<ValueType>, Other> &&
-		  culib::requirements::BinOperatorsExist<ValueType, Other>
-#endif	
   bool operator >= (const Other& lhs, const Value<ValueType>& rhs){
 	  return ((rhs == lhs) || (lhs > rhs));
   }
@@ -351,31 +267,17 @@ namespace time_series {
 	  res.value = lhs.value * rhs.value;
 	  return res;
   }
-#ifndef __cpp_concepts
   template <typename ValueType, typename Other,
 		  culib::requirements::NotSame<Value<ValueType>, Other> = true,
 		  culib::requirements::BinOperatorsExist<ValueType, Other> = true>
-#else
-  template <typename ValueType, typename Other>
-  requires
-		  culib::requirements::NotSame<Value<ValueType>, Other> &&
-		  culib::requirements::BinOperatorsExist<ValueType, Other>
-#endif	
   Value<ValueType> operator*(const Value<ValueType>& lhs, Other &&rhs) {
 	  Value<ValueType> res;
 	  res.value = lhs.value * std::forward<Other>(rhs);
 	  return res;
   }
-#ifndef __cpp_concepts
   template <typename ValueType, typename Other,
 		  culib::requirements::NotSame<Value<ValueType>, Other> = true,
 		  culib::requirements::BinOperatorsExist<ValueType, Other> = true>
-#else
-  template <typename ValueType, typename Other>
-  requires
-		  culib::requirements::NotSame<Value<ValueType>, Other> &&
-		  culib::requirements::BinOperatorsExist<ValueType, Other>
-#endif	
   Value<ValueType> operator*(Other &&lhs, const Value<ValueType>& rhs) {
 	  Value<ValueType> res;
 	  res.value = std::forward<Other>(lhs) * rhs.value;
@@ -387,31 +289,17 @@ namespace time_series {
 	  res.value = lhs.value / rhs.value;
 	  return res;
   }
-#ifndef __cpp_concepts
   template <typename ValueType, typename Other,
 		  culib::requirements::NotSame<Value<ValueType>, Other> = true,
 		  culib::requirements::BinOperatorsExist<ValueType, Other> = true>
-#else
-  template <typename ValueType, typename Other>
-  requires
-		  culib::requirements::NotSame<Value<ValueType>, Other> &&
-		  culib::requirements::BinOperatorsExist<ValueType, Other>
-#endif	
   Value<ValueType> operator / (const Value<ValueType>& lhs, Other &&rhs) {
 	  Value<ValueType> res;
 	  res.value = lhs.value / std::forward<Other>(rhs);
 	  return res;
   }
-#ifndef __cpp_concepts
   template <typename ValueType, typename Other,
 		  culib::requirements::NotSame<Value<ValueType>, Other> = true,
 		  culib::requirements::BinOperatorsExist<ValueType, Other> = true>
-#else
-  template <typename ValueType, typename Other>
-  requires
-		  culib::requirements::NotSame<Value<ValueType>, Other> &&
-		  culib::requirements::BinOperatorsExist<ValueType, Other>
-#endif	
   Value<ValueType> operator / (Other &&lhs, const Value<ValueType>& rhs) {
 	  Value<ValueType> res;
 	  res.value = std::forward<Other>(lhs) / rhs.value;
@@ -423,31 +311,17 @@ namespace time_series {
 	  res.value = lhs.value + rhs.value;
 	  return res;
   }
-#ifndef __cpp_concepts
   template <typename ValueType, typename Other,
 		  culib::requirements::NotSame<Value<ValueType>, Other> = true,
 		  culib::requirements::BinOperatorsExist<ValueType, Other> = true>
-#else
-  template <typename ValueType, typename Other>
-  requires
-		  culib::requirements::NotSame<Value<ValueType>, Other> &&
-		  culib::requirements::BinOperatorsExist<ValueType, Other>
-#endif	
   Value<ValueType> operator + (const Value<ValueType>& lhs, Other &&rhs) {
 	  Value<ValueType> res;
 	  res.value = lhs.value + std::forward<Other>(rhs);
 	  return res;
   }
-#ifndef __cpp_concepts
   template <typename ValueType, typename Other,
 		  culib::requirements::NotSame<Value<ValueType>, Other> = true,
 		  culib::requirements::BinOperatorsExist<ValueType, Other> = true>
-#else
-  template <typename ValueType, typename Other>
-  requires
-  culib::requirements::NotSame<Value<ValueType>, Other> &&
-		  culib::requirements::BinOperatorsExist<ValueType, Other>
-#endif
   Value<ValueType> operator + (Other &&lhs, const Value<ValueType>& rhs) {
 	  Value<ValueType> res;
 	  res.value = std::forward<Other>(lhs) + rhs.value;
@@ -459,31 +333,17 @@ namespace time_series {
 	  res.value = lhs.value - rhs.value;
 	  return res;
   }
-#ifndef __cpp_concepts
   template <typename ValueType, typename Other,
 		  culib::requirements::NotSame<Value<ValueType>, Other> = true,
 		  culib::requirements::BinOperatorsExist<ValueType, Other> = true>
-#else
-  template <typename ValueType, typename Other>
-  requires
-		  culib::requirements::NotSame<Value<ValueType>, Other> &&
-		  culib::requirements::BinOperatorsExist<ValueType, Other>
-#endif	
   Value<ValueType> operator - (const Value<ValueType>& lhs, Other &&rhs) {
 	  Value<ValueType> res;
 	  res.value = lhs.value - std::forward<Other>(rhs);
 	  return res;
   }
-#ifndef __cpp_concepts
   template <typename ValueType, typename Other,
 		  culib::requirements::NotSame<Value<ValueType>, Other> = true,
 		  culib::requirements::BinOperatorsExist<ValueType, Other> = true>
-#else
-  template <typename ValueType, typename Other>
-  requires
-		  culib::requirements::NotSame<Value<ValueType>, Other> &&
-		  culib::requirements::BinOperatorsExist<ValueType, Other>
-#endif	
   Value<ValueType> operator - (Other &&lhs, const Value<ValueType>& rhs) {
 	  Value<ValueType> res;
 	  res.value = std::forward<Other>(lhs) - rhs.value;
@@ -496,16 +356,9 @@ namespace time_series {
 	  lhs.value += rhs.value;
 	  return lhs;
   }
-#ifndef __cpp_concepts
   template <typename ValueType, typename Other,
 		  culib::requirements::NotSame<Value<ValueType>, Other> = true,
 		  culib::requirements::BinOperatorsExist<ValueType, Other> = true>
-#else
-  template <typename ValueType, typename Other>
-  requires
-		  culib::requirements::NotSame<Value<ValueType>, Other> &&
-		  culib::requirements::BinOperatorsExist<ValueType, Other>
-#endif	
   Value<ValueType>& operator += (Value<ValueType>& lhs, Other &&rhs) {
 	  lhs.value += std::forward<Other>(rhs);
 	  return lhs;
@@ -515,16 +368,9 @@ namespace time_series {
 	  lhs.value -= rhs.value;
 	  return lhs;
   }
-#ifndef __cpp_concepts
   template <typename ValueType, typename Other,
 		  culib::requirements::NotSame<Value<ValueType>, Other> = true,
 		  culib::requirements::BinOperatorsExist<ValueType, Other> = true>
-#else
-  template <typename ValueType, typename Other>
-  requires
-		  culib::requirements::NotSame<Value<ValueType>, Other> &&
-		  culib::requirements::BinOperatorsExist<ValueType, Other>
-#endif	
   Value<ValueType>& operator -= (Value<ValueType>& lhs, Other &&rhs) {
 	  lhs.value -= std::forward<Other>(rhs);
 	  return lhs;
@@ -534,16 +380,9 @@ namespace time_series {
 	  lhs.value *= rhs.value;
 	  return lhs;
   }
-#ifndef __cpp_concepts
   template <typename ValueType, typename Other,
 		  culib::requirements::NotSame<Value<ValueType>, Other> = true,
 		  culib::requirements::BinOperatorsExist<ValueType, Other> = true>
-#else
-  template <typename ValueType, typename Other>
-  requires
-		  culib::requirements::NotSame<Value<ValueType>, Other> &&
-		  culib::requirements::BinOperatorsExist<ValueType, Other>
-#endif	
   Value<ValueType>& operator *= (Value<ValueType>& lhs, Other &&rhs) {
 	  lhs.value *= std::forward<Other>(rhs);
 	  return lhs;
@@ -553,16 +392,9 @@ namespace time_series {
 	  lhs.value /= rhs.value;
 	  return lhs;
   }
-#ifndef __cpp_concepts
   template <typename ValueType, typename Other,
 		  culib::requirements::NotSame<Value<ValueType>, Other> = true,
 		  culib::requirements::BinOperatorsExist<ValueType, Other> = true>
-#else
-  template <typename ValueType, typename Other>
-  requires
-		  culib::requirements::NotSame<Value<ValueType>, Other> &&
-		  culib::requirements::BinOperatorsExist<ValueType, Other>
-#endif	
   Value<ValueType>& operator /= (Value<ValueType>& lhs, Other &&rhs) {
 	  lhs.value /= std::forward<Other>(rhs);
 	  return lhs;

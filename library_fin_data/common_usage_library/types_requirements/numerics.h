@@ -13,7 +13,7 @@
 #ifndef TYPE_REQUIREMENTS_NUMERICS_H
 #define TYPE_REQUIREMENTS_NUMERICS_H
 
-//#define CONCEPTS___
+#define CONCEPTS___
 
 namespace culib::requirements {
 
@@ -29,28 +29,6 @@ namespace culib::requirements {
 
   template <typename Number>
   using IsNotIntegral = std::enable_if_t<not std::is_integral_v<Number>, bool>;
-
-#else
-
-  /**
-   * @brief
-   * This concepts also exist in std::\n
-   * but were redefined for sake of keeping\n
-   * a code style
-   * */
-
-  template <typename Number>
-  concept IsFloatinPoint = requires () {std::is_floating_point_v<Number>;};
-
-  template <typename Number>
-  concept IsNotFloatinPoint = requires () {not IsFloatinPoint<Number>;};
-
-  template <typename Number>
-  concept IsIntegral = requires () {std::is_integral_v<Number>;};
-
-  template <typename Number>
-  concept IsNotIntegral = requires () {not IsIntegral<Number>;};
-
 
 #endif
 

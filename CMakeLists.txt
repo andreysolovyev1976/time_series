@@ -12,9 +12,8 @@ endif()
 set(CMAKE_CXX_FLAGS " -Wall -Wextra -Wpedantic -Werror")
 set(CMAKE_CXX_STANDARD 23)
 
-set(CMAKE_CXX_FLAGS_DEBUG " -fsanitize=undefined -g")
-set(CMAKE_CXX_FLAGS_DEBUG " -fsanitize=address -g -fno-omit-frame-pointer -fno-optimize-sibling-calls")
-#set(CMAKE_CXX_FLAGS_DEBUG " -fsanitize=thread -g")
+set(CMAKE_CXX_FLAGS_DEBUG " -fsanitize=address -g -fno-omit-frame-pointer -fno-optimize-sibling-calls -fsanitize=undefined -g -fconcepts-diagnostics-depth=3")
+#set(CMAKE_CXX_FLAGS_DEBUG " -fsanitize=thread -g -fconcepts-diagnostics-depth=3")
 set(CMAKE_CXX_FLAGS_RELEASE " -O3")
 
 

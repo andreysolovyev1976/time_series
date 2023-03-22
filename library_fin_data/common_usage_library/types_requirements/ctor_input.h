@@ -49,8 +49,15 @@ namespace culib::requirements {
 			  std::is_constructible_v<Result, Input>;
 
   template <typename Input, typename Result>
+  concept NotConveribleOrConstructibleFromTo = !ConveribleOrConstructibleFromTo<Input, Result>;
+
+  template <typename Input, typename Result>
   requires ConveribleOrConstructibleFromTo<Input, Result>
   constexpr bool isConveribleOrConstructible_v () { return true; }
+
+  template <typename Input, typename Result>
+  requires NotConveribleOrConstructibleFromTo<Input, Result>
+  constexpr bool isConveribleOrConstructible_v () { return false; }
 
 
 #endif

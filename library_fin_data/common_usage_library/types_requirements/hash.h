@@ -69,7 +69,7 @@ namespace culib::requirements {
   template <typename Key, typename Type, typename HashResult = std::size_t>
   requires IsNotHash<Key, Type, HashResult>
   constexpr bool isHash_v () { return false; }
-  
+
 #endif
 
 }//!namespace
