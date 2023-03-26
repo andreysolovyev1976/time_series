@@ -20,7 +20,7 @@
 namespace culib::mem_usage {
 
   namespace details {
-	template<typename T, std::size_t N>
+	template<std::size_t N, typename T>
 	struct buf_wrapper_t {
 		std::array
 				<std::byte,
@@ -29,14 +29,14 @@ namespace culib::mem_usage {
 	};
   }//!namespace
 
-  template<typename T, std::size_t N>
+  template<std::size_t N, typename T>
   struct mem_resource_t :
-		  private details::buf_wrapper_t<T, N>,
+		  private details::buf_wrapper_t<N, T>,
 		  public std::pmr::monotonic_buffer_resource {
 	  explicit mem_resource_t() noexcept
 			  : monotonic_buffer_resource(
-			  details::buf_wrapper_t<T, N>::buffer.data(),
-			  details::buf_wrapper_t<T, N>::buffer.size(),
+			  details::buf_wrapper_t<N, T>::buffer.data(),
+			  details::buf_wrapper_t<N, T>::buffer.size(),
 			  std::pmr::get_default_resource()) { }
   };
 

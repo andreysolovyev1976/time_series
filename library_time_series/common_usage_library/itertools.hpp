@@ -137,6 +137,7 @@ namespace culib::itertools {
 
 
   namespace details {
+		//todo Add Iterators requirements
 	/**
    * @brief
    * pair of iterators

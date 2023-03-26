@@ -61,6 +61,7 @@ add_executable(${PROJECT_NAME_TEST}
         tests_basics_types_requirements.cpp
         tests_basics_itertools.cpp
         tests_basics_joins.cpp
+        tests_basics_container.cpp
 
         tests_value_ctors.cpp
         tests_value_comparison.cpp
@@ -77,7 +78,10 @@ add_executable(${PROJECT_NAME_TEST}
         tests_serie_itertools.cpp
         tests_serie_joins.cpp
 
-        tests_serie_fun_apply.cpp)
+        tests_serie_fun_apply.cpp
+
+        tests_financial_container.cpp
+        )
 
 
 target_compile_options(${PROJECT_NAME_TEST}
