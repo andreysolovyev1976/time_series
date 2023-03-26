@@ -21,6 +21,10 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char **argv) {
 // test arithmetics and comparison with other field, than default
 // timestamp works poorly with high_res clock
 // test pmr:: containers
+// test
+// 	operator value_type () const;
+// 	operator elem_type () const;
+// 	operator key_type () const;
 
 //todo:
 // decorate methods with ref decorations
