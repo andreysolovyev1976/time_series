@@ -10,6 +10,15 @@
 //
 //----------------------------------------------------------------------------
 
+
+//-----------------------------------------------------------------------------
+//
+// This code was significantly changed by Andrey Solovyev, although basic idea
+// is still there
+//
+//----------------------------------------------------------------------------
+
+
 #pragma once
 
 #include <iostream>
@@ -18,7 +27,7 @@
 #include <cstdlib>
 #include <new>
 
-namespace utils::mem_usage {
+namespace culib::mem_usage {
   struct heap_allocation_stats_t {
   public:
 	  heap_allocation_stats_t(heap_allocation_stats_t const&) = delete;

@@ -15,6 +15,8 @@
 	static const std::size_t EXPECTED_SINGLE_QUOTE_LENGTH {16u}; //arbitrary figure
 	static const std::size_t REQUIRED_ARG_COUNT {5u};
 
+	static const std::size_t ALLOWANCE_FOR_CONTAINER_STATE_DATA {32u};
+
   }//!namespace
 
 
