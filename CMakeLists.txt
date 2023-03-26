@@ -5,31 +5,13 @@ project(${PROJECT_NAME}
         DESCRIPTION "Financial time series project"
         LANGUAGES CXX)
 
-if(UNIX AND NOT APPLE)
-    set(LINUX TRUE)
-endif()
 
-set(CMAKE_CXX_FLAGS " -Wall -Wextra -Wpedantic -Werror")
 set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wpedantic -Werror")
+set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3")
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -fconcepts-diagnostics-depth=3")
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g3 -D_LIBCPP_DEBUG=1")
 
-set(CMAKE_CXX_FLAGS_DEBUG " -fsanitize=address -g -fno-omit-frame-pointer -fno-optimize-sibling-calls -fsanitize=undefined -g -fconcepts-diagnostics-depth=3")
-#set(CMAKE_CXX_FLAGS_DEBUG " -fsanitize=thread -g -fconcepts-diagnostics-depth=3")
-set(CMAKE_CXX_FLAGS_RELEASE " -O3")
-
-
-if (APPLE OR LINUX)
-    #debug
-    add_definitions(-D__GLIBCXX__)
-
-    #Threads not found
-    if(NOT Threads_FOUND)
-        set(CMAKE_THREAD_LIBS_INIT "-lpthread")
-        set(CMAKE_HAVE_THREADS_LIBRARY 1)
-        set(CMAKE_USE_WIN32_THREADS_INIT 0)
-        set(CMAKE_USE_PTHREADS_INIT 1)
-        set(THREADS_PREFER_PTHREAD_FLAG ON)
-    endif()
-endif ()
 
 include_directories(library_fin_data)
 include_directories(library_fin_data/third_part/date_time/include)

@@ -10,10 +10,29 @@ set(CMAKE_CXX_FLAGS " -Wall -Wextra -Wpedantic -Werror")
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_FLAGS_RELEASE " -O3")
 
+
+if(UNIX AND NOT APPLE)
+    set(LINUX TRUE)
+endif()
+
+if (APPLE OR LINUX)
+    #debug
+    add_definitions(-D__GLIBCXX__)
+
+    #Threads not found
+    if(NOT Threads_FOUND)
+        set(CMAKE_THREAD_LIBS_INIT "-lpthread")
+        set(CMAKE_HAVE_THREADS_LIBRARY 1)
+        set(CMAKE_USE_WIN32_THREADS_INIT 0)
+        set(CMAKE_USE_PTHREADS_INIT 1)
+        set(THREADS_PREFER_PTHREAD_FLAG ON)
+    endif()
+endif ()
+
+
 find_package (Boost)
 if(Boost_FOUND)
-    message(STATUS "FOUND Boost, including and linking...")
-    #    message(STATUS "${Boost_VERSION}")
+    message(STATUS "PLAYGROUND FOUND Boost ${Boost_VERSION}, including and linking...")
     set(Boost_USE_STATIC_LIBS ON)
     set(Boost_USE_MULTITHREAD ON)
     include_directories(${Boost_INCLUDE_DIRS})
@@ -23,8 +42,24 @@ else()
 endif()
 
 add_executable(${PROJECT_NAME_PLAYGROUND} playground.cpp)
+target_compile_options(${PROJECT_NAME_PLAYGROUND}
+        PRIVATE
+        -fsanitize=address -g -fno-omit-frame-pointer -fno-optimize-sibling-calls
+        -fsanitize=undefined -g -fno-omit-frame-pointer
+#        -fsanitize=leak -g
+#        -fsanitize=thread -fPIE -pie -g
+        )
+target_link_options(${PROJECT_NAME_PLAYGROUND}
+        PRIVATE
+        -fsanitize=address
+        -fsanitize=undefined
+#        -fsanitize=leak
+#        -fsanitize=thread
+        )
 target_link_libraries(${PROJECT_NAME_PLAYGROUND}
         pthread
         Boost::boost
-        #        fin_quote
+#        fin_quote
         )
+
+

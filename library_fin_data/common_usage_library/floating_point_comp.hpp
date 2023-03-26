@@ -8,6 +8,9 @@
 #include "const_values.h"
 
 #include <mutex>
+#ifdef __cpp_concepts
+#include <concepts>
+#endif
 
 #ifndef BASE_VALUE_COMP_H
 #define BASE_VALUE_COMP_H
