@@ -13,11 +13,11 @@ set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -fconcepts-diagnostics-depth
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g3 -D_LIBCPP_DEBUG=1")
 
 
-include_directories(library_fin_data)
-include_directories(library_fin_data/third_part/date_time/include)
-include_directories(library_fin_data/third_part/cds)
+include_directories(library_time_series)
+include_directories(library_time_series/third_part/date_time/include)
+include_directories(library_time_series/third_part/cds)
 
-add_subdirectory(library_fin_data/time_series)
+add_subdirectory(library_time_series/time_series)
 enable_testing()
 add_subdirectory(tests)
 add_subdirectory(playground)
