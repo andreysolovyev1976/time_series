@@ -5,7 +5,7 @@
 #pragma once
 
 #include "time_series/value.hpp"
-#include "financial_data_structures/const_values.h"
+#include "financial/data_structures/const_values.h"
 
 #include <iosfwd>
 #include <vector>

@@ -61,7 +61,7 @@ namespace culib::utils {
 			  return UniformedReal{lower_bound, upper_bound}(mtre);
 		  }
 #else
-			  if constexpr (std::is_same_v<bool, IsIntegral<T>>) {
+		if constexpr (std::is_same_v<bool, IsIntegral<T>>) {
             return UniformedInt{lower_bound, upper_bound}(mtre);
         } else if constexpr (std::is_same_v<bool, IsFloating<T>>) {
             return UniformedReal{lower_bound, upper_bound}(mtre);
@@ -93,6 +93,7 @@ namespace culib::utils {
    * @brief
    * IILE\n
    * */
+  static
   decltype(auto) randomer = []() -> Randomer& {
 	return Randomer::getInstance();
   }();
