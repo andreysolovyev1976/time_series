@@ -17,7 +17,8 @@
 //#define SET_OPERATIONS_BASICS
 //#define MULTI_ARG_TEMPLATE_CHECK
 //#define CPP20CHECK
-#define CONCEPTS_CIRCULAR_LINK_PROBLEM
+//#define CONCEPTS_CIRCULAR_LINK_PROBLEM
+#define INHERITANCE_SAME_NAMING_ISSUE
 
 #ifdef NESTED_OPERATORS
 #include <iostream>
@@ -1447,7 +1448,6 @@ int main() {
 	return EXIT_SUCCESS;
 }
 
-
 #endif
 
 
@@ -1475,5 +1475,26 @@ int main () {
 	std::cout << (e1 != e2) << '\n';
 }
 
+#endif
+
+#ifdef INHERITANCE_SAME_NAMING_ISSUE
+
+#include <iostream>
+
+struct base_t {
+	int value {42};
+	int& get_value() & { return value; }
+	int& get_base_value() & { return value; }
+};
+
+struct derived_t : base_t {
+	int other_value {14};
+	int& get_value() & { return other_value; }
+};
+
+int main () {
+	derived_t derived;
+	std::cout << derived.get_value() << ' ' << derived.get_base_value() << '\n';
+}
 
 #endif

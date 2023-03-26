@@ -53,7 +53,9 @@ namespace culib::utils {
 	  T operator()(
 			  T lower_bound = std::numeric_limits<T>::min(),
 			  T upper_bound = std::numeric_limits<T>::max()) {
+
 		  std::lock_guard<std::mutex> lg (mtx);
+
 #ifdef __cpp_concepts
 		  if constexpr (std::integral<T>) {
 			  return UniformedInt{lower_bound, upper_bound}(mtre);
@@ -80,7 +82,7 @@ namespace culib::utils {
 	  Randomer() { mtre.seed(setSeed()); } //!ctor
 
 	  int setSeed() {
-		  //		microseconds ms = duration_cast<microseconds>(system_clock::now().time_since_epoch());
+//		  microseconds ms = duration_cast<microseconds>(system_clock::now().time_since_epoch());
 		  std::chrono::seconds s = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now().time_since_epoch());
 		  double rndBase = s.count() / 13. * 3.141592653589793;
 		  int seed = (rndBase - int(rndBase)) * 1e7;

@@ -34,7 +34,7 @@ namespace culib::mem_usage {
 		  private details::buf_wrapper_t<T, N>,
 		  public std::pmr::monotonic_buffer_resource {
 	  explicit mem_resource_t() noexcept
-			  :monotonic_buffer_resource(
+			  : monotonic_buffer_resource(
 			  details::buf_wrapper_t<T, N>::buffer.data(),
 			  details::buf_wrapper_t<T, N>::buffer.size(),
 			  std::pmr::get_default_resource()) { }
