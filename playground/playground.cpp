@@ -1573,6 +1573,9 @@ int main () {
 
 	auto&& [one_m, two_m] = get_derived<int> ();
 	std::cout << one_m.value << ' ' << two_m.value << '\n';
+
+	auto const& [one_c, two_c] = get_derived<int> ();
+	std::cout << one_c.value << ' ' << two_c.value << '\n';
 }
 
 #endif

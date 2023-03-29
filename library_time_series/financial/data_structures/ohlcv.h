@@ -62,14 +62,11 @@ namespace time_series::financial {
 
   private:
 	  template<std::size_t Index, typename ThisType>
-	  auto&& get_helper(ThisType&& t) {
-		  static_assert(Index < 5u, "Index out of bounds for OHLCV");
-		  if constexpr (Index == 0) return std::forward<ThisType>(t).open;
-		  if constexpr (Index == 1) return std::forward<ThisType>(t).high;
-		  if constexpr (Index == 2) return std::forward<ThisType>(t).low;
-		  if constexpr (Index == 3) return std::forward<ThisType>(t).close;
-		  if constexpr (Index == 4) return std::forward<ThisType>(t).volume;
-	  }
+	  auto&& getImpl(ThisType&& t);
+
+	  template<std::size_t Index, typename ThisType>
+	  auto&& getImpl(ThisType&& t) const;
+
   };
 
   template <typename ValueType>
@@ -135,19 +132,42 @@ namespace time_series::financial {
 
   template <typename ValueType>
   template<std::size_t Index>
-  auto&& OHLCV<ValueType>::get() &  { return get_helper<Index>(*this); }
+  auto&& OHLCV<ValueType>::get() &  { return getImpl<Index>(*this); }
 
   template <typename ValueType>
   template<std::size_t Index>
-  auto&& OHLCV<ValueType>::get() && { return get_helper<Index>(*this); }
+  auto&& OHLCV<ValueType>::get() && { return getImpl<Index>(*this); }
 
   template <typename ValueType>
   template<std::size_t Index>
-  auto&& OHLCV<ValueType>::get() const &  { return get_helper<Index>(*this); }
+  auto&& OHLCV<ValueType>::get() const &  { return getImpl<Index>(*this); }
 
   template <typename ValueType>
   template<std::size_t Index>
-  auto&& OHLCV<ValueType>::get() const && { return get_helper<Index>(*this); }
+  auto&& OHLCV<ValueType>::get() const && { return getImpl<Index>(*this); }
+
+
+  template <typename ValueType>
+  template<std::size_t Index, typename ThisType>
+  auto&& OHLCV<ValueType>::getImpl(ThisType&& t) {
+	  static_assert(Index < 5u, "Index out of bounds for OHLCV");
+	  if constexpr (Index == 0) return std::forward<ThisType>(t).open;
+	  if constexpr (Index == 1) return std::forward<ThisType>(t).high;
+	  if constexpr (Index == 2) return std::forward<ThisType>(t).low;
+	  if constexpr (Index == 3) return std::forward<ThisType>(t).close;
+	  if constexpr (Index == 4) return std::forward<ThisType>(t).volume;
+  }
+
+  template <typename ValueType>
+  template<std::size_t Index, typename ThisType>
+  auto&& OHLCV<ValueType>::getImpl(ThisType&& t) const {
+	  static_assert(Index < 5u, "Index out of bounds for OHLCV");
+	  if constexpr (Index == 0) return std::forward<ThisType>(t).open;
+	  if constexpr (Index == 1) return std::forward<ThisType>(t).high;
+	  if constexpr (Index == 2) return std::forward<ThisType>(t).low;
+	  if constexpr (Index == 3) return std::forward<ThisType>(t).close;
+	  if constexpr (Index == 4) return std::forward<ThisType>(t).volume;
+  }
 
 
   template <typename ValueType, typename CompareBy = typename OHLCV<ValueType>::AllFields>

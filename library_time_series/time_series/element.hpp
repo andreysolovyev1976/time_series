@@ -77,12 +77,12 @@ namespace time_series {
 	  ElemType value;
 
   private:
+
 	  template<std::size_t Index, typename ThisType>
-	  auto&& get_helper(ThisType&& t) {
-		  static_assert(Index < 2u, "Index out of bounds for Element");
-		  if constexpr (Index == 0) return std::forward<ThisType>(t).timestamp;
-		  if constexpr (Index == 1) return std::forward<ThisType>(t).value;
-	  }
+	  auto&& getImpl(ThisType&& t);
+
+	  template<std::size_t Index, typename ThisType>
+	  auto&& getImpl(ThisType&& t) const;
   };
 
 
@@ -206,20 +206,36 @@ namespace time_series {
 
   template <typename Duration, typename ElemType>
   template<std::size_t Index>
-  auto&& Element<Duration, ElemType>::get() &  { return get_helper<Index>(*this); }
+  auto&& Element<Duration, ElemType>::get() &  { return getImpl<Index>(*this); }
 
   template <typename Duration, typename ElemType>
   template<std::size_t Index>
-  auto&& Element<Duration, ElemType>::get() && { return get_helper<Index>(*this); }
+  auto&& Element<Duration, ElemType>::get() && { return getImpl<Index>(*this); }
 
   template <typename Duration, typename ElemType>
   template<std::size_t Index>
-  auto&& Element<Duration, ElemType>::get() const &  { return get_helper<Index>(*this); }
+  auto&& Element<Duration, ElemType>::get() const &  { return getImpl<Index>(*this); }
 
   template <typename Duration, typename ElemType>
   template<std::size_t Index>
-  auto&& Element<Duration, ElemType>::get() const && { return get_helper<Index>(*this); }
+  auto&& Element<Duration, ElemType>::get() const && { return getImpl<Index>(*this); }
 
+
+  template <typename Duration, typename ElemType>
+  template<std::size_t Index, typename ThisType>
+  auto&& Element<Duration, ElemType>::getImpl(ThisType&& t) {
+	  static_assert(Index < 2u, "Index out of bounds for Element");
+	  if constexpr (Index == 0) return std::forward<ThisType>(t).timestamp;
+	  if constexpr (Index == 1) return std::forward<ThisType>(t).value;
+  }
+
+  template <typename Duration, typename ElemType>
+  template<std::size_t Index, typename ThisType>
+  auto&& Element<Duration, ElemType>::getImpl(ThisType&& t) const {
+	  static_assert(Index < 2u, "Index out of bounds for Element");
+	  if constexpr (Index == 0) return std::forward<ThisType>(t).timestamp;
+	  if constexpr (Index == 1) return std::forward<ThisType>(t).value;
+  }
 
   template <typename Duration, typename ElemType>
   bool operator == (const Element<Duration, ElemType>& lhs, const Element<Duration, ElemType>& rhs) {

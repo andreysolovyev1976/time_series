@@ -61,15 +61,10 @@ namespace time_series::financial {
 
   private:
 	  template<std::size_t Index, typename ThisType>
-	  auto&& get_helper(ThisType&& t) {
-		  static_assert(Index < 5u, "Index out of bounds for BidAsk");
-		  if constexpr (Index == 0) return std::forward<ThisType>(t).bid;
-		  if constexpr (Index == 1) return std::forward<ThisType>(t).ask;
-		  if constexpr (Index == 2) return std::forward<ThisType>(t).middle;
-		  if constexpr (Index == 3) return std::forward<ThisType>(t).price;
-		  if constexpr (Index == 4) return std::forward<ThisType>(t).volume;
-	  }
+	  auto&& getImpl(ThisType&& t);
 
+	  template<std::size_t Index, typename ThisType>
+	  auto&& getImpl(ThisType&& t) const;
   };
 
   template <typename ValueType>
@@ -137,19 +132,41 @@ namespace time_series::financial {
 
   template <typename ValueType>
   template<std::size_t Index>
-  auto&& BidAsk<ValueType>::get() &  { return get_helper<Index>(*this); }
+  auto&& BidAsk<ValueType>::get() &  { return getImpl<Index>(*this); }
 
   template <typename ValueType>
   template<std::size_t Index>
-  auto&& BidAsk<ValueType>::get() && { return get_helper<Index>(*this); }
+  auto&& BidAsk<ValueType>::get() && { return getImpl<Index>(*this); }
 
   template <typename ValueType>
   template<std::size_t Index>
-  auto&& BidAsk<ValueType>::get() const &  { return get_helper<Index>(*this); }
+  auto&& BidAsk<ValueType>::get() const &  { return getImpl<Index>(*this); }
 
   template <typename ValueType>
   template<std::size_t Index>
-  auto&& BidAsk<ValueType>::get() const && { return get_helper<Index>(*this); }
+  auto&& BidAsk<ValueType>::get() const && { return getImpl<Index>(*this); }
+
+
+  template <typename ValueType>
+  template<std::size_t Index, typename ThisType>
+  auto&& BidAsk<ValueType>::getImpl(ThisType&& t) {
+	  static_assert(Index < 5u, "Index out of bounds for BidAsk");
+	  if constexpr (Index == 0) return std::forward<ThisType>(t).bid;
+	  if constexpr (Index == 1) return std::forward<ThisType>(t).ask;
+	  if constexpr (Index == 2) return std::forward<ThisType>(t).middle;
+	  if constexpr (Index == 3) return std::forward<ThisType>(t).price;
+	  if constexpr (Index == 4) return std::forward<ThisType>(t).volume;
+  }
+  template <typename ValueType>
+  template<std::size_t Index, typename ThisType>
+  auto&& BidAsk<ValueType>::getImpl(ThisType&& t) const {
+	  static_assert(Index < 5u, "Index out of bounds for BidAsk");
+	  if constexpr (Index == 0) return std::forward<ThisType>(t).bid;
+	  if constexpr (Index == 1) return std::forward<ThisType>(t).ask;
+	  if constexpr (Index == 2) return std::forward<ThisType>(t).middle;
+	  if constexpr (Index == 3) return std::forward<ThisType>(t).price;
+	  if constexpr (Index == 4) return std::forward<ThisType>(t).volume;
+  }
 
 
 #ifndef __cpp_concepts
