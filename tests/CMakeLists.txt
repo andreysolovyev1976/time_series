@@ -73,6 +73,7 @@ add_executable(${PROJECT_NAME_TEST}
         tests_element_conversion_operators.cpp
         tests_element_arithmetics.cpp
         tests_element_fun_apply.cpp
+        tests_element_structural_bindings.cpp
 
         tests_serie_container.cpp
         tests_serie_itertools.cpp

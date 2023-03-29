@@ -1,0 +1,105 @@
+name: C/C++ CI
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  gcc:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+    steps:
+    - name: Install google test and boost, also install g++-11
+      run: sudo apt-get install libgtest-dev googletest googletest-tools google-mock libboost-dev g++-11
+    - name: Checkout repository
+      with:
+        submodules: recursive
+      uses: actions/checkout@v3
+    - name: Print env
+      run: |
+        echo github.event.action: ${{ github.event.action }}
+        echo github.event_name: ${{ github.event_name }}
+    - name: CMake Lib release config
+      run: cmake -S . -B release -DCMAKE_CXX_COMPILER=g++-11 -DCMAKE_BUILD_TYPE=Release
+    - name: CMake Lib release build
+      run: cmake --build release
+    - name: CMake Lib debug config
+      run: cmake -S . -B debug -DCMAKE_CXX_COMPILER=g++-11 -DCMAKE_BUILD_TYPE=Debug
+    - name: CMake Lib debug build
+      run: cmake --build debug
+    - name: Run tests
+      run: debug/tests/fin_data_tests
+
+  clang:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Install google test and boost, also install clang-15
+        run: sudo apt-get install libgtest-dev googletest googletest-tools google-mock libboost-dev clang-15
+      - name: Checkout repository
+        with:
+          submodules: recursive
+        uses: actions/checkout@v3
+      - name: Print env
+        run: |
+          echo github.event.action: ${{ github.event.action }}
+          echo github.event_name: ${{ github.event_name }}
+      - name: CMake Lib release config
+        run: cmake -S . -B release -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_BUILD_TYPE=Release
+      - name: CMake Lib release build
+        run: cmake --build release
+      - name: CMake Lib debug config
+        run: cmake -S . -B debug -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_BUILD_TYPE=Debug
+      - name: CMake Lib debug build
+        run: cmake --build debug
+
+      - name: Run tests
+        run: debug/tests/fin_data_tests
+
+  msvc:
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        config:
+          - { name: 'Debug', build_type: 'Debug' }
+          - { name: 'Release', build_type: 'Release' }
+    steps:
+      - name: Install Boost
+        run: |
+          $BOOST_VERSION=1.75.0
+          $BOOST_ARCHITECTURE=msvc-14.2
+          Invoke-WebRequest -Uri "https://dl.bintray.com/boostorg/release/$BOOST_VERSION/binaries/$BOOST_ARCHITECTURE/$BOOST_VERSION-msvc-14.2-$BOOST_ARCHITECTURE.zip" -OutFile "boost.zip"
+          Expand-Archive -Path "boost.zip" -DestinationPath "C:\Boost"
+          Remove-Item -Path "boost.zip"
+          echo "::set-env name=BOOST_ROOT::C:\Boost\boost_$BOOST_VERSION"
+          echo "BOOST_ROOT=C:\Boost\boost_$BOOST_VERSION" >> $GITHUB_ENV
+
+      - name: Install GoogleTest
+        run: |
+          git clone https://github.com/google/googletest.git --branch release-1.10.0
+          pushd googletest
+          cmake -Bbuild -DCMAKE_INSTALL_PREFIX="$HOME/$env:INSTALL_LOCATION" -Dgtest_force_shared_crt=1
+          cmake --build build --config "$env:BUILD_TYPE"
+          cmake --build build --target install --config "$env:BUILD_TYPE"
+          popd
+      - name: Checkout repository
+        with:
+          submodules: recursive
+        uses: actions/checkout@v3
+      - name: Configure
+        run: cmake -Bbuild -DCMAKE_INSTALL_PREFIX="$HOME/$env:INSTALL_LOCATION"
+
+      - name: Build
+        run: cmake --build build --config "$env:BUILD_TYPE" -j4
+
+      - name: Run tests
+        run: |
+          pushd build
+          ctest -C "$env:BUILD_TYPE" -VV
+          popd        

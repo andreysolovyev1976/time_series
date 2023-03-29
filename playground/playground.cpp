@@ -18,7 +18,8 @@
 //#define MULTI_ARG_TEMPLATE_CHECK
 //#define CPP20CHECK
 //#define CONCEPTS_CIRCULAR_LINK_PROBLEM
-#define INHERITANCE_SAME_NAMING_ISSUE
+//#define INHERITANCE_SAME_NAMING_ISSUE
+#define USER_DEFINED_STRUCTURAL_BINDINGS
 
 #ifdef NESTED_OPERATORS
 #include <iostream>
@@ -1495,6 +1496,83 @@ struct derived_t : base_t {
 int main () {
 	derived_t derived;
 	std::cout << derived.get_value() << ' ' << derived.get_base_value() << '\n';
+}
+
+#endif
+
+
+#ifdef USER_DEFINED_STRUCTURAL_BINDINGS
+
+#include <iostream>
+#include <tuple>
+#include <vector>
+
+struct m_one {
+	int value{1};
+	std::vector<int> v1 {1, 2, 3};
+	m_one() = default;
+	m_one(m_one const&) { std::cout << "1 copy\n"; }
+	m_one(m_one &&) { std::cout << "1 move\n"; }
+};
+struct m_two {
+	int value{2};
+	std::vector<int> v2 {4, 5, 6};
+	m_two() = default;
+	m_two(m_two const&) { std::cout << "2 copy\n"; }
+	m_two(m_two &&) { std::cout << "2 move\n"; }
+
+};
+
+template <typename T>
+struct derived_t {
+	m_one one;
+	m_two two;
+	T b;
+
+	template<std::size_t Index>
+	auto&& get() &  { return get_helper<Index>(*this); }
+
+	template<std::size_t Index>
+	auto&& get() && { return get_helper<Index>(*this); }
+
+	template<std::size_t Index>
+	auto&& get() const &  { return get_helper<Index>(*this); }
+
+	template<std::size_t Index>
+	auto&& get() const && { return get_helper<Index>(*this); }
+
+private:
+	template<std::size_t Index, typename ThisType>
+	auto&& get_helper(ThisType&& t) {
+		static_assert(Index < 2, "Index out of bounds for base_t");
+		if constexpr (Index == 0) return std::forward<ThisType>(t).one;
+		if constexpr (Index == 1) return std::forward<ThisType>(t).two;
+	}
+};
+
+
+namespace std {
+  template <typename T>
+  struct tuple_size<derived_t<T>> : integral_constant<size_t, 2u> {};
+
+  template<size_t Index, typename T>
+  struct tuple_element<Index, ::derived_t<T>>
+		  : tuple_element<Index, tuple<m_one, m_two>>{};
+}
+
+template <typename T>
+auto get_derived () {
+	derived_t<T> derived;
+	return derived;
+}
+
+int main () {
+	derived_t<int> derived1;
+	auto& [one, two] = derived1;
+	std::cout << one.value << ' ' << two.value << '\n';
+
+	auto&& [one_m, two_m] = get_derived<int> ();
+	std::cout << one_m.value << ' ' << two_m.value << '\n';
 }
 
 #endif

@@ -25,6 +25,10 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char **argv) {
 // 	operator value_type () const;
 // 	operator elem_type () const;
 // 	operator key_type () const;
+// test structural bindings access for
+// Element
+// OHLCV
+// BidAsk
 
 //todo:
 // decorate methods with ref decorations

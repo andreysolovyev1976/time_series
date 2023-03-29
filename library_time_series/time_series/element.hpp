@@ -61,8 +61,28 @@ namespace time_series {
 	  template <typename Fn, typename... Args>
 	  decltype(auto) applyFunction (Fn&& fn, Args&& ...args) &;
 
+	  template<std::size_t Index>
+	  auto&& get() &;
+
+	  template<std::size_t Index>
+	  auto&& get() &&;
+
+	  template<std::size_t Index>
+	  auto&& get() const &;
+
+	  template<std::size_t Index>
+	  auto&& get() const &&;
+
 	  base::Timestamp<Duration> timestamp;
 	  ElemType value;
+
+  private:
+	  template<std::size_t Index, typename ThisType>
+	  auto&& get_helper(ThisType&& t) {
+		  static_assert(Index < 2u, "Index out of bounds for Element");
+		  if constexpr (Index == 0) return std::forward<ThisType>(t).timestamp;
+		  if constexpr (Index == 1) return std::forward<ThisType>(t).value;
+	  }
   };
 
 
@@ -183,6 +203,22 @@ namespace time_series {
 		  static_assert(sizeof(Fn) == 0, "Unexpected callable while applying over element");
 	  }
   }
+
+  template <typename Duration, typename ElemType>
+  template<std::size_t Index>
+  auto&& Element<Duration, ElemType>::get() &  { return get_helper<Index>(*this); }
+
+  template <typename Duration, typename ElemType>
+  template<std::size_t Index>
+  auto&& Element<Duration, ElemType>::get() && { return get_helper<Index>(*this); }
+
+  template <typename Duration, typename ElemType>
+  template<std::size_t Index>
+  auto&& Element<Duration, ElemType>::get() const &  { return get_helper<Index>(*this); }
+
+  template <typename Duration, typename ElemType>
+  template<std::size_t Index>
+  auto&& Element<Duration, ElemType>::get() const && { return get_helper<Index>(*this); }
 
 
   template <typename Duration, typename ElemType>
@@ -558,4 +594,26 @@ namespace time_series {
   }//!operator
 
 }//!namespace
+
+
+/**
+ * @details
+ * Template specialization for std:: namespace \n
+ * to make a structural binding available\n\n
+ *
+ * */
+
+namespace std {
+  template <typename Duration, typename ElemType>
+  struct tuple_size<time_series::Element<Duration, ElemType>> : integral_constant<std::size_t, 2u> {};
+
+  template<std::size_t Index, typename Duration, typename ElemType>
+  struct tuple_element<Index, time_series::Element<Duration, ElemType>>
+		  : tuple_element<Index, tuple<
+				  typename time_series::Element<Duration, ElemType>::key_type,
+				  typename time_series::Element<Duration, ElemType>::elem_type>
+		  >{};
+}//!namespace
+
+
 #endif //TS_ELEMENT_H

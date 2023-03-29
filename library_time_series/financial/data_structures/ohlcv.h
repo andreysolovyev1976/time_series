@@ -46,7 +46,30 @@ namespace time_series::financial {
 
 	  std::string toString() const;
 
-	  Value<ValueType> open, high, low, close, volume {0.0};
+	  template<std::size_t Index>
+	  auto&& get() &;
+
+	  template<std::size_t Index>
+	  auto&& get() &&;
+
+	  template<std::size_t Index>
+	  auto&& get() const &;
+
+	  template<std::size_t Index>
+	  auto&& get() const &&;
+
+	  Value<ValueType> open, high, low, close, volume {};
+
+  private:
+	  template<std::size_t Index, typename ThisType>
+	  auto&& get_helper(ThisType&& t) {
+		  static_assert(Index < 5u, "Index out of bounds for OHLCV");
+		  if constexpr (Index == 0) return std::forward<ThisType>(t).open;
+		  if constexpr (Index == 1) return std::forward<ThisType>(t).high;
+		  if constexpr (Index == 2) return std::forward<ThisType>(t).low;
+		  if constexpr (Index == 3) return std::forward<ThisType>(t).close;
+		  if constexpr (Index == 4) return std::forward<ThisType>(t).volume;
+	  }
   };
 
   template <typename ValueType>
@@ -109,6 +132,23 @@ namespace time_series::financial {
 	  msg.append(volume.toString());
 	  return msg;
   }
+
+  template <typename ValueType>
+  template<std::size_t Index>
+  auto&& OHLCV<ValueType>::get() &  { return get_helper<Index>(*this); }
+
+  template <typename ValueType>
+  template<std::size_t Index>
+  auto&& OHLCV<ValueType>::get() && { return get_helper<Index>(*this); }
+
+  template <typename ValueType>
+  template<std::size_t Index>
+  auto&& OHLCV<ValueType>::get() const &  { return get_helper<Index>(*this); }
+
+  template <typename ValueType>
+  template<std::size_t Index>
+  auto&& OHLCV<ValueType>::get() const && { return get_helper<Index>(*this); }
+
 
   template <typename ValueType, typename CompareBy = typename OHLCV<ValueType>::AllFields>
   bool operator == (const OHLCV<ValueType>& lhs, const OHLCV<ValueType>& rhs) {
@@ -1140,8 +1180,31 @@ namespace time_series::financial {
 	  return is;
   }//!operator
 
-
 }//!namespace
+
+
+/**
+ * @details
+ * Template specialization for std:: namespace \n
+ * to make a structural binding available\n\n
+ *
+ * */
+
+namespace std {
+  template <typename ValueType>
+  struct tuple_size<time_series::financial::OHLCV<ValueType>> : integral_constant<std::size_t, 5u> {};
+
+  template<std::size_t Index, typename ValueType>
+  struct tuple_element<Index, time_series::financial::OHLCV<ValueType>>
+		  : tuple_element<Index, tuple<
+				  typename time_series::financial::OHLCV<ValueType>::value_type,
+				  typename time_series::financial::OHLCV<ValueType>::value_type,
+				  typename time_series::financial::OHLCV<ValueType>::value_type,
+				  typename time_series::financial::OHLCV<ValueType>::value_type,
+				  typename time_series::financial::OHLCV<ValueType>::value_type>
+		  >{};
+}//!namespace
+
 
 
 #endif //FIN_OHLCV_H

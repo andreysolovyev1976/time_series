@@ -49,10 +49,25 @@ namespace culib::itertools {
 		using iterator_type = ZipIterator;
 		using iterator_category = std::bidirectional_iterator_tag;
 		using value_type = typename std::tuple<AccessTypeFor<Iter>...>;
+		using reference = value_type &; //todo: wrong, it should be a ref!
 		using difference_type = int;
-		using pointer = value_type *;
-		using reference = value_type &;
+		using pointer = value_type *; //todo: wrong, it should be a ptr!
 
+		/*
+		 * todo:
+		 * for refs
+		 * • Корректно:
+  using KeyRef = typename iterator_traits<KeyIt>::reference; using ValueRef = typename iterator_traits<ValueIt>::reference;
+  using reference = std::pair<KeyRef, ValueRef>;
+		*/
+/*
+ * for value_type
+	  using value_type = typename std::tuple<AccessTypeFor<Iter>...>;
+
+ ADD VECTOR<BOOL> INTO THE TESTS!!!
+
+ CHECK THAT IT WILL NOT WITH OSTREAM ITERATOR
+ */
 
 		ZipIterator() = delete;
 

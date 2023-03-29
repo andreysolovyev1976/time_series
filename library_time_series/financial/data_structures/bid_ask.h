@@ -45,7 +45,31 @@ namespace time_series::financial {
 
 	  std::string toString() const;
 
-	  Value<ValueType> bid, ask, middle, price, volume {0.0};
+	  template<std::size_t Index>
+	  auto&& get() &;
+
+	  template<std::size_t Index>
+	  auto&& get() &&;
+
+	  template<std::size_t Index>
+	  auto&& get() const &;
+
+	  template<std::size_t Index>
+	  auto&& get() const &&;
+
+	  Value<ValueType> bid, ask, middle, price, volume {};
+
+  private:
+	  template<std::size_t Index, typename ThisType>
+	  auto&& get_helper(ThisType&& t) {
+		  static_assert(Index < 5u, "Index out of bounds for BidAsk");
+		  if constexpr (Index == 0) return std::forward<ThisType>(t).bid;
+		  if constexpr (Index == 1) return std::forward<ThisType>(t).ask;
+		  if constexpr (Index == 2) return std::forward<ThisType>(t).middle;
+		  if constexpr (Index == 3) return std::forward<ThisType>(t).price;
+		  if constexpr (Index == 4) return std::forward<ThisType>(t).volume;
+	  }
+
   };
 
   template <typename ValueType>
@@ -109,6 +133,23 @@ namespace time_series::financial {
 	  msg.append(volume.toString());
 	  return msg;
   }
+
+
+  template <typename ValueType>
+  template<std::size_t Index>
+  auto&& BidAsk<ValueType>::get() &  { return get_helper<Index>(*this); }
+
+  template <typename ValueType>
+  template<std::size_t Index>
+  auto&& BidAsk<ValueType>::get() && { return get_helper<Index>(*this); }
+
+  template <typename ValueType>
+  template<std::size_t Index>
+  auto&& BidAsk<ValueType>::get() const &  { return get_helper<Index>(*this); }
+
+  template <typename ValueType>
+  template<std::size_t Index>
+  auto&& BidAsk<ValueType>::get() const && { return get_helper<Index>(*this); }
 
 
 #ifndef __cpp_concepts
@@ -1151,6 +1192,29 @@ namespace time_series::financial {
 	  return is;
   }//!operator
 
+}//!namespace
+
+
+/**
+ * @details
+ * Template specialization for std:: namespace \n
+ * to make a structural binding available\n\n
+ *
+ * */
+
+namespace std {
+  template <typename ValueType>
+  struct tuple_size<time_series::financial::BidAsk<ValueType>> : integral_constant<std::size_t, 5u> {};
+
+  template<std::size_t Index, typename ValueType>
+  struct tuple_element<Index, time_series::financial::BidAsk<ValueType>>
+		  : tuple_element<Index, tuple<
+				  typename time_series::financial::BidAsk<ValueType>::value_type,
+				  typename time_series::financial::BidAsk<ValueType>::value_type,
+				  typename time_series::financial::BidAsk<ValueType>::value_type,
+				  typename time_series::financial::BidAsk<ValueType>::value_type,
+				  typename time_series::financial::BidAsk<ValueType>::value_type>
+		  >{};
 }//!namespace
 
 

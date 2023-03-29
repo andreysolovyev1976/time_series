@@ -46,6 +46,8 @@ namespace culib::requirements {
   template<typename... MaybeContainer>
   using AreAllContainers = std::enable_if_t<areAllContainers_v<MaybeContainer...>(), bool>;
 
+  template<typename... MaybeContainer>
+  using NotAreAllContainers = std::enable_if_t<!areAllContainers_v<MaybeContainer...>(), bool>;
 
   template<typename Element>
   using IsDefaultConstructible = std::enable_if_t<std::is_default_constructible_v<Element>, bool>;
