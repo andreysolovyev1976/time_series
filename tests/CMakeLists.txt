@@ -106,3 +106,6 @@ target_link_libraries(${PROJECT_NAME_TEST}
         pthread
         fin_data_time_series
         )
+
+include(GoogleTest)
+gtest_discover_tests(${PROJECT_NAME}_tests)
