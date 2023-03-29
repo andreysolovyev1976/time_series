@@ -46,16 +46,16 @@ namespace time_series::financial {
 	  std::string toString() const;
 
 	  template<std::size_t Index>
-	  auto&& get() &;
+	  decltype(auto) get() &;
 
 	  template<std::size_t Index>
-	  auto&& get() &&;
+	  decltype(auto) get() &&;
 
 	  template<std::size_t Index>
-	  auto&& get() const &;
+	  decltype(auto) get() const &;
 
 	  template<std::size_t Index>
-	  auto&& get() const &&;
+	  decltype(auto) get() const &&;
 
 	  Value<ValueType> bid, ask, middle, price, volume {};
 
@@ -132,19 +132,19 @@ namespace time_series::financial {
 
   template <typename ValueType>
   template<std::size_t Index>
-  auto&& BidAsk<ValueType>::get() &  { return getImpl<Index>(*this); }
+  decltype(auto) BidAsk<ValueType>::get() &  { return getImpl<Index>(*this); }
 
   template <typename ValueType>
   template<std::size_t Index>
-  auto&& BidAsk<ValueType>::get() && { return getImpl<Index>(*this); }
+  decltype(auto) BidAsk<ValueType>::get() && { return getImpl<Index>(*this); }
 
   template <typename ValueType>
   template<std::size_t Index>
-  auto&& BidAsk<ValueType>::get() const &  { return getImpl<Index>(*this); }
+  decltype(auto) BidAsk<ValueType>::get() const &  { return getImpl<Index>(*this); }
 
   template <typename ValueType>
   template<std::size_t Index>
-  auto&& BidAsk<ValueType>::get() const && { return getImpl<Index>(*this); }
+  decltype(auto) BidAsk<ValueType>::get() const && { return getImpl<Index>(*this); }
 
 
   template <typename ValueType>
@@ -1234,5 +1234,14 @@ namespace std {
 		  >{};
 }//!namespace
 
+#if 0
+//todo: can be used here
+
+  template<std::size_t Index, typename... Iterators>
+struct tuple_element<Index, itertools::ZipIterator<Iterators...>> {
+	using type = decltype(std::get<Index>(std::declval<itertools::ZipIterator<Iterators...>>().operator*() ));
+};
+
+#endif
 
 #endif //FIN_BID_ASK_H

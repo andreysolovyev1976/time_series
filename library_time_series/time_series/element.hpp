@@ -62,16 +62,16 @@ namespace time_series {
 	  decltype(auto) applyFunction (Fn&& fn, Args&& ...args) &;
 
 	  template<std::size_t Index>
-	  auto&& get() &;
+	  decltype(auto) get() &;
 
 	  template<std::size_t Index>
-	  auto&& get() &&;
+	  decltype(auto) get() &&;
 
 	  template<std::size_t Index>
-	  auto&& get() const &;
+	  decltype(auto) get() const &;
 
 	  template<std::size_t Index>
-	  auto&& get() const &&;
+	  decltype(auto) get() const &&;
 
 	  base::Timestamp<Duration> timestamp;
 	  ElemType value;
@@ -206,19 +206,19 @@ namespace time_series {
 
   template <typename Duration, typename ElemType>
   template<std::size_t Index>
-  auto&& Element<Duration, ElemType>::get() &  { return getImpl<Index>(*this); }
+  decltype(auto) Element<Duration, ElemType>::get() &  { return getImpl<Index>(*this); }
 
   template <typename Duration, typename ElemType>
   template<std::size_t Index>
-  auto&& Element<Duration, ElemType>::get() && { return getImpl<Index>(*this); }
+  decltype(auto) Element<Duration, ElemType>::get() && { return getImpl<Index>(*this); }
 
   template <typename Duration, typename ElemType>
   template<std::size_t Index>
-  auto&& Element<Duration, ElemType>::get() const &  { return getImpl<Index>(*this); }
+  decltype(auto) Element<Duration, ElemType>::get() const &  { return getImpl<Index>(*this); }
 
   template <typename Duration, typename ElemType>
   template<std::size_t Index>
-  auto&& Element<Duration, ElemType>::get() const && { return getImpl<Index>(*this); }
+  decltype(auto) Element<Duration, ElemType>::get() const && { return getImpl<Index>(*this); }
 
 
   template <typename Duration, typename ElemType>
@@ -611,7 +611,6 @@ namespace time_series {
 
 }//!namespace
 
-
 /**
  * @details
  * Template specialization for std:: namespace \n
@@ -629,7 +628,18 @@ namespace std {
 				  typename time_series::Element<Duration, ElemType>::key_type,
 				  typename time_series::Element<Duration, ElemType>::elem_type>
 		  >{};
+
 }//!namespace
+
+#if 0
+//todo: can be used here
+
+  template<std::size_t Index, typename... Iterators>
+struct tuple_element<Index, itertools::ZipIterator<Iterators...>> {
+	using type = decltype(std::get<Index>(std::declval<itertools::ZipIterator<Iterators...>>().operator*() ));
+};
+
+#endif
 
 
 #endif //TS_ELEMENT_H

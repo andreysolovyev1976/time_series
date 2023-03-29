@@ -47,16 +47,16 @@ namespace time_series::financial {
 	  std::string toString() const;
 
 	  template<std::size_t Index>
-	  auto&& get() &;
+	  decltype(auto) get() &;
 
 	  template<std::size_t Index>
-	  auto&& get() &&;
+	  decltype(auto) get() &&;
 
 	  template<std::size_t Index>
-	  auto&& get() const &;
+	  decltype(auto) get() const &;
 
 	  template<std::size_t Index>
-	  auto&& get() const &&;
+	  decltype(auto) get() const &&;
 
 	  Value<ValueType> open, high, low, close, volume {};
 
@@ -132,19 +132,19 @@ namespace time_series::financial {
 
   template <typename ValueType>
   template<std::size_t Index>
-  auto&& OHLCV<ValueType>::get() &  { return getImpl<Index>(*this); }
+  decltype(auto) OHLCV<ValueType>::get() &  { return getImpl<Index>(*this); }
 
   template <typename ValueType>
   template<std::size_t Index>
-  auto&& OHLCV<ValueType>::get() && { return getImpl<Index>(*this); }
+  decltype(auto) OHLCV<ValueType>::get() && { return getImpl<Index>(*this); }
 
   template <typename ValueType>
   template<std::size_t Index>
-  auto&& OHLCV<ValueType>::get() const &  { return getImpl<Index>(*this); }
+  decltype(auto) OHLCV<ValueType>::get() const &  { return getImpl<Index>(*this); }
 
   template <typename ValueType>
   template<std::size_t Index>
-  auto&& OHLCV<ValueType>::get() const && { return getImpl<Index>(*this); }
+  decltype(auto) OHLCV<ValueType>::get() const && { return getImpl<Index>(*this); }
 
 
   template <typename ValueType>
@@ -1223,6 +1223,16 @@ namespace std {
 				  typename time_series::financial::OHLCV<ValueType>::value_type,
 				  typename time_series::financial::OHLCV<ValueType>::value_type>
 		  >{};
+
+#if 0
+  //todo: can be used here
+
+  template<std::size_t Index, typename... Iterators>
+struct tuple_element<Index, itertools::ZipIterator<Iterators...>> {
+	using type = decltype(std::get<Index>(std::declval<itertools::ZipIterator<Iterators...>>().operator*() ));
+};
+
+#endif
 }//!namespace
 
 

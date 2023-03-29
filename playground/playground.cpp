@@ -1510,14 +1510,14 @@ int main () {
 struct m_one {
 	int value{1};
 	std::vector<int> v1 {1, 2, 3};
-	m_one() = default;
+	m_one()  { std::cout << "1 default\n"; }
 	m_one(m_one const&) { std::cout << "1 copy\n"; }
 	m_one(m_one &&) { std::cout << "1 move\n"; }
 };
 struct m_two {
 	int value{2};
 	std::vector<int> v2 {4, 5, 6};
-	m_two() = default;
+	m_two()  { std::cout << "2 default\n"; }
 	m_two(m_two const&) { std::cout << "2 copy\n"; }
 	m_two(m_two &&) { std::cout << "2 move\n"; }
 
@@ -1530,16 +1530,16 @@ struct derived_t {
 	T b;
 
 	template<std::size_t Index>
-	auto&& get() &  { return get_helper<Index>(*this); }
+	decltype(auto)  get() &  { return get_helper<Index>(*this); }
 
 	template<std::size_t Index>
-	auto&& get() && { return get_helper<Index>(*this); }
+	decltype(auto)  get() && { return get_helper<Index>(*this); }
 
 	template<std::size_t Index>
-	auto&& get() const &  { return get_helper<Index>(*this); }
+	decltype(auto)  get() const &  { return get_helper<Index>(*this); }
 
 	template<std::size_t Index>
-	auto&& get() const && { return get_helper<Index>(*this); }
+	decltype(auto) get() const && { return get_helper<Index>(*this); }
 
 private:
 	template<std::size_t Index, typename ThisType>
@@ -1548,17 +1548,37 @@ private:
 		if constexpr (Index == 0) return std::forward<ThisType>(t).one;
 		if constexpr (Index == 1) return std::forward<ThisType>(t).two;
 	}
+	template<std::size_t Index, typename ThisType>
+	auto&& get_helper(ThisType&& t) const {
+		static_assert(Index < 2, "Index out of bounds for base_t");
+		if constexpr (Index == 0) return std::forward<ThisType>(t).one;
+		if constexpr (Index == 1) return std::forward<ThisType>(t).two;
+	}
 };
 
 
 namespace std {
-  template <typename T>
-  struct tuple_size<derived_t<T>> : integral_constant<size_t, 2u> {};
 
-  template<size_t Index, typename T>
-  struct tuple_element<Index, ::derived_t<T>>
-		  : tuple_element<Index, tuple<m_one, m_two>>{};
+  template<typename T>
+  struct tuple_size<derived_t<T>>: public std::integral_constant<std::size_t, 2u> {};
+
+template<std::size_t N, typename T>
+decltype(auto) get(derived_t<T> &&r) {
+	return std::forward<derived_t<T>>(r).template get<N>();
 }
+
+template<std::size_t N, typename T>
+decltype(auto) get(derived_t<T> const &r) {
+	return r.template get<N>();
+}
+
+template<std::size_t Index, typename T>
+struct tuple_element<Index, derived_t<T>> {
+	using type = decltype(std::get<Index>(std::declval<derived_t<T>>() ));
+};
+
+} // namespace std
+
 
 template <typename T>
 auto get_derived () {
@@ -1574,8 +1594,8 @@ int main () {
 	auto&& [one_m, two_m] = get_derived<int> ();
 	std::cout << one_m.value << ' ' << two_m.value << '\n';
 
-	auto const& [one_c, two_c] = get_derived<int> ();
-	std::cout << one_c.value << ' ' << two_c.value << '\n';
+//	auto const& [one_c, two_c] = get_derived<int> ();
+//	std::cout << one_c.value << ' ' << two_c.value << '\n';
 }
 
 #endif
