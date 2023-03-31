@@ -31,7 +31,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char **argv) {
 // BidAsk
 
 //todo:
-// check that const version of getImpl is required for structural bindings
+// DONE check that const version of getImpl is required for structural bindings
 // decorate methods with ref decorations
 // operator + is to be made in terms of operator +=
 // operator += should be made inside of a class

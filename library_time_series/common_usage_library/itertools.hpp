@@ -68,14 +68,14 @@ namespace culib::itertools {
    * operator -> () \n
    * thing for this iterator.\n\n
    * */
-		template<typename Reference>
+		template <typename Reference>
 		struct arrowProxy {
 			Reference R;
-			Reference* operator->() { return &R; } // non const
+			Reference *operator->() { return &R; } // non const
 		};
 
 	public:
-		using iterator_type = ZipIterator<Iterators...>;
+		using iterator_type = ZipIterator;
 		using iterator_category = std::common_type_t<IteratorCategoryFor<Iterators>...>;
 		using value_type = typename std::tuple<ValueTypeFor<Iterators>...>;
 		using reference = typename std::tuple<ReferenceTypeFor<Iterators>...>;
@@ -83,56 +83,44 @@ namespace culib::itertools {
 		using difference_type = std::common_type_t<DifferenceTypeFor<Iterators>...>;
 
 		ZipIterator() = delete;
+		ZipIterator(ZipIterator const&) = default;
+		ZipIterator(ZipIterator &&) = default;
+		ZipIterator& operator = (ZipIterator const&) = default;
+		ZipIterator& operator = (ZipIterator &&) = default;
 
 #ifndef __cpp_concepts
 		template<culib::requirements::AreAllIterators<Iterators...> = true>
 #endif
 		explicit
-		ZipIterator(Iterators&& ... iters)
-				:iterators(std::make_tuple(std::forward<Iterators>(iters)...)) { }
-		ZipIterator& operator++()&
-		{
-			std::apply([](Iterators& ... iter) { ((++iter), ...); }, iterators);
+		ZipIterator(Iterators&&... iters) :iterators (std::make_tuple(std::forward<Iterators>(iters)...))
+		{}
+		ZipIterator& operator++() & {
+			std::apply([](Iterators&... iter){ ((++iter), ...); }, iterators);
 			return *this;
 		}
-		ZipIterator operator++(int)
-		{
+		ZipIterator operator++(int) {
 			ZipIterator tmp(*this);
 			operator++();
 			return tmp;
 		}
 		//todo: add requirement that it works for bidirectional and higher
-		ZipIterator& operator--()&
-		{
-			std::apply([](Iterators& ... iter) { ((--iter), ...); }, iterators);
+		ZipIterator& operator--() & {
+			std::apply([](Iterators&... iter){ ((--iter), ...); }, iterators);
 			return *this;
 		}
-		ZipIterator operator--(int)
-		{
+		ZipIterator operator--(int) {
 			ZipIterator tmp(*this);
 			operator--();
 			return tmp;
 		}
-		bool operator==(ZipIterator const& other) const
-		{
+		bool operator==(ZipIterator const& other) const {
 			return base::utils::weakComparison(this->iterators, other.iterators);
 		}
-		bool operator!=(ZipIterator const& other) const
-		{
-			return !(*this==other);
-		}
-		reference operator*()
-		{
-			return makeRefs();
-		}
-		reference operator*() const
-		{
-			return makeRefs();
-		}
-		pointer operator->()
-		{ //it is supposed to survive just a drill-down
-			return pointer{makeRefs()};
-		}
+		bool operator!=(ZipIterator const& other) const { return !(*this == other); }
+		reference operator*() { return makeRefs(); }
+		reference operator*() const { return makeRefs(); }
+		//it is supposed to survive just a drill-down
+		pointer operator->() { return pointer{makeRefs()}; }
 
 		/**
 		 * @details
@@ -144,42 +132,24 @@ namespace culib::itertools {
 		 *
 		 * */
 		template<std::size_t Index>
-		decltype(auto) get()& { return getImpl<Index>(*this); }
-
+		decltype(auto) get() &  { return std::get<Index>(iterators).operator*(); }
 		template<std::size_t Index>
-		decltype(auto) get()&& { return getImpl<Index>(*this); }
-
+		decltype(auto) get() && { return std::get<Index>(iterators).operator*(); }
 		template<std::size_t Index>
-		decltype(auto) get() const& { return getImpl<Index>(*this); }
-
+		decltype(auto) get() const &  { return std::get<Index>(iterators).operator*(); }
 		template<std::size_t Index>
-		decltype(auto) get() const&& { return getImpl<Index>(*this); }
+		decltype(auto) get() const && { return std::get<Index>(iterators).operator*(); }
 
 	private:
 
 		std::tuple<Iterators...> iterators;
 
-		template<std::size_t... I>
-		auto makeRefsImpl(std::index_sequence<I...>)
-		{
-			return reference({std::get<I>(iterators).operator*()...});
+		template <std::size_t... I>
+		auto makeRefsImpl (std::index_sequence<I...>) {
+			return reference ({ std::get<I>(iterators).operator*()... });
 		}
-		auto makeRefs()
-		{
-			return makeRefsImpl(std::make_index_sequence<sizeof...(Iterators)>{});
-		}
-
-		template<std::size_t Index, typename ThisType>
-		decltype(auto) getImpl(ThisType&& t)
-		{
-			static_assert(Index<std::tuple_size_v<std::tuple<Iterators...>>, "Index out of bounds for zip iterator");
-			return std::get<Index>(std::forward<ThisType>(t).iterators).operator*();
-		}
-		template<std::size_t Index, typename ThisType>
-		decltype(auto) getImpl(ThisType&& t) const
-		{
-			static_assert(Index<std::tuple_size_v<std::tuple<Iterators...>>, "Index out of bounds for zip iterator");
-			return std::get<Index>(std::forward<ThisType>(t).iterators).operator*();
+		auto makeRefs () {
+			return makeRefsImpl (std::make_index_sequence<sizeof...(Iterators)>{});
 		}
 	};
 
@@ -276,12 +246,11 @@ namespace culib::itertools {
 namespace std {
   template<typename... Iterators>
   struct tuple_size<culib::itertools::details::ZipIterator<Iterators...>> :
-  public std::integral_constant<std::size_t, sizeof...(Iterators)> {};
-
-template<std::size_t Index, typename... Iterators>
-struct tuple_element<Index, culib::itertools::details::ZipIterator<Iterators...>> {
-using type = decltype(std::get<Index>(std::declval<culib::itertools::details::ZipIterator<Iterators...>>().operator*() ));
-};
+		  std::integral_constant<std::size_t, sizeof...(Iterators)> {};
+  template<std::size_t Index, typename... Iterators>
+  struct tuple_element<Index, culib::itertools::details::ZipIterator<Iterators...>> {
+	  using type = decltype(std::get<Index>(std::declval<culib::itertools::details::ZipIterator<Iterators...>>().operator*() ));
+  };
 }//!namespace
 
 
@@ -352,6 +321,16 @@ namespace culib::itertools {
   bool isSortedAscending(Container const& v) {
 	  return *v.begin() < *std::prev(v.end());
   }
+
+#ifndef __cpp_concepts
+  template<typename Iterator, requirements::IsIterator<Iterator> = true>
+#else
+  template<requirements::Iterator Iterator>
+#endif
+  bool isSortedAscending(Iterator first, Iterator second) {
+	  return *first < *second;
+  }
+
 
   /**
  * @brief

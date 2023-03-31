@@ -8,6 +8,9 @@
 
 //write on the std::array helper in serie container 
 
+//default container is inherited from std::pmr:: deque, guarantees data is sorted but not unique
+see bench
+//write on a stack size of different systems, as well as their thread size - see the notes 
 
 ## Zip in C++
 ### Reasoning

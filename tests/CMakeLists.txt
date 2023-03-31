@@ -108,4 +108,4 @@ target_link_libraries(${PROJECT_NAME_TEST}
         )
 
 include(GoogleTest)
-gtest_discover_tests(${PROJECT_NAME}_tests)
+gtest_discover_tests(${PROJECT_NAME_TEST})

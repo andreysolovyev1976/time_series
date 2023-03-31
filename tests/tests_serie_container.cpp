@@ -4,6 +4,7 @@
 
 #include <gtest/gtest.h>
 #include "time_series/serie.hpp"
+#include "common_usage_library/memuse.hpp"
 
 
 #include <sstream>
@@ -339,6 +340,7 @@ namespace user_defined_containers {
 	  const T& end() const {return data[4];}
   };
 }//!namespace
+
 TEST(SerieContainer, UserDefinedContainer) {
 	time_series::Serie<
 			Duration, ElemType,
@@ -357,4 +359,25 @@ TEST(SerieContainer, UserDefinedContainer) {
 		}
 	}
 	ASSERT_TRUE(assigned_values.empty());
+}
+TEST(SerieContainer, PmrContainer) {
+	using namespace culib::mem_usage;
+	mem_resource_t<10u, Elem> memory_resource;
+
+	time_series::Serie<Duration, ElemType,
+			std::pmr::vector
+	> serie (&memory_resource);
+	serie.push_back({12});
+	serie.push_back({1});
+	serie.push_back({3});
+
+	std::stringstream ss;
+	for (const auto& elem : serie) {
+		ss << elem.value << ' ';
+	}
+	const std::string check {"12 1 3 "};
+	ASSERT_EQ(ss.str(), check);
+}
+TEST(SerieContainer, UserDefinedPmrContainer) {
+	ASSERT_EQ(true, false);
 }
