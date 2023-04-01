@@ -10,6 +10,9 @@
 #include <concepts>
 #endif
 
+#include "numerics.h"
+
+
 #ifndef TIME_H
 #define TIME_H
 
@@ -112,9 +115,7 @@ namespace culib::requirements {
 
 #endif
 
-
 }//!namespace
-
 
 
 #endif //TIME_H

@@ -7,7 +7,6 @@
 #include "date/date.h"
 
 #include "types_requirements/time.h"
-#include "types_requirements/numerics.h"
 
 #include <string>
 #include <ctime>
@@ -22,12 +21,44 @@
 
 namespace culib::time {
 
+  namespace details {
+#ifndef __cpp_concepts
+	template<typename Duration1, typename Duration2,
+		  requirements::IsDuration<Duration1> = true,
+		  requirements::IsDuration<Duration2> = true>
+#else
+	template<requirements::IsDuration Duration1, requirements::IsDuration Duration2>
+#endif
+	constexpr auto shorter() noexcept
+	{
+		using R1 = typename Duration1::period;
+		using R2 = typename Duration2::period;
+		if constexpr (!(requirements::is_ratio_v<R1> && requirements::is_ratio_v<R2>)) {
+			throw std::invalid_argument("can't compare durations");
+		}
+		return std::ratio_less_v<R1, R2>;
+	}
+
+	template<typename Duration1, typename Duration2>
+	inline bool constexpr is_shorter_v { shorter<Duration1, Duration2>() };
+
+#ifndef __cpp_concepts
+	template<typename Duration1, typename Duration2>
+	using ConversionAllowed = std::enable_if_t<is_shorter_v<Duration1, Duration2>, bool>;
+#else
+	template<typename Duration1, typename Duration2>
+	concept ConversionAllowed = is_shorter_v<Duration1, Duration2>;
+
+#endif
+
+  }//!namespace
+
 
   using SysClock = std::chrono::system_clock;
   using HiResClock = std::chrono::high_resolution_clock;
 
 #if defined(__cplusplus) && (__cplusplus>201703L)
-using UtcClock = std::chrono::utc_clock;
+  using UtcClock = std::chrono::utc_clock;
 #endif
   using DefaultClock = SysClock;
 
@@ -58,14 +89,15 @@ using UtcClock = std::chrono::utc_clock;
 		  requirements::IsClock ClockType = DefaultClock>
 #endif
   struct Timestamp final {
+	  Timepoint<ClockType, Duration> time_point;
+
 	  using clock_type = ClockType;
 	  using duration_type = Duration;
+	  using rep_type = typename Timepoint<ClockType, Duration>::rep;
 
 	  // todo: check floor is ok
 	  Timestamp() noexcept : time_point(std::chrono::floor<Duration>(ClockType::now()))
 	  {}
-
-	  auto getNumeric () const noexcept { return time_point.time_since_epoch().count(); }
 
 	  std::string toString () const {
 		  std::string output;
@@ -76,7 +108,36 @@ using UtcClock = std::chrono::utc_clock;
 		  return output;
 	  }
 
-	  Timepoint<ClockType, Duration> time_point;
+	  operator rep_type () const noexcept { return time_point.time_since_epoch().count(); }
+
+	  auto getNumeric () const noexcept { return time_point.time_since_epoch().count(); }
+
+
+
+#ifndef __cpp_concepts
+	  template<typename DurationTo, details::ConversionAllowed<Duration, DurationTo> = true>
+#else
+	  template<requirements::IsDuration DurationTo>
+	  requires details::ConversionAllowed<Duration, DurationTo>
+#endif
+	  operator Timestamp<DurationTo> () noexcept {
+		  Timestamp<DurationTo> result {*this};
+		  result.time_point = std::chrono::time_point_cast<DurationTo>(result.time_point);
+		  return result;
+	  }
+
+
+#ifndef __cpp_concepts
+	  template<typename DurationTo, details::ConversionAllowed<Duration, DurationTo> = true>
+#else
+	  template<requirements::IsDuration DurationTo>
+	  requires details::ConversionAllowed<Duration, DurationTo>
+#endif
+	decltype(auto) castTo () const noexcept {
+		  Timestamp<DurationTo> result;
+		  result.time_point = std::chrono::time_point_cast<DurationTo>(time_point);
+		  return result;
+	  }
   };
 
 #ifndef __cpp_concepts
@@ -99,13 +160,28 @@ using UtcClock = std::chrono::utc_clock;
   using TenSeconds = std::chrono::duration<long, std::ratio<10>>;
   using ThirtySeconds = std::chrono::duration<long, std::ratio<30>>;
   using Minutes = std::chrono::minutes;
+  using TwoMinutes = std::chrono::duration<long, std::ratio<120>>;
+  using ThreeMinutes = std::chrono::duration<long, std::ratio<180>>;
   using FiveMinutes = std::chrono::duration<long, std::ratio<300>>;
   using TenMinutes = std::chrono::duration<long, std::ratio<600>>;
   using FifteenMinutes = std::chrono::duration<long, std::ratio<900>>;
   using ThirtyMinutes = std::chrono::duration<long, std::ratio<1800>>;
   using Hours = std::chrono::hours;
+  using TwoHours = std::chrono::duration<long, std::ratio<3600>>;
+  using ThreeHours = std::chrono::duration<long, std::ratio<5400>>;
+  using SixHours = std::chrono::duration<long, std::ratio<10800>>;
+  using EightHours = std::chrono::duration<long, std::ratio<28800>>;
+  using TwelveHours = std::chrono::duration<long, std::ratio<43200>>;
+  using Days = std::chrono::duration<long, std::ratio<86400>>;
+  using TwoDays = std::chrono::duration<long, std::ratio<172800>>;
+  using ThreeDays = std::chrono::duration<long, std::ratio<259200>>;
+
+//todo: buisness days
+//todo: weeks
+//todo: month
 
 
+#if 0
   /*
 typedef duration<long long,         nano> nanoseconds;
 typedef duration<long long,        micro> microseconds;
@@ -132,6 +208,7 @@ typedef duration<     long, ratio<3600> > hours;
   constexpr bool IsMinutes (Duration) {
 	  return std::is_same_v<Duration, Minutes>;
   }
+#endif
 
 #ifndef __cpp_concepts
   template<typename Duration, requirements::IsDuration<Duration> = true>
@@ -140,23 +217,6 @@ typedef duration<     long, ratio<3600> > hours;
 #endif
   static constexpr auto ZeroDuration {Duration::zero()};
 
-
-
-#ifndef __cpp_concepts
-  template<typename Duration1, typename Duration2,
-		requirements::IsDuration<Duration1> = true,
-		requirements::IsDuration<Duration2> = true>
-#else
-  template<requirements::IsDuration Duration1, requirements::IsDuration Duration2>
-#endif
-  constexpr auto less (Duration1, Duration2) noexcept {
-	  using R1 = typename Duration1::period;
-	  using R2 = typename Duration2::period;
-	  if constexpr (! (requirements::is_ratio_v<R1> && requirements::is_ratio_v<R2>) ) {
-		  throw std::invalid_argument ("can't compare durations");
-	  }
-	  return std::ratio_less_v<R1, R2>;
-  }
 
 
 

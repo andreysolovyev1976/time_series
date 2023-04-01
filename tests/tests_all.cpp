@@ -29,6 +29,8 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char **argv) {
 // Element
 // OHLCV
 // BidAsk
+// fix timestamp
+
 
 
 
@@ -38,6 +40,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char **argv) {
 // decorate methods with ref decorations
 // operator + is to be made in terms of operator +=
 // operator += should be made inside of a class
+// noexcept everywhere it is possible
 // series - make joins for the series
 // duration cast
 // joins, make joins possible if any of arg is a tuple of args

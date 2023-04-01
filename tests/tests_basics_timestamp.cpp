@@ -14,7 +14,6 @@ using Duration = culib::time::Microseconds;
 using TS = culib::time::Timestamp<Duration>;
 
 TEST(BasicsTimestamp, CtorsFloorIsOk) {}
-
 TEST(BasicsTimestamp, AdditionDurationAssign) {
 	TS t1;
 	auto ts_copy = t1.time_point.time_since_epoch().count();
@@ -29,7 +28,6 @@ TEST(BasicsTimestamp, AdditionNumberAssign) {
 	auto new_ts = t1.time_point.time_since_epoch().count();
 	ASSERT_EQ(ts_copy + 1, new_ts);
 }
-
 TEST(BasicsTimestamp, AdditionDurationNewValue) {
 	TS t1;
 	auto t2 = t1 + 1us;
@@ -46,7 +44,6 @@ TEST(BasicsTimestamp, AdditionNumberNewValue) {
 	auto ts_2 = t2.time_point.time_since_epoch().count();
 	ASSERT_EQ(ts_1 + 1, ts_2);
 }
-
 TEST(BasicsTimestamp, SubtractionDurationAssign) {
 	TS t1;
 	auto ts_copy = t1.time_point.time_since_epoch().count();
@@ -61,7 +58,6 @@ TEST(BasicsTimestamp, SubtractionNumberAssign) {
 	auto new_ts = t1.time_point.time_since_epoch().count();
 	ASSERT_EQ(ts_copy - 1, new_ts);
 }
-
 TEST(BasicsTimestamp, SubtractionDurationNewValue) {
 	TS t1;
 	auto t2 = t1 - 1us;
@@ -78,7 +74,6 @@ TEST(BasicsTimestamp, SubtractionNumberNewValue) {
 	auto ts_2 = t2.time_point.time_since_epoch().count();
 	ASSERT_EQ(ts_1 - 1, ts_2);
 }
-
 TEST(BasicsTimestamp, Comparison) {
 	auto first = TS{};
 	auto first_copy = first;
@@ -96,15 +91,13 @@ TEST(BasicsTimestamp, Comparison) {
 TEST(BasicsTimestamp, Hasher) {
 	std::unordered_map<TS, int, culib::time::TimestampHasher<Duration>> um;
 	auto first = TS{};
-	std::this_thread::sleep_for(10ms);
-	auto second = TS{};
+	auto second = first + 1ms;
 	um[first] = 1;
 	um[second] = 2;
 
 	ASSERT_EQ(um[first], 1);
 	ASSERT_EQ(um[second], 2);
 }
-
 TEST(BasicsTimestamp, Timer) {
 	using namespace culib::time;
 	auto const stop = Timestamp<Milliseconds>{} + 100ms;
@@ -117,23 +110,42 @@ TEST(BasicsTimestamp, Timer) {
 
 	ASSERT_TRUE(time_left <= 0);
 }
-
 TEST(BasicsTimestamp, DurationComparison) {
 	using namespace culib::time;
-	auto ms = ZeroDuration<Milliseconds>;
-	auto s = ZeroDuration<Seconds>;
-	auto m = ZeroDuration<Minutes>;
-	auto h = ZeroDuration<Hours>;
+	using namespace culib::time::details;
 
-	ASSERT_TRUE(less(ms, s));
-	ASSERT_TRUE(less(s, m));
-	ASSERT_TRUE(less(m, h));
-	ASSERT_TRUE(less(ms, h));
-	ASSERT_TRUE(less(m, h));
+	bool res = shorter<Milliseconds, Seconds>();
+	ASSERT_TRUE(res);
+	res = is_shorter_v<Seconds, Minutes>;
+	ASSERT_TRUE(res);
+	res = is_shorter_v<Minutes, Hours>;
+	ASSERT_TRUE(res);
+	res = is_shorter_v<Milliseconds, Hours>;
+	ASSERT_TRUE(res);
+	res = is_shorter_v<Minutes, Hours>;
+	ASSERT_TRUE(res);
 
-	ASSERT_FALSE(less(h, m));
-	ASSERT_FALSE(less(m, s));
-	ASSERT_FALSE(less(s, ms));
-	ASSERT_FALSE(less(h, s));
-	ASSERT_FALSE(less(h, ms));
+	res = is_shorter_v<Hours, Minutes>;
+	ASSERT_FALSE(res);
+	res = is_shorter_v<Minutes, Seconds>;
+	ASSERT_FALSE(res);
+	res = is_shorter_v<Seconds, Milliseconds>;
+	ASSERT_FALSE(res);
+	res = is_shorter_v<Hours, Seconds>;
+	ASSERT_FALSE(res);
+	res = is_shorter_v<Hours, Milliseconds>;
+	ASSERT_FALSE(res);
+}
+TEST(BasicsTimestamp, UpCast) {
+	using namespace culib::time;
+
+	TS initial;
+	auto s = initial.castTo<Seconds>();
+	ASSERT_EQ(s.time_point, std::chrono::floor<Seconds>(initial.time_point));
+	auto m = s.castTo<Minutes>();
+	ASSERT_EQ(m.time_point, std::chrono::floor<Minutes>(s.time_point));
+	auto h = m.castTo<Hours>();
+	ASSERT_EQ(h.time_point, std::chrono::floor<Hours>(m.time_point));
+
+	// auto err = h.castTo<Seconds>(); //compile error
 }
