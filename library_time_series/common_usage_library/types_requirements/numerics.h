@@ -28,6 +28,12 @@ namespace culib::requirements {
   template <typename Number>
   using IsNotIntegral = std::enable_if_t<not std::is_integral_v<Number>, bool>;
 
+  template <typename Number>
+  using IsArithmetic = std::enable_if_t<std::is_arithmetic_v<Number>, bool>;;
+
+  template <typename Number>
+  using IsNotArithmetic = std::enable_if_t<!std::is_arithmetic_v<Number>, bool>;;
+
 
   template <typename I, typename = void>
   struct MaybeIncrementable : std::false_type {} ;
@@ -66,6 +72,13 @@ namespace culib::requirements {
    * concepts, there is no need to define those\n
    * in C++20.\n
    * */
+
+
+  template <typename Number>
+  concept IsArithmetic = std::integral<Number> || std::floating_point<Number>;
+
+  template <typename Number>
+  concept IsNotArithmetic = !IsArithmetic<Number>;
 
 
   template <typename I>

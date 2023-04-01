@@ -1182,25 +1182,25 @@ namespace time_series::financial {
 			  << ohlcv.volume;
   }//!operator
   template <typename ValueType>
-  std::istream& operator >> (std::istream& is, BidAsk<ValueType>& ohlcv) {
-	  typename BidAsk<ValueType>::Type open, high, low, close, volume {0.0};
-	  bool ohlc_read_ok {false}, volume_read_ok {false};
+  std::istream& operator >> (std::istream& is, BidAsk<ValueType>& bid_ask) {
+	  typename BidAsk<ValueType>::Type bid, ask, middle, price, volume {0.0};
+	  bool bid_ask_read_ok {false}, volume_read_ok {false};
 	  if (is && !is.eof()) {
-		  is >> open >> high >> low >> close;
+		  is >> bid >> ask >> middle >> price;
 		  if (is && !is.eof()) {
-			  ohlc_read_ok = true;
+			  bid_ask_read_ok = true;
 			  is >> volume;
 		  }
-		  if (is && !is.eof()) {
+		  if (is) {
 			  volume_read_ok = true;
 		  }
 
-		  if (ohlc_read_ok) {
-			  ohlcv.bid = open;
-			  ohlcv.ask = high;
-			  ohlcv.middle = low;
-			  ohlcv.price = close;
-			  if (volume_read_ok) ohlcv.volume = volume;
+		  if (bid_ask_read_ok) {
+			  bid_ask.bid = bid;
+			  bid_ask.ask = ask;
+			  bid_ask.middle = middle;
+			  bid_ask.price = price;
+			  if (volume_read_ok) bid_ask.volume = volume;
 		  }
 		  else {
 			  is.setstate(std::ios_base::failbit);

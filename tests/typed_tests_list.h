@@ -102,16 +102,16 @@ TYPED_TEST_SUITE(ValueArithmeticsMultiField, value_multifield);
  */
 
 using test_element = testing::Types<
-		  time_series::Element<base::Seconds, double>
-		, time_series::Element<base::Seconds, int>
-		, time_series::Element<base::Seconds, time_series::Value<time_series::value::traits::ValueTypeDefault>>
-		, time_series::Element<base::Seconds, time_series::Value<std::int64_t>>
-		, time_series::Element<base::Seconds, time_series::financial::SingleQuote<time_series::value::traits::ValueTypeDefault>>
-		, time_series::Element<base::Seconds, time_series::financial::SingleQuote<std::int64_t>>
-		, time_series::Element<base::Seconds, time_series::financial::OHLCV<time_series::value::traits::ValueTypeDefault>>
-		, time_series::Element<base::Seconds, time_series::financial::OHLCV<std::int64_t>>
-		, time_series::Element<base::Seconds, time_series::financial::BidAsk<time_series::value::traits::ValueTypeDefault>>
-		, time_series::Element<base::Seconds, time_series::financial::BidAsk<std::int64_t>>
+		  time_series::Element<culib::time::Seconds, double>
+		, time_series::Element<culib::time::Seconds, int>
+		, time_series::Element<culib::time::Seconds, time_series::Value<time_series::value::traits::ValueTypeDefault>>
+		, time_series::Element<culib::time::Seconds, time_series::Value<std::int64_t>>
+		, time_series::Element<culib::time::Seconds, time_series::financial::SingleQuote<time_series::value::traits::ValueTypeDefault>>
+		, time_series::Element<culib::time::Seconds, time_series::financial::SingleQuote<std::int64_t>>
+		, time_series::Element<culib::time::Seconds, time_series::financial::OHLCV<time_series::value::traits::ValueTypeDefault>>
+		, time_series::Element<culib::time::Seconds, time_series::financial::OHLCV<std::int64_t>>
+		, time_series::Element<culib::time::Seconds, time_series::financial::BidAsk<time_series::value::traits::ValueTypeDefault>>
+		, time_series::Element<culib::time::Seconds, time_series::financial::BidAsk<std::int64_t>>
 		>;
 
 template<typename T>

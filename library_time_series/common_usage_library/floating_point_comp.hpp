@@ -24,7 +24,6 @@ namespace culib::comp {
  * kValue that is used in comparison - see all deleted ctors.
  */
 #ifndef __cpp_concepts
-
   template<typename Floating, requirements::IsFloatinPoint<Floating> = true>
 #else
   template<std::floating_point Floating>
@@ -79,7 +78,6 @@ namespace culib::comp {
 
 
 #ifndef __cpp_concepts
-
   template<typename T, typename U,
 		  requirements::IsFloatinPoint<T> = true,
 		  requirements::IsIntegral<U> = true>

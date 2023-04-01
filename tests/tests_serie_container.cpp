@@ -24,7 +24,7 @@
 
 using namespace std::chrono_literals;
 using namespace boost::typeindex;
-using Duration = base::Microseconds;
+using Duration = culib::time::Microseconds;
 using ElemType = time_series::Value<std::int64_t>;
 using Elem = time_series::Element<Duration, ElemType>;
 const auto pause_to_take = 10us;
@@ -124,12 +124,12 @@ TEST(SerieContainer, BoostCircularBuffer) {
 namespace comparators {
   template<typename Duration>
   struct CompTimestampStruct {
-	  bool operator()(const base::Timestamp<Duration> &a, const base::Timestamp<Duration> &b) const {
+	  bool operator()(const culib::time::Timestamp<Duration> &a, const culib::time::Timestamp<Duration> &b) const {
 		  return a > b;
 	  };
   };
   template<typename Duration>
-  [[maybe_unused]] auto comp_timestamp = [](const base::Timestamp<Duration> &a, const base::Timestamp<Duration> &b) {
+  [[maybe_unused]] auto comp_timestamp = [](const culib::time::Timestamp<Duration> &a, const culib::time::Timestamp<Duration> &b) {
 	return a > b;
   };
   template<typename Duration>
@@ -216,7 +216,7 @@ TEST(SerieContainer, Map_DefaultComparator) {
 			std::map
 	> serie;
 
-	serie.insert({base::Timestamp<Duration>(), 12});
+	serie.insert({culib::time::Timestamp<Duration>(), 12});
 	std::this_thread::sleep_for(pause_to_take);
 	serie.insert({{}, 1});
 	std::this_thread::sleep_for(pause_to_take);
@@ -237,7 +237,7 @@ TEST(SerieContainer, Map_UserDefinedComparatorStruct) {
 			comparators::CompTimestampStruct<Duration>
 	> serie;
 
-	serie.insert({base::Timestamp<Duration>(), 12});
+	serie.insert({culib::time::Timestamp<Duration>(), 12});
 	std::this_thread::sleep_for(pause_to_take);
 	serie.insert({{}, 1});
 	std::this_thread::sleep_for(pause_to_take);
@@ -259,7 +259,7 @@ TEST(SerieContainer, Map_UserDefinedComparatorLambda) {
 		comparators::CompTimestampLambda<Duration>
 	> serie;
 
-	serie.insert({base::Timestamp<Duration>(), 12});
+	serie.insert({culib::time::Timestamp<Duration>(), 12});
 	std::this_thread::sleep_for(pause_to_take);
 	serie.insert({{}, 1});
 	std::this_thread::sleep_for(pause_to_take);
@@ -277,7 +277,7 @@ TEST(SerieContainer, Map_UserDefinedComparatorLambda) {
 
 namespace hashers {
   template <typename Duration>
-  using HasherTimestamp = typename base::TimestampHasher<Duration>;
+  using HasherTimestamp = typename culib::time::TimestampHasher<Duration>;
 
   template <typename Duration, typename ElemType>
   struct HasherElem {
@@ -316,7 +316,7 @@ TEST(SerieContainer, Exotics_UnorderedMap) {
 			hashers::HasherTimestamp<Duration>
 			> serie;
 
-	serie.insert({base::Timestamp<Duration>(), 12});
+	serie.insert({culib::time::Timestamp<Duration>(), 12});
 	std::this_thread::sleep_for(pause_to_take);
 	serie.insert({{}, 1});
 	std::this_thread::sleep_for(pause_to_take);

@@ -10,7 +10,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char **argv) {
 //	testing::GTEST_FLAG(filter) = "Ctors*:Assignments*:Constructible*:Compare*:Arithmetics*";
 //	testing::GTEST_FLAG(filter) = "ElementFnApplication*";
 //	testing::GTEST_FLAG(filter) = "ElementFnApplication/1.*";
-//	testing::GTEST_FLAG(filter) = "BasicsTypesRequirements.Concepts*";
+	testing::GTEST_FLAG(filter) = "BasicsTimestamp.*";
 	return RUN_ALL_TESTS();
 }
 
@@ -30,8 +30,11 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char **argv) {
 // OHLCV
 // BidAsk
 
+
+
 //todo:
 // DONE check that const version of getImpl is required for structural bindings
+// use flat_map as a container, that combines vectors of Open High Low Close
 // decorate methods with ref decorations
 // operator + is to be made in terms of operator +=
 // operator += should be made inside of a class

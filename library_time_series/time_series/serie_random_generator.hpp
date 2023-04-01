@@ -16,7 +16,7 @@
 namespace time_series::utils {
 
   template <
-		  typename Duration = base::Microseconds
+		  typename Duration = culib::time::Microseconds
 		  , typename ElemType = Value<int>
 		  , template <typename...> typename Container = std::vector
   >
@@ -37,7 +37,7 @@ namespace time_series::utils {
   }
 
   template <
-		  typename Duration = base::Microseconds
+		  typename Duration = culib::time::Microseconds
 		  , typename ElemType = Value<int>
 		  , template <typename...> typename Container = std::vector
   >

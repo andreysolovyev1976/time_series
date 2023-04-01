@@ -14,7 +14,7 @@
 #include <sstream>
 
 /*
-		  typename Duration = base::Microseconds
+		  typename Duration = culib::time::Microseconds
 		  , typename ElemType = time_series::Value<int>
 		  , template <typename...> typename Container = std::vector
 
@@ -22,7 +22,7 @@
 TEST(SerieJoins, InnerOk) {
 	std::size_t const ksize {5u};
 	int value {42};
-	auto ts1 = time_series::utils::generateSerie<base::Microseconds, time_series::Value<int>, std::deque>(value, ksize);
+	auto ts1 = time_series::utils::generateSerie<culib::time::Microseconds, time_series::Value<int>, std::deque>(value, ksize);
 	auto ts2 = ts1;
 	ts2.pop_front();
 	ts2.push_back({50});

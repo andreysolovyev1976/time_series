@@ -62,8 +62,8 @@ TEST(BasicsTypesRequirements, CtorInputNotOk) {
 
 
 TEST(BasicsTypesRequirements, ContainerOk) {
-	using Elem = time_series::Element<base::Seconds, int>;
-	using Map = std::map<base::Timestamp<base::Seconds>, time_series::Value<time_series::value::traits::ValueTypeDefault>>;
+	using Elem = time_series::Element<culib::time::Seconds, int>;
+	using Map = std::map<culib::time::Timestamp<culib::time::Seconds>, time_series::Value<time_series::value::traits::ValueTypeDefault>>;
 	ASSERT_TRUE(requirements::isContainer_v<std::string>());
 	ASSERT_TRUE(requirements::isContainer_v<std::vector<Elem>>());
 	ASSERT_TRUE(requirements::isContainer_v<Map>());
@@ -73,7 +73,7 @@ TEST(BasicsTypesRequirements, ContainerOk) {
 }
 
 TEST(BasicsTypesRequirements, ContainerNotOk) {
-	using Elem = time_series::Element<base::Seconds, int>;
+	using Elem = time_series::Element<culib::time::Seconds, int>;
 	ASSERT_FALSE(requirements::isContainer_v<double>());
 	ASSERT_FALSE(requirements::isContainer_v<int>());
 	ASSERT_FALSE(requirements::isContainer_v<Container_not_ok<Elem>>());
@@ -125,8 +125,8 @@ TEST (BasicsTypesRequirements, TypeIsComparator) {
 #ifdef __cpp_concepts
 
 TEST (BasicsTypesRequirements, ConceptsContainerOk) {
-	using Elem = time_series::Element<base::Seconds, int>;
-	using Map = std::map<base::Timestamp<base::Seconds>, time_series::Value<time_series::value::traits::ValueTypeDefault>>;
+	using Elem = time_series::Element<culib::time::Seconds, int>;
+	using Map = std::map<culib::time::Timestamp<culib::time::Seconds>, time_series::Value<time_series::value::traits::ValueTypeDefault>>;
 	ASSERT_TRUE(requirements::isContainer_v<std::string>());
 	ASSERT_TRUE(requirements::isContainer_v<std::vector<Elem>>());
 	ASSERT_TRUE(requirements::isContainer_v<Map>());
@@ -136,7 +136,7 @@ TEST (BasicsTypesRequirements, ConceptsContainerOk) {
 }
 
 TEST(BasicsTypesRequirements, ConceptsContainerNotOk) {
-	using Elem = time_series::Element<base::Seconds, int>;
+	using Elem = time_series::Element<culib::time::Seconds, int>;
 	ASSERT_FALSE(requirements::isContainer_v<double>());
 	ASSERT_FALSE(requirements::isContainer_v<int>());
 	ASSERT_FALSE(requirements::isContainer_v<Container_not_ok<Elem>>());

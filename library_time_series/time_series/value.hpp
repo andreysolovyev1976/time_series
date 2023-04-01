@@ -8,8 +8,8 @@
 #include "common_usage_library/floating_point_comp.hpp"
 #include "common_usage_library/types_requirements/ctor_input.h"
 #include "common_usage_library/types_requirements/operators.h"
+#include "common_usage_library/timestamp.hpp"
 #include "time_series/const_values.h"
-#include "time_series/timestamp.hpp"
 #include "time_series/value_traits.h"
 
 #ifndef BASE_VALUE_H

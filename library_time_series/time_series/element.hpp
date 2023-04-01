@@ -5,8 +5,8 @@
 #pragma once
 
 #include "time_series/const_values.h"
-#include "time_series/timestamp.hpp"
 #include "time_series/value.hpp"
+#include "common_usage_library/timestamp.hpp"
 #include "common_usage_library//types_requirements/ctor_input.h"
 #include "common_usage_library/types_requirements/operators.h"
 
@@ -23,16 +23,16 @@ namespace time_series {
   //todo: add requirements on ElemType
   //todo: add requirements for Other - should be an Arithmetic or better - operator is defined?
 
-  template <typename Duration = base::Seconds, typename ElemType = Value<value::traits::ValueTypeDefault>>
+  template <typename Duration = culib::time::Seconds, typename ElemType = Value<value::traits::ValueTypeDefault>>
   struct Element final {
 	  using elem_type = ElemType;
-	  using key_type = base::Timestamp<Duration>;
+	  using key_type = culib::time::Timestamp<Duration>;
 
 	  /**
 	   * @brief
 	   * for map-alike collections
 	   * */
-	  using value_type = std::pair<base::Timestamp<Duration>, ElemType>;
+	  using value_type = std::pair<culib::time::Timestamp<Duration>, ElemType>;
 
 	  Element() = default;
 	  Element (const ElemType &e);
@@ -73,7 +73,7 @@ namespace time_series {
 	  template<std::size_t Index>
 	  decltype(auto) get() const &&;
 
-	  base::Timestamp<Duration> timestamp;
+	  culib::time::Timestamp<Duration> timestamp;
 	  ElemType value;
 
   private:
@@ -590,7 +590,7 @@ namespace time_series {
   }//!operator
   template <typename Duration, typename ElemType>
   std::istream& operator >> (std::istream& is, Element<Duration, ElemType>& element) {
-	  base::Timestamp<Duration> timestamp;
+	  culib::time::Timestamp<Duration> timestamp;
 	  ElemType elem_type_value;
 	  if (is) {
 		  is >> timestamp;

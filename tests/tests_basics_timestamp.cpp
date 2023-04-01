@@ -3,58 +3,120 @@
 //
 
 #include <gtest/gtest.h>
-#include "time_series/timestamp.hpp"
+#include "common_usage_library/timestamp.hpp"
+
+#include <unordered_map>
 #include <sstream>
 #include <thread>
 
-using namespace base;
+
 using namespace std::chrono_literals;
+using Duration = culib::time::Microseconds;
+using TS = culib::time::Timestamp<Duration>;
 
-TEST(BasicsTimestamp, Timer) {
+TEST(BasicsTimestamp, CtorsFloorIsOk) {}
 
-	auto stop = std::chrono::system_clock::now() + 7s;
-	auto time_left = std::chrono::duration_cast<Seconds>(stop - std::chrono::system_clock::now()).count();
-
-	while (time_left > 0) {
-		std::this_thread::sleep_for(3s);
-		time_left = std::chrono::duration_cast<Seconds>(stop - std::chrono::system_clock::now()).count();
-		std::cerr << time_left << '\n';
-	}
+TEST(BasicsTimestamp, AdditionDurationAssign) {
+	TS t1;
+	auto ts_copy = t1.time_point.time_since_epoch().count();
+	t1 += 1us;
+	auto new_ts = t1.time_point.time_since_epoch().count();
+	ASSERT_EQ(ts_copy + 1, new_ts);
+}
+TEST(BasicsTimestamp, AdditionNumberAssign) {
+	TS t1;
+	auto ts_copy = t1.time_point.time_since_epoch().count();
+	t1 += 1;
+	auto new_ts = t1.time_point.time_since_epoch().count();
+	ASSERT_EQ(ts_copy + 1, new_ts);
 }
 
-TEST(BasicsTimestamp, ComparisonOk) {
+TEST(BasicsTimestamp, AdditionDurationNewValue) {
+	TS t1;
+	auto t2 = t1 + 1us;
+
+	auto ts_1 = t1.time_point.time_since_epoch().count();
+	auto ts_2 = t2.time_point.time_since_epoch().count();
+	ASSERT_EQ(ts_1 + 1, ts_2);
 }
-TEST(BasicsTimestamp, ComparisonNotOk) {
+TEST(BasicsTimestamp, AdditionNumberNewValue) {
+	TS t1;
+	auto t2 = t1 + 1;
+
+	auto ts_1 = t1.time_point.time_since_epoch().count();
+	auto ts_2 = t2.time_point.time_since_epoch().count();
+	ASSERT_EQ(ts_1 + 1, ts_2);
+}
+
+TEST(BasicsTimestamp, SubtractionDurationAssign) {
+	TS t1;
+	auto ts_copy = t1.time_point.time_since_epoch().count();
+	t1 -= 1us;
+	auto new_ts = t1.time_point.time_since_epoch().count();
+	ASSERT_EQ(ts_copy - 1, new_ts);
+}
+TEST(BasicsTimestamp, SubtractionNumberAssign) {
+	TS t1;
+	auto ts_copy = t1.time_point.time_since_epoch().count();
+	t1 -= 1;
+	auto new_ts = t1.time_point.time_since_epoch().count();
+	ASSERT_EQ(ts_copy - 1, new_ts);
+}
+
+TEST(BasicsTimestamp, SubtractionDurationNewValue) {
+	TS t1;
+	auto t2 = t1 - 1us;
+
+	auto ts_1 = t1.time_point.time_since_epoch().count();
+	auto ts_2 = t2.time_point.time_since_epoch().count();
+	ASSERT_EQ(ts_1 - 1, ts_2);
+}
+TEST(BasicsTimestamp, SubtractionNumberNewValue) {
+	TS t1;
+	auto t2 = t1 - 1;
+
+	auto ts_1 = t1.time_point.time_since_epoch().count();
+	auto ts_2 = t2.time_point.time_since_epoch().count();
+	ASSERT_EQ(ts_1 - 1, ts_2);
+}
+
+TEST(BasicsTimestamp, Comparison) {
+	auto first = TS{};
+	auto first_copy = first;
+	auto second = first + 1s;
+
+	ASSERT_EQ(first, first_copy);
+	ASSERT_NE(first, second);
+	ASSERT_LT(first, second);
+	ASSERT_LE(first, second);
+	ASSERT_LE(first, first_copy);
+	ASSERT_GT(second, first);
+	ASSERT_GE(second, first);
+	ASSERT_GE(first_copy, first);
 }
 TEST(BasicsTimestamp, Hasher) {
-}
-TEST(BasicsTimestamp, Add) {
-	Timestamp<Seconds> t1;
-	std::this_thread::sleep_for(2s);
-	Timestamp<Seconds> t2;
-	std::cerr << (t2 + t1) << '\n';
-}
-TEST(BasicsTimestamp, Subtract) {
-	Timestamp<Seconds> t1;
-	std::this_thread::sleep_for(2s);
-	Timestamp<Seconds> t2;
-	std::cerr << (t2 - t1) << '\n';
-}
-TEST(BasicsTimestamp, Multiply) {
-}
-TEST(BasicsTimestamp, Divide) {
+	std::unordered_map<TS, int, culib::time::TimestampHasher<Duration>> um;
+	auto first = TS{};
+	std::this_thread::sleep_for(10ms);
+	auto second = TS{};
+	um[first] = 1;
+	um[second] = 2;
+
+	ASSERT_EQ(um[first], 1);
+	ASSERT_EQ(um[second], 2);
 }
 
 
 
-TEST(BasicsTimestamp, Print) {
+TEST(BasicsTimestamp, Timer) {
+	using namespace culib::time;
+	auto const stop = Timestamp<Milliseconds>{} + 100ms;
+	auto time_left = (stop - Timestamp<Milliseconds>{}).count();
 
-	Timestamp<Seconds> t1;
-	std::this_thread::sleep_for(2s);
-	Timestamp<Seconds> t2;
+	while (time_left > 0) {
+		std::this_thread::sleep_for(1ms);
+		time_left = (stop - Timestamp<Milliseconds>{}).count();
+	}
 
-	std::stringstream ss;
-	ss << t1 << ' ' << t2;
-	ASSERT_EQ(ss.str(), "");
-
+	ASSERT_TRUE(time_left <= 0);
 }

@@ -80,7 +80,7 @@ namespace time_series {
 	{
 		using namespace culib::requirements;
 		using Elem = Element<Duration, ElemType>;
-		using Timestamp = base::Timestamp<Duration>;
+		using Timestamp = culib::time::Timestamp<Duration>;
 
 		/**
 		 * @brief
@@ -105,7 +105,7 @@ namespace time_series {
   }//!namespace
 
   template <
-		  typename Duration = base::Seconds
+		  typename Duration = culib::time::Seconds
 		  , typename ElemType = Value<value::traits::ValueTypeDefault>
 		  , template <typename...> typename Container = std::vector
 		  , typename ...Args
