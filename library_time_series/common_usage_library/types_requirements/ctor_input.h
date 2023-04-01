@@ -34,12 +34,11 @@ namespace culib::requirements {
   > : std::true_type {};
 
   template <typename Input, typename Result>
-  constexpr bool isConveribleOrConstructible () {
-	  return MaybeConveribleOrConstructibleFromTo<Input, Result>::value;
-  }
+  inline constexpr bool is_converible_or_constructible_v {
+	  MaybeConveribleOrConstructibleFromTo<Input, Result>::value };
 
   template <typename Input, typename Result>
-  using ConveribleOrConstructibleFromTo = std::enable_if_t<isConveribleOrConstructible<Input, Result>(), bool>;
+  using ConveribleOrConstructibleFromTo = std::enable_if_t<is_converible_or_constructible_v<Input, Result>, bool>;
 
 #else
 
@@ -49,15 +48,8 @@ namespace culib::requirements {
 			  std::is_constructible_v<Result, Input>;
 
   template <typename Input, typename Result>
-  concept NotConveribleOrConstructibleFromTo = !ConveribleOrConstructibleFromTo<Input, Result>;
-
-  template <typename Input, typename Result>
-  requires ConveribleOrConstructibleFromTo<Input, Result>
-  constexpr bool isConveribleOrConstructible_v () { return true; }
-
-  template <typename Input, typename Result>
-  requires NotConveribleOrConstructibleFromTo<Input, Result>
-  constexpr bool isConveribleOrConstructible_v () { return false; }
+  inline constexpr bool is_converible_or_constructible_v  {
+	  ConveribleOrConstructibleFromTo<Input, Result> ? true : false };
 
 
 #endif

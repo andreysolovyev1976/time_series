@@ -34,7 +34,7 @@ namespace culib::requirements {
 								 std::void_t<std::is_constructible<Object<Arg1>>>
   > : std::true_type {};
   template <template <typename...> typename Object, typename Arg1>
-  constexpr bool objectCanHaveSingleArg_v () {return ObjectCanHaveSingleArg<Object, Arg1>::value;}
+  inline constexpr bool object_can_have_single_arg_v { ObjectCanHaveSingleArg<Object, Arg1>::value };
 
   template <template <typename...> typename Object, typename Arg1, typename Arg2, typename = void>
   struct objectCanHaveTwoArgs : std::false_type {};
@@ -44,35 +44,24 @@ namespace culib::requirements {
 							   std::void_t<std::is_constructible<Object<Arg1, Arg2>>>
   > : std::true_type {};
   template <template <typename...> typename Object, typename Arg1, typename Arg2>
-  constexpr bool objectCanHaveTwoArgs_v () {return objectCanHaveTwoArgs<Object, Arg1, Arg2>::value;}
+  inline constexpr bool object_can_have_two_args_v { objectCanHaveTwoArgs<Object, Arg1, Arg2>::value };
 
 #else
 
   template <template <typename...> typename Object, typename Arg1>
   concept ObjectCanHaveSingleArg = requires () { std::is_constructible_v<Object<Arg1>>; };
-  template <template <typename...> typename Object, typename Arg1>
-  concept NotObjectCanHaveSingleArg = !ObjectCanHaveSingleArg<Object, Arg1> ;
 
   template <template <typename...> typename Object, typename Arg1>
-  requires ObjectCanHaveSingleArg<Object, Arg1>
-  constexpr bool objectCanHaveSingleArg_v () {return true;}
-
-  template <template <typename...> typename Object, typename Arg1>
-  requires NotObjectCanHaveSingleArg<Object, Arg1>
-  constexpr bool objectCanHaveSingleArg_v () {return false;}
+  inline constexpr bool object_can_have_single_arg_v {
+	  ObjectCanHaveSingleArg<Object, Arg1> ? true : false };
 
   template <template <typename...> typename Object, typename Arg1, typename Arg2>
   concept ObjectCanHaveTwoArgs = requires () { std::is_constructible_v<Object<Arg1, Arg2>>; };
-  template <template <typename...> typename Object, typename Arg1, typename Arg2>
-  concept NotObjectCanHaveTwoArgs = !ObjectCanHaveTwoArgs<Object, Arg1, Arg2>;
 
   template <template <typename...> typename Object, typename Arg1, typename Arg2>
-  requires ObjectCanHaveTwoArgs<Object, Arg1, Arg2>
-  constexpr bool objectCanHaveTwoArgs_v () {return true;}
+  inline constexpr bool object_can_have_two_args_v {
+	  ObjectCanHaveTwoArgs<Object, Arg1, Arg2> ? true : false };
 
-  template <template <typename...> typename Object, typename Arg1, typename Arg2>
-  requires NotObjectCanHaveTwoArgs<Object, Arg1, Arg2>
-  constexpr bool objectCanHaveTwoArgs_v () {return false;}
 
 #endif
 

@@ -6,7 +6,6 @@
 #include "common_usage_library/timestamp.hpp"
 
 #include <unordered_map>
-#include <sstream>
 #include <thread>
 
 
@@ -106,8 +105,6 @@ TEST(BasicsTimestamp, Hasher) {
 	ASSERT_EQ(um[second], 2);
 }
 
-
-
 TEST(BasicsTimestamp, Timer) {
 	using namespace culib::time;
 	auto const stop = Timestamp<Milliseconds>{} + 100ms;
@@ -119,4 +116,24 @@ TEST(BasicsTimestamp, Timer) {
 	}
 
 	ASSERT_TRUE(time_left <= 0);
+}
+
+TEST(BasicsTimestamp, DurationComparison) {
+	using namespace culib::time;
+	auto ms = ZeroDuration<Milliseconds>;
+	auto s = ZeroDuration<Seconds>;
+	auto m = ZeroDuration<Minutes>;
+	auto h = ZeroDuration<Hours>;
+
+	ASSERT_TRUE(less(ms, s));
+	ASSERT_TRUE(less(s, m));
+	ASSERT_TRUE(less(m, h));
+	ASSERT_TRUE(less(ms, h));
+	ASSERT_TRUE(less(m, h));
+
+	ASSERT_FALSE(less(h, m));
+	ASSERT_FALSE(less(m, s));
+	ASSERT_FALSE(less(s, ms));
+	ASSERT_FALSE(less(h, s));
+	ASSERT_FALSE(less(h, ms));
 }

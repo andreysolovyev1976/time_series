@@ -12,11 +12,10 @@
 #include <string>
 #include <ctime>
 #include <chrono>
-#include <ratio>
 #include <cstdint>
 #include <cstddef>
 #include <cmath>
-#include <iosfwd>
+#include <stdexcept>
 
 #ifndef TIMESTAMP_H
 #define TIMESTAMP_H
@@ -25,8 +24,11 @@ namespace culib::time {
 
 
   using SysClock = std::chrono::system_clock;
-  using UtcClock = std::chrono::utc_clock;
   using HiResClock = std::chrono::high_resolution_clock;
+
+#if defined(__cplusplus) && (__cplusplus>201703L)
+using UtcClock = std::chrono::utc_clock;
+#endif
   using DefaultClock = SysClock;
 
 
@@ -93,9 +95,15 @@ namespace culib::time {
   using Microseconds = std::chrono::microseconds;
   using Milliseconds = std::chrono::milliseconds;
   using Seconds = std::chrono::seconds;
+  using FiveSeconds = std::chrono::duration<long, std::ratio<5>>;
+  using TenSeconds = std::chrono::duration<long, std::ratio<10>>;
   using ThirtySeconds = std::chrono::duration<long, std::ratio<30>>;
   using Minutes = std::chrono::minutes;
   using FiveMinutes = std::chrono::duration<long, std::ratio<300>>;
+  using TenMinutes = std::chrono::duration<long, std::ratio<600>>;
+  using FifteenMinutes = std::chrono::duration<long, std::ratio<900>>;
+  using ThirtyMinutes = std::chrono::duration<long, std::ratio<1800>>;
+  using Hours = std::chrono::hours;
 
 
   /*
@@ -125,13 +133,32 @@ typedef duration<     long, ratio<3600> > hours;
 	  return std::is_same_v<Duration, Minutes>;
   }
 
-
 #ifndef __cpp_concepts
   template<typename Duration, requirements::IsDuration<Duration> = true>
 #else
   template<requirements::IsDuration Duration>
 #endif
   static constexpr auto ZeroDuration {Duration::zero()};
+
+
+
+#ifndef __cpp_concepts
+  template<typename Duration1, typename Duration2,
+		requirements::IsDuration<Duration1> = true,
+		requirements::IsDuration<Duration2> = true>
+#else
+  template<requirements::IsDuration Duration1, requirements::IsDuration Duration2>
+#endif
+  constexpr auto less (Duration1, Duration2) noexcept {
+	  using R1 = typename Duration1::period;
+	  using R2 = typename Duration2::period;
+	  if constexpr (! (requirements::is_ratio_v<R1> && requirements::is_ratio_v<R2>) ) {
+		  throw std::invalid_argument ("can't compare durations");
+	  }
+	  return std::ratio_less_v<R1, R2>;
+  }
+
+
 
 
 #ifndef __cpp_concepts
@@ -225,10 +252,10 @@ typedef duration<     long, ratio<3600> > hours;
 		  (requirements::IsArithmetic<Number> || requirements::IsDuration<Duration>)
 #endif
   Timestamp<Duration>& operator -= (Timestamp<Duration>& lhs, Number rhs) {
-	  if constexpr (requirements::IsArithmetic<Number>) {
+	  if constexpr (std::is_arithmetic_v<Number>) {
 		  lhs.time_point -= Duration {rhs};
 	  }
-	  else if constexpr (requirements::IsDuration<Number>) {
+	  else if constexpr (requirements::is_duration_v<Number>) {
 		  lhs.time_point -= rhs;
 	  }
 	  return lhs;
@@ -260,10 +287,10 @@ typedef duration<     long, ratio<3600> > hours;
 		  (requirements::IsArithmetic<Number> || requirements::IsDuration<Duration>)
 #endif
   Timestamp<Duration>& operator += (Timestamp<Duration>& lhs, Number rhs) {
-	  if constexpr (requirements::IsArithmetic<Number>) {
+	  if constexpr (std::is_arithmetic_v<Number>) {
 		  lhs.time_point += Duration {rhs};
 	  }
-	  else if constexpr (requirements::IsDuration<Number>) {
+	  else if constexpr (requirements::is_duration_v<Number>) {
 		  lhs.time_point += rhs;
 	  }
 	  return lhs;

@@ -30,6 +30,8 @@ namespace culib::requirements {
 						>
   > : std::true_type{};
 
+  template <typename Duration>
+  inline constexpr bool is_duration_v { MaybeDuration<Duration>::value };
 
   template <typename Duration>
   using IsDuration = std::enable_if_t<MaybeDuration<Duration>::value, bool>;
@@ -37,18 +39,11 @@ namespace culib::requirements {
   template <typename Duration>
   using IsNotDuration = std::enable_if_t<!MaybeDuration<Duration>::value, bool>;
 
-  template <typename Duration, IsDuration<Duration> = true>
-  constexpr bool isDuration_v () { return true; }
-
-  template <typename Duration, IsNotDuration<Duration> = true>
-  constexpr bool isDuration_v () { return false; }
-
-
   template <typename SomeType>
   using CanBeDuration  = std::enable_if_t<
 		  std::disjunction_v<
 		  	MaybeDuration<SomeType>,
-		  	std::is_arithmetic_v<SomeType>
+		  	std::is_arithmetic<SomeType>
 		  >,
 		  bool>;
 
@@ -72,16 +67,14 @@ namespace culib::requirements {
   > : std::true_type {};
 
   template <typename Clock>
+  bool constexpr is_clock_v { MaybeClock<Clock>::value };
+
+  template <typename Clock>
   using IsClock = std::enable_if_t<MaybeClock<Clock>::value, bool>;
 
   template <typename Clock>
   using IsNotClock = std::enable_if_t<!MaybeClock<Clock>::value, bool>;
 
-  template <typename Clock, IsClock<Clock> = true>
-  bool constexpr isClock_v () { return true; }
-
-  template <typename Clock, IsNotClock<Clock> = true>
-  bool constexpr isClock_v () { return false; }
 
 
 #else
@@ -99,11 +92,8 @@ namespace culib::requirements {
   template <typename Clock>
   concept IsNotClock = !IsClock<Clock>;
 
-  template <IsClock Clock>
-  bool constexpr isClock_v () { return true; }
-
-  template <IsNotClock Clock>
-  bool constexpr isClock_v () { return false; }
+  template <typename Clock>
+  inline bool constexpr is_clock_v { IsClock<Clock> ? true : false };
 
 
   template <typename Duration>
@@ -117,12 +107,8 @@ namespace culib::requirements {
   template <typename Duration>
   concept IsNotDuration = !IsDuration<Duration>;
 
-  template <IsDuration Duration>
-  constexpr bool isDuration_v () { return true; }
-
-  template <IsNotDuration Duration>
-  constexpr bool isDuration_v () { return false; }
-
+  template <typename Duration>
+  inline constexpr bool is_duration_v { IsDuration<Duration> ? true : false };
 
 #endif
 

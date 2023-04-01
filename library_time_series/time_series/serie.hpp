@@ -88,13 +88,13 @@ namespace time_series {
 		 * evaluation and therefore the second condition is being attempted to instantiate
 		 * with the wrong arguments, resulting in a compile error
 		*/
-		if constexpr (objectCanHaveSingleArg_v<Container, Elem>()) {
-			if constexpr (isContainer_v<Container<Elem, Args...>>()) {
+		if constexpr (object_can_have_single_arg_v<Container, Elem>) {
+			if constexpr (is_container_v<Container<Elem, Args...>>) {
 				return ContainerTypeHolder<Container<Elem, Args...>>{};
 			}
 		}
-		else if constexpr (objectCanHaveTwoArgs_v<Container, Timestamp, ElemType>()) {
-			if constexpr (isContainer_v<Container<Timestamp, ElemType, Args...>>()) {
+		else if constexpr (object_can_have_two_args_v<Container, Timestamp, ElemType>) {
+			if constexpr (is_container_v<Container<Timestamp, ElemType, Args...>>) {
 				return ContainerTypeHolder<Container<Timestamp, ElemType, Args...>>{};
 			}
 		}

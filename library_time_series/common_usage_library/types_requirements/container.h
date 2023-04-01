@@ -32,15 +32,15 @@ namespace culib::requirements {
   > : std::true_type {};
 
   template<typename Container>
-  constexpr bool isContainer_v() { return MaybeContainer<Container>::value; }
+  inline constexpr bool is_container_v { MaybeContainer<Container>::value };
 
   template<typename Container>
-  using IsContainer = std::enable_if_t<isContainer_v<Container>(), bool>;
+  using IsContainer = std::enable_if_t<is_container_v<Container>, bool>;
 
   template <typename... Args>
   constexpr bool areAllContainers_v () {
 	  bool result {true};
-	  return ((result = result && isContainer_v<Args>()),...);
+	  return ((result = result && is_container_v<Args>),...);
   }
 
   template<typename... MaybeContainer>
@@ -60,14 +60,9 @@ namespace culib::requirements {
 	  c.end();
   };
 
+
   template<typename C>
-  concept IsNotContainer = !IsContainer<C>;
-
-  template <IsContainer C>
-  constexpr bool isContainer_v () {return true;}
-
-  template <IsNotContainer C>
-  constexpr bool isContainer_v () {return false;}
+  inline constexpr bool is_container_v { IsContainer<C> ? true : false };
 
   template<typename... MaybeContainer>
   concept AreAllContainers = requires () {requires ((IsContainer<MaybeContainer>),...);};

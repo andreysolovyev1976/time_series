@@ -41,13 +41,11 @@ namespace culib::requirements {
 						  >
   > : std::true_type {};
   template <typename Key, typename Type, typename HashResult = std::size_t>
-  constexpr bool isHash_v () {
-	  return
+  inline constexpr bool is_hash_v {
 			  MaybeUserDefinedHash<Key, Type, HashResult>::value ||
-			  MaybeBuiltInHash<Key, Type>::value;
-  }
+			  MaybeBuiltInHash<Key, Type>::value };
   template <typename Key, typename Type, typename HashResult = std::size_t>
-  using IsHash = std::enable_if_t<isHash_v<Key, Type, HashResult>, bool>;
+  using IsHash = std::enable_if_t<is_hash_v<Key, Type, HashResult>, bool>;
 
 #else
   template <typename Key, typename Type, typename HashResult = std::size_t>
@@ -63,12 +61,7 @@ namespace culib::requirements {
   concept IsNotHash = ! IsHash<Key, Type, HashResult>;
 
   template <typename Key, typename Type, typename HashResult = std::size_t>
-  requires IsHash<Key, Type, HashResult>
-  constexpr bool isHash_v () { return true; }
-
-  template <typename Key, typename Type, typename HashResult = std::size_t>
-  requires IsNotHash<Key, Type, HashResult>
-  constexpr bool isHash_v () { return false; }
+  inline constexpr bool is_hash_v { IsHash<Key, Type, HashResult> ? true : false };
 
 #endif
 

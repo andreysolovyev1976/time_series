@@ -43,9 +43,7 @@ namespace culib::requirements {
   concept NotIterator = !Iterator<I>;
 
   template <Iterator Iter>
-  constexpr bool isIterator_v () { return true; }
-  template <NotIterator Iter>
-  constexpr bool isIterator_v () { return false; }
+  inline constexpr bool is_iterator_v { Iterator<Iter> ? true : false };
 
   template<typename... MaybeIterator>
   concept AreAllIterators = requires () {requires ((Iterator<MaybeIterator>),...);};
@@ -89,11 +87,9 @@ namespace culib::requirements {
   template <class Derived, class Base>
   using IsNotDerivedFrom = std::enable_if_t<!std::is_base_of_v<Base, Derived>, bool>;
 
-  template <class Derived, class Base, IsDerivedFrom<Derived, Base> = true>
-  constexpr bool isDerivedFrom_v () { return true ;}
+  template <class Derived, class Base>
+  inline constexpr bool is_derived_from_v { std::is_base_of_v<Base, Derived> };
 
-  template <class Derived, class Base, IsNotDerivedFrom<Derived, Base> = true>
-  constexpr bool isDerivedFrom_v () { return false; }
 
   template <typename Iter, typename = void>
   struct MaybeIterator : std::false_type {};
@@ -107,15 +103,15 @@ namespace culib::requirements {
 		  typename Iter::iterator_category>> : std::true_type {};
 
   template <typename Iter>
-  constexpr bool isIterator_v () { return MaybeIterator<Iter>::value; }
+  inline constexpr bool is_iterator_v { MaybeIterator<Iter>::value };
 
   template <typename Iter>
-  using IsIterator = std::enable_if_t<isIterator_v<Iter>(), bool>;
+  using IsIterator = std::enable_if_t<is_iterator_v<Iter>, bool>;
 
   template <typename... MaybeIterators>
   constexpr bool areAllIterators_v () {
 	  bool result {true};
-	  return ((result = result && isIterator_v<MaybeIterators>()),...);
+	  return ((result = result && is_iterator_v<MaybeIterators>),...);
   }
 
   template<typename... MaybeIterators>
@@ -125,7 +121,7 @@ namespace culib::requirements {
 
   template <typename Iter, IsIterator<Iter> = true>
   using InputIterator = std::enable_if_t<
-		  isDerivedFrom_v<
+		  is_derived_from_v<
 				  typename std::iterator_traits<Iter>::iterator_category,
 				  std::input_iterator_tag>,
 		  bool>;

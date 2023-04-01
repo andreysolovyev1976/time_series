@@ -41,22 +41,22 @@ struct Container_not_ok {
 
 
 TEST(BasicsTypesRequirements, CtorInputOk) {
-	bool ok = requirements::isConveribleOrConstructible_v<double, int>();
+	bool ok = requirements::is_converible_or_constructible_v<double, int>;
 	ASSERT_TRUE(ok);
-	ok = requirements::isConveribleOrConstructible_v<int, double>();
+	ok = requirements::is_converible_or_constructible_v<int, double>;
 	ASSERT_TRUE(ok);
-	ok = requirements::isConveribleOrConstructible_v<int, bool>();
+	ok = requirements::is_converible_or_constructible_v<int, bool>;
 	ASSERT_TRUE(ok);
-	ok = requirements::isConveribleOrConstructible_v<S<int>, double>();
+	ok = requirements::is_converible_or_constructible_v<S<int>, double>;
 	ASSERT_TRUE(ok);
 }
 
 TEST(BasicsTypesRequirements, CtorInputNotOk) {
-	bool ok = requirements::isConveribleOrConstructible_v<std::string, int>();
+	bool ok = requirements::is_converible_or_constructible_v<std::string, int>;
 	ASSERT_FALSE(ok);
-	ok = requirements::isConveribleOrConstructible_v<double, S<int>>();
+	ok = requirements::is_converible_or_constructible_v<double, S<int>>;
 	ASSERT_FALSE(ok);
-	ok = requirements::isConveribleOrConstructible_v<bool, std::string>();
+	ok = requirements::is_converible_or_constructible_v<bool, std::string>;
 	ASSERT_FALSE(ok);
 }
 
@@ -64,20 +64,20 @@ TEST(BasicsTypesRequirements, CtorInputNotOk) {
 TEST(BasicsTypesRequirements, ContainerOk) {
 	using Elem = time_series::Element<culib::time::Seconds, int>;
 	using Map = std::map<culib::time::Timestamp<culib::time::Seconds>, time_series::Value<time_series::value::traits::ValueTypeDefault>>;
-	ASSERT_TRUE(requirements::isContainer_v<std::string>());
-	ASSERT_TRUE(requirements::isContainer_v<std::vector<Elem>>());
-	ASSERT_TRUE(requirements::isContainer_v<Map>());
-	ASSERT_TRUE(requirements::isContainer_v<std::deque<Elem>>());
-	ASSERT_TRUE(requirements::isContainer_v<std::set<Elem>>());
-	ASSERT_TRUE(requirements::isContainer_v<Container_ok<Elem>>());
+	ASSERT_TRUE(requirements::is_container_v<std::string>);
+	ASSERT_TRUE(requirements::is_container_v<std::vector<Elem>>);
+	ASSERT_TRUE(requirements::is_container_v<Map>);
+	ASSERT_TRUE(requirements::is_container_v<std::deque<Elem>>);
+	ASSERT_TRUE(requirements::is_container_v<std::set<Elem>>);
+	ASSERT_TRUE(requirements::is_container_v<Container_ok<Elem>>);
 }
 
 TEST(BasicsTypesRequirements, ContainerNotOk) {
 	using Elem = time_series::Element<culib::time::Seconds, int>;
-	ASSERT_FALSE(requirements::isContainer_v<double>());
-	ASSERT_FALSE(requirements::isContainer_v<int>());
-	ASSERT_FALSE(requirements::isContainer_v<Container_not_ok<Elem>>());
-	ASSERT_FALSE(requirements::isContainer_v<std::variant<Elem>>());
+	ASSERT_FALSE(requirements::is_container_v<double>);
+	ASSERT_FALSE(requirements::is_container_v<int>);
+	ASSERT_FALSE(requirements::is_container_v<Container_not_ok<Elem>>);
+	ASSERT_FALSE(requirements::is_container_v<std::variant<Elem>>);
 }
 
 
@@ -98,50 +98,27 @@ struct SComparator {
 
 
 TEST (BasicsTypesRequirements, TypeIsHash) {
-	bool result = requirements::isHash_v<S1, SHasher>();
+	bool result = requirements::is_hash_v<S1, SHasher>;
 	ASSERT_TRUE(result);
-	result = requirements::isHash_v<S1, SComparator>();
+	result = requirements::is_hash_v<S1, SComparator>;
 	ASSERT_FALSE(result);
-	result = requirements::isHash_v<S1, double>();
+	result = requirements::is_hash_v<S1, double>;
 	ASSERT_FALSE(result);
 	std::hash<int> hi;
-	result = requirements::isHash_v<int, decltype(hi)>();
+	result = requirements::is_hash_v<int, decltype(hi)>;
 	ASSERT_TRUE(result);
 }
 
 
 TEST (BasicsTypesRequirements, TypeIsComparator) {
-	bool result = requirements::isComparator_v<S1, SComparator>();
+	bool result = requirements::is_comparator_v<S1, SComparator>;
 	ASSERT_TRUE(result);
-	result = requirements::isComparator_v<S1, SHasher>();
+	result = requirements::is_comparator_v<S1, SHasher>;
 	ASSERT_FALSE(result);
-	result = requirements::isComparator_v<S1, double>();
+	result = requirements::is_comparator_v<S1, double>;
 	ASSERT_FALSE(result);
-	result = requirements::isComparator_v<S1, std::less<S1>>();
+	result = requirements::is_comparator_v<S1, std::less<S1>>;
 	ASSERT_TRUE(result);
 }
 
 
-#ifdef __cpp_concepts
-
-TEST (BasicsTypesRequirements, ConceptsContainerOk) {
-	using Elem = time_series::Element<culib::time::Seconds, int>;
-	using Map = std::map<culib::time::Timestamp<culib::time::Seconds>, time_series::Value<time_series::value::traits::ValueTypeDefault>>;
-	ASSERT_TRUE(requirements::isContainer_v<std::string>());
-	ASSERT_TRUE(requirements::isContainer_v<std::vector<Elem>>());
-	ASSERT_TRUE(requirements::isContainer_v<Map>());
-	ASSERT_TRUE(requirements::isContainer_v<std::deque<Elem>>());
-	ASSERT_TRUE(requirements::isContainer_v<std::set<Elem>>());
-	ASSERT_TRUE(requirements::isContainer_v<Container_ok<Elem>>());
-}
-
-TEST(BasicsTypesRequirements, ConceptsContainerNotOk) {
-	using Elem = time_series::Element<culib::time::Seconds, int>;
-	ASSERT_FALSE(requirements::isContainer_v<double>());
-	ASSERT_FALSE(requirements::isContainer_v<int>());
-	ASSERT_FALSE(requirements::isContainer_v<Container_not_ok<Elem>>());
-	ASSERT_FALSE(requirements::isContainer_v<std::variant<Elem>>());
-}
-
-
-#endif

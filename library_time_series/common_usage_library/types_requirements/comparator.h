@@ -44,10 +44,10 @@ template <typename Value, typename Type, typename = void>
 
   > : std::true_type {};
   template <typename Value, typename Type>
-  constexpr bool isComparator_v () {return MaybeComparator<Value, Type>::value;}
+  inline constexpr bool is_comparator_v { MaybeComparator<Value, Type>::value };
 
   template <typename Value, typename Type>
-  using IsComparator = std::enable_if_t<isComparator_v<Value, Type>, bool>;
+  using IsComparator = std::enable_if_t<is_comparator_v<Value, Type>, bool>;
 #else
 
   template <typename Value, typename Type>
@@ -63,18 +63,10 @@ template <typename Value, typename Type, typename = void>
 			  bool>;
   };
 
-  template <typename Value, typename Type>
-  concept NotComparator = requires () {
-	  requires !Comparator<Value, Type>;
-  };
 
   template <typename Value, typename Type>
-  requires Comparator<Value, Type>
-  constexpr bool isComparator_v () {return true;}
+  inline constexpr bool is_comparator_v { Comparator<Value, Type> ? true : false };
 
-  template <typename Value, typename Type>
-  requires NotComparator<Value, Type>
-  constexpr bool isComparator_v () {return false;}
 
 
 #endif

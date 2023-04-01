@@ -8,6 +8,7 @@
 #ifdef __cpp_concepts
 #include <concepts>
 #endif
+#include <ratio>
 
 #ifndef TYPE_REQUIREMENTS_NUMERICS_H
 #define TYPE_REQUIREMENTS_NUMERICS_H
@@ -35,6 +36,8 @@ namespace culib::requirements {
   using IsNotArithmetic = std::enable_if_t<!std::is_arithmetic_v<Number>, bool>;;
 
 
+
+
   template <typename I, typename = void>
   struct MaybeIncrementable : std::false_type {} ;
   template <typename I>
@@ -48,7 +51,6 @@ namespace culib::requirements {
   template <typename Iter>
   using IsIncrementable = std::enable_if_t<is_incrementable_v<Iter>, bool>;
 
-
   template <typename I, typename = void>
   struct MaybeDecrementable : std::false_type {} ;
   template <typename I>
@@ -59,9 +61,27 @@ namespace culib::requirements {
   template <typename I>
   inline constexpr bool is_decrementable_v {MaybeDecrementable<I>::value} ;
 
-
   template <typename Iter>
   using IsDecrementable = std::enable_if_t<is_decrementable_v<Iter>, bool>;
+
+
+
+
+  template <typename R, typename = void>
+  struct MaybeStdRatio : std::false_type {} ;
+  template <typename R>
+  struct MaybeStdRatio<R, std::void_t<
+		  decltype(R::num),
+		  decltype(R::den),
+		  decltype(std::declval<std::ratio_equal<R, R>>())>
+		  > : std::true_type {};
+
+  template <typename R>
+  inline constexpr bool is_ratio_v { MaybeStdRatio<R>::value };
+
+  template <typename R>
+  using IsStdRatio = std::enable_if_t<is_ratio_v<R>, bool>;
+
 
 
 #else
@@ -81,17 +101,31 @@ namespace culib::requirements {
   concept IsNotArithmetic = !IsArithmetic<Number>;
 
 
+
+
+
   template <typename I>
   concept Incrementable = requires(I i) {
 	  ++i;
 	  i++;
   };
-
   template <typename I>
   concept Decrementable = requires(I i) {
 	  --i;
 	  i--;
   };
+
+
+
+  template <typename Ratio>
+  concept IsStdRatio = requires () {
+	  Ratio::num;
+	  Ratio::den;
+	  std::ratio_equal<Ratio, Ratio>{};
+  };
+  template <typename R>
+  inline constexpr bool is_ratio_v { IsStdRatio<R> ? true : false };
+
 
 #endif
 

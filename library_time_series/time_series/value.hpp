@@ -80,14 +80,14 @@ namespace time_series {
   Value<ValueType>::Value (std::string&& input) {
 	  auto input_number = culib::utils::fromChars(std::move(input));
 	  using Input = decltype(input_number);
-	  static_assert(culib::requirements::isConveribleOrConstructible_v<Input, ValueType>());
+	  static_assert(culib::requirements::is_converible_or_constructible_v<Input, ValueType>);
 	  value = input_number;
   }
   template <typename ValueType>
   Value<ValueType>::Value (const std::string& input) {
 	  auto input_number = culib::utils::fromChars(input);
 	  using Input = decltype(input_number);
-	  static_assert(culib::requirements::isConveribleOrConstructible_v<Input, ValueType>());
+	  static_assert(culib::requirements::is_converible_or_constructible_v<Input, ValueType>);
 	  value = input_number;
   }
 
