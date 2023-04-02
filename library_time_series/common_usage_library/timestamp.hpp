@@ -59,8 +59,10 @@ namespace culib::time {
 
 #if defined(__cplusplus) && (__cplusplus>201703L)
   using UtcClock = std::chrono::utc_clock;
+  using TaiClock = std::chrono::tai_clock;
+  using GpsClock = std::chrono::gps_clock;
 #endif
-  using DefaultClock = SysClock;
+  using DefaultClock = HiResClock;
 
 
 #ifndef __cpp_concepts
@@ -121,8 +123,8 @@ namespace culib::time {
 	  requires details::ConversionAllowed<Duration, DurationTo>
 #endif
 	  operator Timestamp<DurationTo> () noexcept {
-		  Timestamp<DurationTo> result {*this};
-		  result.time_point = std::chrono::time_point_cast<DurationTo>(result.time_point);
+		  Timestamp<DurationTo> result;
+		  result.time_point = std::chrono::time_point_cast<DurationTo>(time_point);
 		  return result;
 	  }
 
@@ -151,7 +153,6 @@ namespace culib::time {
 	  }
   };
 
-
   using Nanoseconds = std::chrono::nanoseconds;
   using Microseconds = std::chrono::microseconds;
   using Milliseconds = std::chrono::milliseconds;
@@ -165,49 +166,33 @@ namespace culib::time {
   using FiveMinutes = std::chrono::duration<long, std::ratio<300>>;
   using TenMinutes = std::chrono::duration<long, std::ratio<600>>;
   using FifteenMinutes = std::chrono::duration<long, std::ratio<900>>;
-  using ThirtyMinutes = std::chrono::duration<long, std::ratio<1800>>;
-  using Hours = std::chrono::hours;
-  using TwoHours = std::chrono::duration<long, std::ratio<3600>>;
-  using ThreeHours = std::chrono::duration<long, std::ratio<5400>>;
-  using SixHours = std::chrono::duration<long, std::ratio<10800>>;
-  using EightHours = std::chrono::duration<long, std::ratio<28800>>;
-  using TwelveHours = std::chrono::duration<long, std::ratio<43200>>;
-  using Days = std::chrono::duration<long, std::ratio<86400>>;
-  using TwoDays = std::chrono::duration<long, std::ratio<172800>>;
-  using ThreeDays = std::chrono::duration<long, std::ratio<259200>>;
-
+  using ThirtyMinutes = std::chrono::duration<long, std::ratio<1'800>>;
+  using Hours = std::chrono::duration<long, std::ratio<3'600>>;
+  using TwoHours = std::chrono::duration<long, std::ratio<7'200>>;
+  using ThreeHours = std::chrono::duration<long, std::ratio<10'800>>;
+  using SixHours = std::chrono::duration<long, std::ratio<21'600>>;
+  using EightHours = std::chrono::duration<long, std::ratio<28'800>>;
+  using TwelveHours = std::chrono::duration<long, std::ratio<43'200>>;
+  using Days = std::chrono::duration<long, std::ratio<86'400>>;
+  using TwoDays = std::chrono::duration<long, std::ratio<172'800>>;
+  using ThreeDays = std::chrono::duration<long, std::ratio<259'200>>;
+  using Weeks = std::chrono::duration<long, std::ratio<604'800>>;
+  using Months = std::chrono::duration<long, std::ratio<2'628'000>>;
+  using Quarters = std::chrono::duration<long, std::ratio<7'884'000>>;
+  using Year = std::chrono::duration<long, std::ratio<31'536'000>>;
 //todo: buisness days
 //todo: weeks
 //todo: month
 
 
 #if 0
-  /*
+//a hint from std::chrono::
 typedef duration<long long,         nano> nanoseconds;
 typedef duration<long long,        micro> microseconds;
 typedef duration<long long,        milli> milliseconds;
 typedef duration<long long              > seconds;
 typedef duration<     long, ratio<  60> > minutes;
 typedef duration<     long, ratio<3600> > hours;
-*/
-
-
-  template <typename Duration>
-  constexpr bool IsMicroseconds (Duration) {
-	  return std::is_same_v<Duration, Microseconds>;
-  }
-  template <typename Duration>
-  constexpr bool IsMilliseconds (Duration) {
-	  return std::is_same_v<Duration, Milliseconds>;
-  }
-  template <typename Duration>
-  constexpr bool IsSeconds (Duration) {
-	  return std::is_same_v<Duration, Seconds>;
-  }
-  template <typename Duration>
-  constexpr bool IsMinutes (Duration) {
-	  return std::is_same_v<Duration, Minutes>;
-  }
 #endif
 
 #ifndef __cpp_concepts

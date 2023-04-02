@@ -4,5 +4,5 @@
 
 #include "time_series/value.hpp"
 #include "financial/data_structures/single_quote.h"
-#include "financial/data_structures/ohlcv.h"
-#include "financial/data_structures/bid_ask.h"
+#include "financial/data_structures/ohlcv.hpp"
+#include "financial/data_structures/bid_ask.hpp"
