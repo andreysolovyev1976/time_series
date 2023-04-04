@@ -279,7 +279,14 @@ typedef duration<     long, ratio<3600> > hours;
   }
 
   template<typename Duration>
-  Timestamp<Duration> fromString(std::string input, const std::string& input_fmt){
+  std::istream& operator >> (std::istream& is, Timestamp<Duration>& timestamp){
+	  is >> date::parse("%F %T", timestamp.time_point);
+	  return is;
+  }
+
+
+  template<typename Duration>
+  Timestamp<Duration> fromString(std::string input, const std::string& input_fmt = "%F %T"){
 	  Timestamp<Duration> timestamp;
 	  std::stringstream ss(std::move(input));
 	  date::from_stream(ss, input_fmt.c_str(), timestamp.time_point);

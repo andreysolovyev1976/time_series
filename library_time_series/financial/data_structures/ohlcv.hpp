@@ -1173,7 +1173,7 @@ namespace time_series::financial {
   }//!operator
   template <typename ValueType>
   std::istream& operator >> (std::istream& is, OHLCV<ValueType>& ohlcv) {
-	  typename OHLCV<ValueType>::Type open, high, low, close, volume {0.0};
+	  ValueType open, high, low, close, volume {0.0};
 	  bool ohlc_read_ok {false}, volume_read_ok {false};
 	  if (is && !is.eof()) {
 		  is >> open >> high >> low >> close;

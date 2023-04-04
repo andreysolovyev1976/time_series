@@ -188,7 +188,6 @@ TEST(SerieContainer, Set_UserDefinedComparatorStruct) {
 	const std::string check {"3 1 12 "};
 	ASSERT_EQ(ss.str(), check);
 }
-#if 0
 TEST(SerieContainer, Set_UserDefinedComparatorLambda) {
 	time_series::Serie<
 			Duration, ElemType,
@@ -209,7 +208,6 @@ TEST(SerieContainer, Set_UserDefinedComparatorLambda) {
 	const std::string check {"3 1 12 "};
 	ASSERT_EQ(ss.str(), check);
 }
-#endif
 TEST(SerieContainer, Map_DefaultComparator) {
 	time_series::Serie<
 			Duration, ElemType,
@@ -251,7 +249,7 @@ TEST(SerieContainer, Map_UserDefinedComparatorStruct) {
 	const std::string check {"3 1 12 "};
 	ASSERT_EQ(ss.str(), check);
 }
-#if 0
+
 TEST(SerieContainer, Map_UserDefinedComparatorLambda) {
 	time_series::Serie<
 		Duration, ElemType,
@@ -273,7 +271,6 @@ TEST(SerieContainer, Map_UserDefinedComparatorLambda) {
 	const std::string check {"3 1 12 "};
 	ASSERT_EQ(ss.str(), check);
 }
-#endif
 
 namespace hashers {
   template <typename Duration>

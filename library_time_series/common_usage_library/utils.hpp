@@ -4,24 +4,26 @@
 
 #pragma once
 
+#include "types_requirements/numerics.h"
+
 #include <charconv>
 #include <string>
 #include <array>
 #include <stdexcept>
 #include <system_error>
-#include <tuple>
+#include <optional>
 
 #ifndef BASE_UTILS_H
 #define BASE_UTILS_H
 
 namespace culib::utils {
 
-	template<typename Number, typename = std::enable_if_t<std::is_arithmetic_v<Number>>>
-	std::string toChars(Number input) {
-#ifdef __APPLE__
-		return std::to_string(input);
+#ifndef __cpp_concepts
+  template<typename Number, requirements::IsArithmetic<Number> = true>
 #else
-
+  template<requirements::IsArithmetic Number>
+#endif
+	std::string toChars(Number input) {
 		std::array<char, 32> str;
 		if (auto [ptr, ec] = std::to_chars(str.data(), str.data()+str.size(), input);
 				ec == std::errc()) {
@@ -30,25 +32,31 @@ namespace culib::utils {
 		else {
 			std::invalid_argument(std::make_error_code(ec).message());
 		}
-#endif
 	}
 
-	inline
-	auto fromChars(const std::string &str) {
-		double local_result;
-#ifdef __APPLE__
-		local_result = std::stod(str);
+
+
+#ifndef __cpp_concepts
+  template<typename Number, requirements::IsArithmetic<Number> = true>
 #else
-
-		auto [ptr, ec]{std::from_chars(str.data(), str.data() + str.size(), local_result)};
-		if (ec == std::errc::invalid_argument) {
-			throw std::invalid_argument("Attempt to convert not a number; ");
-		} else if (ec == std::errc::result_out_of_range) {
-			throw std::invalid_argument("Out of bound for an int64_t; ");
-		}
+  template<requirements::IsArithmetic Number>
 #endif
-		return local_result;
-	}
+  std::optional<Number> fromChars(std::string_view str) {
+	  Number local_result;
+	  auto const last = str.data() + str.size();
+
+	  auto [ptr, ec]{std::from_chars(str.data(), last, local_result)};
+
+	  if (ec == std::errc::invalid_argument ||
+			  ec == std::errc::result_out_of_range ||
+			  ptr != last) {
+		  return std::nullopt;
+	  }
+	  return {local_result};
+//	  throw std::invalid_argument("Attempt to convert not a number; ");
+//	  throw std::invalid_argument("Out of bound; ");
+  }
+
 
 }//!namespace
 #endif //BASE_UTILS_H

@@ -10,7 +10,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char **argv) {
 //	testing::GTEST_FLAG(filter) = "Ctors*:Assignments*:Constructible*:Compare*:Arithmetics*";
 //	testing::GTEST_FLAG(filter) = "ElementFnApplication*";
 //	testing::GTEST_FLAG(filter) = "ElementFnApplication/1.*";
-	testing::GTEST_FLAG(filter) = "BasicsTimestamp.*";
+//	testing::GTEST_FLAG(filter) = "BasicsTimestamp.*";
 	return RUN_ALL_TESTS();
 }
 
@@ -19,17 +19,17 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char **argv) {
 // test double < int , int < double, double < string, string < double
 // test change of epsilon
 // test arithmetics and comparison with other field, than default
-// timestamp works poorly with high_res clock
+// DONE timestamp works poorly with high_res clock
 // test pmr:: containers
 // test
 // 	operator value_type () const;
 // 	operator elem_type () const;
 // 	operator key_type () const;
 // test structural bindings access for
-// Element
-// OHLCV
-// BidAsk
-// fix timestamp
+// 	Element
+// 	OHLCV
+// 	BidAsk
+// DONE fix timestamp
 
 
 

@@ -78,17 +78,37 @@ namespace time_series {
   }
   template <typename ValueType>
   Value<ValueType>::Value (std::string&& input) {
-	  auto input_number = culib::utils::fromChars(std::move(input));
-	  using Input = decltype(input_number);
-	  static_assert(culib::requirements::is_converible_or_constructible_v<Input, ValueType>);
-	  value = input_number;
+	  if constexpr (culib::requirements::IsArithmetic<ValueType>) {
+		  auto input_number = culib::utils::fromChars<ValueType>(input);
+		  if (input_number.has_value()) {
+			  using Input = decltype(input_number.value());
+			  static_assert(culib::requirements::is_converible_or_constructible_v<Input, ValueType>);
+			  value = input_number.value();
+		  } else {
+			  throw std::invalid_argument ("Can't construct a Value out of " + input);
+		  }
+	  }
+	  else {
+		  static_assert(culib::requirements::is_converible_or_constructible_v<std::string, ValueType>);
+		  value = std::move(input);
+	  }
   }
   template <typename ValueType>
   Value<ValueType>::Value (const std::string& input) {
-	  auto input_number = culib::utils::fromChars(input);
-	  using Input = decltype(input_number);
-	  static_assert(culib::requirements::is_converible_or_constructible_v<Input, ValueType>);
-	  value = input_number;
+	  if constexpr (culib::requirements::IsArithmetic<ValueType>) {
+		  auto input_number = culib::utils::fromChars<ValueType>(input);
+		  if (input_number.has_value()) {
+			  using Input = decltype(input_number.value());
+			  static_assert(culib::requirements::is_converible_or_constructible_v<Input, ValueType>);
+			  value = input_number.value();
+		  } else {
+			  throw std::invalid_argument ("Can't construct a Value out of " + input);
+		  }
+	  }
+	  else {
+		  static_assert(culib::requirements::is_converible_or_constructible_v<std::string, ValueType>);
+		  value = std::move(input);
+	  }
   }
 
   template <typename ValueType>

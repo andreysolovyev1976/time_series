@@ -39,6 +39,8 @@ namespace time_series {
 	  Element (ElemType &&e);
 	  Element (value_type &&p);
 	  Element (const value_type &p);
+	  Element (culib::time::Timestamp<Duration> ts, ElemType && value);
+	  Element (culib::time::Timestamp<Duration> ts, ElemType const& value);
 	  Element& operator = (const ElemType &e);
 	  Element& operator = (ElemType &&e);
 	  Element& operator = (value_type &&p);
@@ -110,6 +112,17 @@ namespace time_series {
   Element<Duration, ElemType>::Element (const Element<Duration, ElemType>::value_type &p)
 		  : timestamp (p.first)
 		  , value (p.second)
+  {}
+
+  template <typename Duration, typename ElemType>
+  Element<Duration, ElemType>::Element (culib::time::Timestamp<Duration> ts, ElemType &&value)
+		  : timestamp (ts)
+		  , value (std::move(value))
+  {}
+  template <typename Duration, typename ElemType>
+  Element<Duration, ElemType>::Element (culib::time::Timestamp<Duration> ts, ElemType const& value)
+		  : timestamp (ts)
+		  , value (value)
   {}
 
   template <typename Duration, typename ElemType>
@@ -593,10 +606,8 @@ namespace time_series {
 	  culib::time::Timestamp<Duration> timestamp;
 	  ElemType elem_type_value;
 	  if (is) {
-		  is >> timestamp;
-		  if (is && !is.eof()) {
-			  is >> elem_type_value;
-		  }
+
+		  is >> timestamp >> elem_type_value;
 
 		  if (is && !is.eof()) {
 			  element.timestamp = timestamp;

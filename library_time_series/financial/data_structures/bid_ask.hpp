@@ -1183,7 +1183,7 @@ namespace time_series::financial {
   }//!operator
   template <typename ValueType>
   std::istream& operator >> (std::istream& is, BidAsk<ValueType>& bid_ask) {
-	  typename BidAsk<ValueType>::Type bid, ask, middle, price, volume {0.0};
+	  ValueType bid, ask, middle, price, volume {0.0};
 	  bool bid_ask_read_ok {false}, volume_read_ok {false};
 	  if (is && !is.eof()) {
 		  is >> bid >> ask >> middle >> price;
