@@ -4,10 +4,13 @@
 
 #pragma once
 
-#include "finacial/const_values.h"
-#include "finacial/bid_ask.hpp"
-#include "finacial/ohlcv.hpp"
-#include "finacial/single_quote.hpp"
+
+#include "financial/data_structures/const_values.h"
+#include "financial/data_structures/bid_ask.hpp"
+#include "financial/data_structures/ohlcv.hpp"
+#include "financial/data_structures/single_quote.h"
+#include "financial/container/columns.hpp"
+
 
 #ifndef FINLIB_H
 #define FINLIB_H

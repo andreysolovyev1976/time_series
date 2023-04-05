@@ -78,7 +78,7 @@ namespace time_series {
   }
   template <typename ValueType>
   Value<ValueType>::Value (std::string&& input) {
-	  if constexpr (culib::requirements::IsArithmetic<ValueType>) {
+	  if constexpr (std::is_arithmetic_v<ValueType>) {
 		  auto input_number = culib::utils::fromChars<ValueType>(input);
 		  if (input_number.has_value()) {
 			  using Input = decltype(input_number.value());
@@ -95,7 +95,7 @@ namespace time_series {
   }
   template <typename ValueType>
   Value<ValueType>::Value (const std::string& input) {
-	  if constexpr (culib::requirements::IsArithmetic<ValueType>) {
+	  if constexpr (std::is_arithmetic_v<ValueType>) {
 		  auto input_number = culib::utils::fromChars<ValueType>(input);
 		  if (input_number.has_value()) {
 			  using Input = decltype(input_number.value());

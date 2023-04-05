@@ -49,7 +49,6 @@ Right Outer join
 
 
 #include <gtest/gtest.h>
-#include "common_usage_library/joins.hpp"
 
 #include <iosfwd>
 #include <sstream>
@@ -111,6 +110,16 @@ std::ostream& operator << (std::ostream& os, std::map<Key, int> const& m) {
 	os << '}';
 	return os;
 }
+
+/*@details
+ * need to include this AFTER operator << to make sure (operator << tuple), \n
+ * that is templated, is called after all other operators are declared and \n
+ * defined. \n
+ * */
+
+#include "common_usage_library/joins.hpp"
+
+
 
 //todo: test pointer, refs and values
 //todo: test it moves while joining

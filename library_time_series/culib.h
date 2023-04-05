@@ -6,7 +6,7 @@
 
 #include "common_usage_library/const_values.h"
 #include "common_usage_library/cpp_version.h"
-#include "common_usage_library/floating_point_comp.h"
+#include "common_usage_library/floating_point_comp.hpp"
 #include "common_usage_library/itertools.hpp"
 #include "common_usage_library/joins.hpp"
 #include "common_usage_library/memuse.hpp"

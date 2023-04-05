@@ -82,6 +82,9 @@ add_executable(${PROJECT_NAME_TEST}
         tests_serie_fun_apply.cpp
 
         tests_financial_container.cpp
+
+        tests_end_to_end_columns_single_thread.cpp
+
         )
 
 

@@ -6,9 +6,11 @@
 
 #include "types_requirements/numerics.h"
 
+#include <cstddef>
 #include <charconv>
 #include <string>
 #include <array>
+#include <vector>
 #include <stdexcept>
 #include <system_error>
 #include <optional>
@@ -56,6 +58,35 @@ namespace culib::utils {
 	  return {local_result};
 //	  throw std::invalid_argument("Attempt to convert not a number; ");
 //	  throw std::invalid_argument("Out of bound; ");
+  }
+
+
+
+  inline
+  auto splitStringBy(std::string const& line, char delim, std::size_t expected_lines_count) {
+	  std::string_view str(line);
+	  std::vector<std::string_view> result;
+	  result.reserve(expected_lines_count);
+	  std::size_t found_delim{0};
+	  while (true) {
+		  found_delim = str.find(delim);
+		  auto substr = str.substr(0, found_delim);
+		  if (not substr.empty()) result.push_back(substr);
+		  if (found_delim==str.npos) break;
+		  else str.remove_prefix(found_delim+1);
+	  }
+	  return result;
+  }
+
+  inline
+  auto splitStringViewBy(std::string_view s, char sep) {
+	  std::vector<std::string_view> result;
+	  while (!s.empty()) {
+		  size_t pos = s.find(sep);
+		  result.push_back(s.substr(0, pos));
+		  s.remove_prefix(pos!=s.npos ? pos+1 : s.size());
+	  }
+	  return result;
   }
 
 
