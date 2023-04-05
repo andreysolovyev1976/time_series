@@ -9,6 +9,7 @@
 #include "time_series/element.hpp"
 #include "time_series/serie.hpp"
 #include "time_series/serie_synthetic.hpp"
+#include "time_series/serie_requirements.h"
 
 #ifndef TSLIB_H
 #define TSLIB_H

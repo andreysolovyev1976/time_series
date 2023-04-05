@@ -39,8 +39,6 @@ namespace culib::requirements {
 	  typename I::pointer;
 	  typename I::iterator_category;
   };
-  template <typename I>
-  concept NotIterator = !Iterator<I>;
 
   template <Iterator Iter>
   inline constexpr bool is_iterator_v { Iterator<Iter> ? true : false };
@@ -91,19 +89,20 @@ namespace culib::requirements {
   inline constexpr bool is_derived_from_v { std::is_base_of_v<Base, Derived> };
 
 
-  template <typename Iter, typename = void>
-  struct MaybeIterator : std::false_type {};
+  namespace details {
+	template<typename Iter, typename = void>
+	struct MaybeIterator : std::false_type { };
 
+	template<typename Iter>
+	struct MaybeIterator<Iter, std::void_t<
+			typename Iter::value_type,
+			typename Iter::difference_type,
+			typename Iter::reference,
+			typename Iter::pointer,
+			typename Iter::iterator_category>> : std::true_type {};
+  }//!namespace
   template <typename Iter>
-  struct MaybeIterator <Iter, std::void_t<
-		  typename Iter::value_type,
-		  typename Iter::difference_type,
-		  typename Iter::reference,
-		  typename Iter::pointer,
-		  typename Iter::iterator_category>> : std::true_type {};
-
-  template <typename Iter>
-  inline constexpr bool is_iterator_v { MaybeIterator<Iter>::value };
+  inline constexpr bool is_iterator_v { details::MaybeIterator<Iter>::value };
 
   template <typename Iter>
   using IsIterator = std::enable_if_t<is_iterator_v<Iter>, bool>;

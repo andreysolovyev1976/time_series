@@ -37,29 +37,32 @@ namespace culib::requirements {
 
 
 
+  namespace details {
+	template<typename I, typename = void>
+	struct MaybeIncrementable : std::false_type { };
+	template<typename I>
+	struct MaybeIncrementable<I, std::void_t<
+			decltype(std::declval<I>()++),
+			decltype(++std::declval<I>())>> : std::true_type {};
+  }//!namespace
 
-  template <typename I, typename = void>
-  struct MaybeIncrementable : std::false_type {} ;
   template <typename I>
-  struct MaybeIncrementable<I, std::void_t<
-		  decltype(std::declval<I>()++),
-		  decltype(++std::declval<I>())>> : std::true_type {};
-
-  template <typename I>
-  inline constexpr bool is_incrementable_v {MaybeIncrementable<I>::value} ;
+  inline constexpr bool is_incrementable_v { details::MaybeIncrementable<I>::value };
 
   template <typename Iter>
   using IsIncrementable = std::enable_if_t<is_incrementable_v<Iter>, bool>;
 
-  template <typename I, typename = void>
-  struct MaybeDecrementable : std::false_type {} ;
-  template <typename I>
-  struct MaybeDecrementable<I, std::void_t<
-		  decltype(std::declval<I>()--),
-		  decltype(--std::declval<I>())>> : std::true_type {};
+  namespace details {
+	template <typename I, typename = void>
+	struct MaybeDecrementable : std::false_type {} ;
+	template <typename I>
+	struct MaybeDecrementable<I, std::void_t<
+			decltype(std::declval<I>()--),
+			decltype(--std::declval<I>())>> : std::true_type {};
+  }//!namespace
 
   template <typename I>
-  inline constexpr bool is_decrementable_v {MaybeDecrementable<I>::value} ;
+  inline constexpr bool is_decrementable_v { details::MaybeDecrementable<I>::value };
 
   template <typename Iter>
   using IsDecrementable = std::enable_if_t<is_decrementable_v<Iter>, bool>;
@@ -67,17 +70,19 @@ namespace culib::requirements {
 
 
 
-  template <typename R, typename = void>
-  struct MaybeStdRatio : std::false_type {} ;
-  template <typename R>
-  struct MaybeStdRatio<R, std::void_t<
-		  decltype(R::num),
-		  decltype(R::den),
-		  decltype(std::declval<std::ratio_equal<R, R>>())>
-		  > : std::true_type {};
+  namespace details {
+	template <typename R, typename = void>
+	struct MaybeStdRatio : std::false_type {} ;
+	template <typename R>
+	struct MaybeStdRatio<R, std::void_t<
+			decltype(R::num),
+			decltype(R::den),
+			decltype(std::declval<std::ratio_equal<R, R>>())>
+	> : std::true_type {};
+  }//!namespace
 
   template <typename R>
-  inline constexpr bool is_ratio_v { MaybeStdRatio<R>::value };
+  inline constexpr bool is_ratio_v { details::MaybeStdRatio<R>::value };
 
   template <typename R>
   using IsStdRatio = std::enable_if_t<is_ratio_v<R>, bool>;

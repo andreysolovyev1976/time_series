@@ -1226,11 +1226,11 @@ namespace std {
   template<std::size_t Index, typename ValueType>
   struct tuple_element<Index, time_series::financial::BidAsk<ValueType>>
 		  : tuple_element<Index, tuple<
-				  typename time_series::financial::BidAsk<ValueType>::value_type,
-				  typename time_series::financial::BidAsk<ValueType>::value_type,
-				  typename time_series::financial::BidAsk<ValueType>::value_type,
-				  typename time_series::financial::BidAsk<ValueType>::value_type,
-				  typename time_series::financial::BidAsk<ValueType>::value_type>
+				  typename time_series::Value<ValueType>,
+				  typename time_series::Value<ValueType>,
+				  typename time_series::Value<ValueType>,
+				  typename time_series::Value<ValueType>,
+				  typename time_series::Value<ValueType>>
 		  >{};
 }//!namespace
 

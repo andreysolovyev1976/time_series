@@ -26,6 +26,12 @@ namespace time_series {
 	  using Name = typename std::string;
 	  using Headers = typename std::vector<Name>;
 
+
+	  using duration_type = Duration;
+	  using value_type = ValueType;
+	  struct serie_synthetic_tag {}; //tag to identify a container as a SyntheticTimeSerie
+
+
 	  SerieSynthethic () { data.resize(ColumnCount); }
 	  SerieSynthethic (Name n) :name (std::move(n)) { data.resize(ColumnCount); }
 

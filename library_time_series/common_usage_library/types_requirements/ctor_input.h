@@ -5,7 +5,6 @@
 #pragma once
 
 #include <type_traits>
-
 #ifdef __cpp_concepts
 #include <concepts>
 #endif
@@ -17,25 +16,26 @@ namespace culib::requirements {
 
 
 #ifndef __cpp_concepts
-  template <typename Input, typename Result, typename = void>
-  struct MaybeConveribleOrConstructibleFromTo : std::false_type {};
+  namespace details {
+	template<typename Input, typename Result, typename = void>
+	struct MaybeConveribleOrConstructibleFromTo : std::false_type { };
 
-  template <typename Input, typename Result>
-  struct MaybeConveribleOrConstructibleFromTo <
-		  Input, Result,
-		  std::void_t<
-				  std::enable_if_t<
-						  std::disjunction_v<
-								  std::is_convertible<Input, Result>,
-								  std::is_constructible<Result, Input>
-						  >
-				  >
-		  >
-  > : std::true_type {};
-
+	template<typename Input, typename Result>
+	struct MaybeConveribleOrConstructibleFromTo<
+			Input, Result,
+			std::void_t<
+					std::enable_if_t<
+							std::disjunction_v<
+									std::is_convertible<Input, Result>,
+									std::is_constructible<Result, Input>
+							>
+					>
+			>
+	> : std::true_type {};
+  }//!namespace
   template <typename Input, typename Result>
   inline constexpr bool is_converible_or_constructible_v {
-	  MaybeConveribleOrConstructibleFromTo<Input, Result>::value };
+	  details::MaybeConveribleOrConstructibleFromTo<Input, Result>::value };
 
   template <typename Input, typename Result>
   using ConveribleOrConstructibleFromTo = std::enable_if_t<is_converible_or_constructible_v<Input, Result>, bool>;

@@ -6,7 +6,6 @@
 
 #include <type_traits>
 #include <functional>
-
 #ifdef __cpp_concepts
 #include <concepts>
 #endif
@@ -22,36 +21,39 @@ namespace culib::requirements {
  * */
 
 #ifndef __cpp_concepts
-
-template <typename Value, typename Type, typename = void>
-  struct MaybeComparator : std::false_type {};
+  namespace details {
+	template<typename Value, typename Type, typename = void>
+	struct MaybeComparator : std::false_type { };
+	template<typename Value, typename Type>
+	struct MaybeComparator<Value, Type,
+						   std::void_t<
+								   std::enable_if_t<
+										   std::is_invocable_r_v<
+												   bool,
+												   Type,
+												   std::add_const_t<std::decay_t<Value>>,
+												   std::add_const_t<std::decay_t<Value>>
+										   >
+								   >,
+								   std::enable_if_t<
+										   std::is_same_v<
+												   std::invoke_result_t<Type,
+																		std::add_const_t<std::decay_t<Value>>,
+																		std::add_const_t<std::decay_t<Value>>>,
+												   bool>
+								   >
+						   >
+	> : std::true_type {};
+  }//!namespace
   template <typename Value, typename Type>
-  struct MaybeComparator<Value, Type,
-						 std::void_t<
-								 std::enable_if_t<
-										 std::is_invocable_r_v<
-												 bool,
-												 Type,
-												 std::add_const_t<std::decay_t<Value>>, std::add_const_t<std::decay_t<Value>>
-										 >
-								 >,
-								 std::enable_if_t<
-										 std::is_same_v<
-												 std::invoke_result_t<Type, std::add_const_t<std::decay_t<Value>>, std::add_const_t<std::decay_t<Value>>>,
-												 bool>
-								 >
-						 >
-
-  > : std::true_type {};
-  template <typename Value, typename Type>
-  inline constexpr bool is_comparator_v { MaybeComparator<Value, Type>::value };
+  inline constexpr bool is_comparator_v { details::MaybeComparator<Value, Type>::value };
 
   template <typename Value, typename Type>
   using IsComparator = std::enable_if_t<is_comparator_v<Value, Type>, bool>;
 #else
 
   template <typename Value, typename Type>
-  concept Comparator = requires () {
+  concept IsComparator = requires () {
 	  requires std::is_invocable_r_v<
 			  bool,
 			  Type,
@@ -65,7 +67,7 @@ template <typename Value, typename Type, typename = void>
 
 
   template <typename Value, typename Type>
-  inline constexpr bool is_comparator_v { Comparator<Value, Type> ? true : false };
+  inline constexpr bool is_comparator_v { IsComparator<Value, Type> ? true : false };
 
 
 

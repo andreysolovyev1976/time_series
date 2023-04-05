@@ -12,6 +12,26 @@
 see bench
 //write on a stack size of different systems, as well as their thread size - see the notes 
 
+//for Value<ValueType> comparison to double is defined
+
+//list the defines
+//list the global objects
+- memuse
+- float comp
+- randomer
+
+//pmr container
+keep something on a stack
+if thread locals, them mem volume is abut 460 Kb
+if full stack then mem volume is about 8Mb
+list is used for better multithreading
+
+//input
+problem of rading date
+input is different - IB gives you an instance of C++ object, Coinbase - json, and C/T SV files something else
+input should be implemented by lib user
+
+
 ## Zip in C++
 ### Reasoning
 I like small useful snippets, like this one. Let myself have an entertaining night while coding this exercise.

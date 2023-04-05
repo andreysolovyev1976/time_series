@@ -11,12 +11,14 @@
 #include <string_view>
 #include <vector>
 #include <filesystem>
+#include <optional>
 
 
 namespace csv_reader {
 
-  template <int N = 0>
-  [[nodiscard]] std::string readFile(std::filesystem::path const& file_path) {
+  [[nodiscard]]
+  inline
+  std::string readFile(std::filesystem::path const& file_path) {
 	  std::ifstream in_file{file_path, std::ios::in | std::ios::binary};
 	  if (!in_file) {
 		  throw std::runtime_error("Cannot open "+file_path.string());
@@ -32,6 +34,11 @@ namespace csv_reader {
 	  return str;
   }
 
+  template<typename Iter>
+  void freakingWindows (Iter iter) {
+	  if (iter->back()=='\r') { iter->remove_suffix(1); }//freaking windows
+  }
+
   template <typename Iter>
   bool headersArePresented(Iter line_iter) {
 	  auto symbol = line_iter->begin();
@@ -41,25 +48,25 @@ namespace csv_reader {
 
   template <typename Iter>
   std::vector<std::string> makeHeaders(Iter line_iter, const char sep){
-	  if (*std::prev(line_iter->end())=='\r') { line_iter->remove_suffix(1); }//freaking windows
+	  freakingWindows(line_iter);
 	  auto tmp = culib::utils::splitStringViewBy(*line_iter, sep);
 	  return {std::make_move_iterator(tmp.begin()),
 			  std::make_move_iterator(tmp.end())};
   }
 
-  template<typename DataStructure, typename Iter>
-  void getData (DataStructure &data_structure, Iter iter, const char sep) {
-	  using ValueType = double;
-	  using Duration = culib::time::Minutes;
 
+
+  template<typename Duration, typename ValueType, typename Iter>
+  std::pair<culib::time::Timestamp<Duration>,std::vector<ValueType>>
+  parseData (Iter iter, const char sep) {
 	  //surely can be optimized, these entities are created every iteration
 	  std::stringstream ss;
 	  std::vector<ValueType> ohlcv_tmp; ohlcv_tmp.reserve(5);
 	  culib::time::Timestamp<Duration> ts;
 
-	  if (iter->back()=='\r') { iter->remove_suffix(1); }//freaking windows
+	  freakingWindows(iter);
 	  auto data_points = culib::utils::splitStringViewBy(*iter, sep);
-	  if (data_points.empty()) return;
+	  if (data_points.empty()) return {};
 	  for (auto data_point : data_points) {
 		  if (data_point == *data_points.begin()) {
 			  ss.write(data_point.data(), data_point.size());
@@ -72,7 +79,7 @@ namespace csv_reader {
 			  else { break; }
 		  }
 	  }
-	  data_structure.emplaceBack(ts, std::move(ohlcv_tmp));
+	  return std::pair{std::move(ts), std::move(ohlcv_tmp)};
   }
 
 }//!namespace

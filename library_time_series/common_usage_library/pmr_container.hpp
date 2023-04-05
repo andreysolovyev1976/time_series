@@ -4,10 +4,8 @@
 
 #pragma once
 
-#include "common_usage_library/memuse.hpp"
-#include "common_usage_library/types_requirements/container.h"
-
-#include <deque>
+#include "memuse.hpp"
+#include "types_requirements/container.h"
 
 #ifndef PMR_CONTAINER_H
 #define PMR_CONTAINER_H

@@ -21,63 +21,63 @@ namespace culib::requirements {
    *
    */
 #ifndef __cpp_concepts
-  template<class X, class Y, class Op>
-  struct op_valid_impl
-  {
-	  template<class U, class L, class R>
-	  static auto test(int) -> decltype(std::declval<U>()(std::declval<L>(), std::declval<R>()),
-			  void(), std::true_type());
+  namespace details {
+	template<class X, class Y, class Op>
+	struct op_valid_impl {
+		template<class U, class L, class R>
+		static auto test(int) -> decltype(std::declval<U>()(std::declval<L>(), std::declval<R>()),
+				void(), std::true_type());
 
-	  template<class U, class L, class R>
-	  static auto test(...) -> std::false_type;
+		template<class U, class L, class R>
+		static auto test(...) -> std::false_type;
 
-	  using type = decltype(test<Op, X, Y>(0));
-  };
-
-  template<class X, class Y, class Op> using op_valid = typename op_valid_impl<X, Y, Op>::type;
-
-  namespace notstd {
-
-	struct left_shift {
-		template <class L, class R>
-		constexpr auto operator()(L&& l, R&& r) const
-		noexcept(noexcept(std::forward<L>(l) << std::forward<R>(r)))
-		-> decltype(std::forward<L>(l) << std::forward<R>(r))
-		{
-			return std::forward<L>(l) << std::forward<R>(r);
-		}
+		using type = decltype(test<Op, X, Y>(0));
 	};
 
-	struct right_shift {
-		template <class L, class R>
-		constexpr auto operator()(L&& l, R&& r) const
-		noexcept(noexcept(std::forward<L>(l) >> std::forward<R>(r)))
-		-> decltype(std::forward<L>(l) >> std::forward<R>(r))
-		{
-			return std::forward<L>(l) >> std::forward<R>(r);
-		}
-	};
-  }
+	template<class X, class Y, class Op> using op_valid = typename op_valid_impl<X, Y, Op>::type;
 
-  template<class X, class Y> using has_equality = op_valid<X, Y, std::equal_to<>>;
-  template<class X, class Y> using has_inequality = op_valid<X, Y, std::not_equal_to<>>;
-  template<class X, class Y> using has_less_than = op_valid<X, Y, std::less<>>;
-  template<class X, class Y> using has_less_equal = op_valid<X, Y, std::less_equal<>>;
-  template<class X, class Y> using has_greater_than = op_valid<X, Y, std::greater<>>;
-  template<class X, class Y> using has_greater_equal = op_valid<X, Y, std::greater_equal<>>;
-  template<class X, class Y> using has_bit_xor = op_valid<X, Y, std::bit_xor<>>;
-  template<class X, class Y> using has_bit_or = op_valid<X, Y, std::bit_or<>>;
-  template<class X, class Y> using has_left_shift = op_valid<X, Y, notstd::left_shift>;
-  template<class X, class Y> using has_right_shift = op_valid<X, Y, notstd::right_shift>;
+	namespace notstd {
 
-  template <class X, class Y>using has_plus = op_valid<X, Y, std::plus<>>;
-  template <class X, class Y>using has_minus = op_valid<X, Y, std::minus<>>;
-  template <class X, class Y>using has_multiply = op_valid<X, Y, std::multiplies<>>;
-  template <class X, class Y>using has_divides = op_valid<X, Y, std::divides<>>;
-  template <class X, class Y>using has_modulus = op_valid<X, Y, std::modulus<>>;
+	  struct left_shift {
+		  template<class L, class R>
+		  constexpr auto operator()(L&& l, R&& r) const
+		  noexcept(noexcept(std::forward<L>(l) << std::forward<R>(r)))
+		  -> decltype(std::forward<L>(l) << std::forward<R>(r))
+		  {
+			  return std::forward<L>(l) << std::forward<R>(r);
+		  }
+	  };
 
-  template <class X, class Y>using has_logical_and = op_valid<X, Y, std::logical_and<>>;
-  template <class X, class Y>using has_logical_or = op_valid<X, Y, std::logical_or<>>;
+	  struct right_shift {
+		  template<class L, class R>
+		  constexpr auto operator()(L&& l, R&& r) const
+		  noexcept(noexcept(std::forward<L>(l) >> std::forward<R>(r)))
+		  -> decltype(std::forward<L>(l) >> std::forward<R>(r))
+		  {
+			  return std::forward<L>(l) >> std::forward<R>(r);
+		  }
+	  };
+	}//!namespace
+  }//!namespace
+  template<class X, class Y> using has_equality = details::op_valid<X, Y, std::equal_to<>>;
+  template<class X, class Y> using has_inequality = details::op_valid<X, Y, std::not_equal_to<>>;
+  template<class X, class Y> using has_less_than = details::op_valid<X, Y, std::less<>>;
+  template<class X, class Y> using has_less_equal = details::op_valid<X, Y, std::less_equal<>>;
+  template<class X, class Y> using has_greater_than = details::op_valid<X, Y, std::greater<>>;
+  template<class X, class Y> using has_greater_equal = details::op_valid<X, Y, std::greater_equal<>>;
+  template<class X, class Y> using has_bit_xor = details::op_valid<X, Y, std::bit_xor<>>;
+  template<class X, class Y> using has_bit_or = details::op_valid<X, Y, std::bit_or<>>;
+  template<class X, class Y> using has_left_shift = details::op_valid<X, Y, details::notstd::left_shift>;
+  template<class X, class Y> using has_right_shift = details::op_valid<X, Y, details::notstd::right_shift>;
+
+  template <class X, class Y>using has_plus = details::op_valid<X, Y, std::plus<>>;
+  template <class X, class Y>using has_minus = details::op_valid<X, Y, std::minus<>>;
+  template <class X, class Y>using has_multiply = details::op_valid<X, Y, std::multiplies<>>;
+  template <class X, class Y>using has_divides = details::op_valid<X, Y, std::divides<>>;
+  template <class X, class Y>using has_modulus = details::op_valid<X, Y, std::modulus<>>;
+
+  template <class X, class Y>using has_logical_and = details::op_valid<X, Y, std::logical_and<>>;
+  template <class X, class Y>using has_logical_or = details::op_valid<X, Y, std::logical_or<>>;
   /**
    * @details
    * this is the end of copied fragment

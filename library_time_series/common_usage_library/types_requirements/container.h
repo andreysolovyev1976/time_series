@@ -5,7 +5,6 @@
 #pragma once
 
 #include <type_traits>
-
 #ifdef __cpp_concepts
 #include <concepts>
 #endif
@@ -20,19 +19,21 @@ namespace culib::requirements {
    * */
 
 #ifndef __cpp_concepts
-  template<typename Container, typename = void>
-  struct MaybeContainer : std::false_type {};
+  namespace details {
+	template<typename Container, typename = void>
+	struct MaybeContainer : std::false_type { };
 
+	template<typename Container>
+	struct MaybeContainer<Container,
+						  std::void_t<
+								  decltype(std::declval<Container>().begin()),
+								  decltype(std::declval<Container>().end())
+						  >
+	> : std::true_type {
+	};
+  }//!namespace
   template<typename Container>
-  struct MaybeContainer<Container,
-					 std::void_t<
-							 decltype(std::declval<Container>().begin()),
-							 decltype(std::declval<Container>().end())
-					 >
-  > : std::true_type {};
-
-  template<typename Container>
-  inline constexpr bool is_container_v { MaybeContainer<Container>::value };
+  inline constexpr bool is_container_v { details::MaybeContainer<Container>::value };
 
   template<typename Container>
   using IsContainer = std::enable_if_t<is_container_v<Container>, bool>;

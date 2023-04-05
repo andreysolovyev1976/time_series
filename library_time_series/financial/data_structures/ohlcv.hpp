@@ -1216,11 +1216,11 @@ namespace std {
   template<std::size_t Index, typename ValueType>
   struct tuple_element<Index, time_series::financial::OHLCV<ValueType>>
 		  : tuple_element<Index, tuple<
-				  typename time_series::financial::OHLCV<ValueType>::value_type,
-				  typename time_series::financial::OHLCV<ValueType>::value_type,
-				  typename time_series::financial::OHLCV<ValueType>::value_type,
-				  typename time_series::financial::OHLCV<ValueType>::value_type,
-				  typename time_series::financial::OHLCV<ValueType>::value_type>
+				  typename time_series::Value<ValueType>,
+				  typename time_series::Value<ValueType>,
+				  typename time_series::Value<ValueType>,
+				  typename time_series::Value<ValueType>,
+				  typename time_series::Value<ValueType>>
 		  >{};
 
 #if 0

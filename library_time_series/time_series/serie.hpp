@@ -9,7 +9,7 @@
 #include "common_usage_library/types_requirements/object_args_count.h"
 #include "common_usage_library/types_requirements/numerics.h"
 
-#include <deque>
+#include <list>
 #include <cstddef>
 #include <stdexcept>
 
@@ -24,40 +24,6 @@
 namespace time_series {
 
   namespace details {
-
-	namespace requirements {
-
-#ifndef __cpp_concepts
-
-	  template<typename Serie, typename = void>
-	  struct MaybeSerie : std::false_type {};
-
-	  template<typename Serie>
-	  struct MaybeSerie<Serie, std::void_t<decltype(Serie::serie_tag)> > : std::true_type {};
-
-	  template<typename Serie>
-	  constexpr bool isSerie_v() { return MaybeSerie<Serie>::value; }
-
-	  template<typename Serie>
-	  using IsSerie = std::enable_if_t<isSerie_v<Serie>(), bool>;
-#else
-
-	  template <typename S>
-	  concept IsSerie = requires () {S::serie_tag;};
-
-	  template <typename S>
-	  concept IsNotSerie = requires () {!IsSerie<S>;};
-
-	  template<IsSerie>
-	  constexpr bool isSerie_v() { return true; }
-
-	  template<IsNotSerie>
-	  constexpr bool isSerie_v() { return false; }
-
-#endif
-	}//!namespace
-
-
 	/**
 	 * @brief
 	 * Empty Object Optimization
@@ -107,7 +73,7 @@ namespace time_series {
   template <
 		  typename Duration = culib::time::Seconds
 		  , typename ElemType = Value<value::traits::ValueTypeDefault>
-		  , template <typename...> typename Container = std::vector
+		  , template <typename...> typename Container = std::list
 		  , typename ...Args
   >
   struct Serie : public

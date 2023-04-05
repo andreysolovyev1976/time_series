@@ -4,13 +4,13 @@
 
 #pragma once
 
+#include "numerics.h"
+
 #include <chrono>
 #include <type_traits>
 #ifdef __cpp_concepts
 #include <concepts>
 #endif
-
-#include "numerics.h"
 
 
 #ifndef TIME_H
@@ -20,32 +20,33 @@ namespace culib::requirements {
 
 #ifndef __cpp_concepts
 
-  template <typename Duration, typename = void>
-  struct MaybeDuration : std::false_type{};
+  namespace details {
+	template<typename Duration, typename = void>
+	struct MaybeDuration : std::false_type { };
+
+	template<typename Duration>
+	struct MaybeDuration<Duration,
+						 std::void_t<
+								 decltype(std::chrono::duration_values<Duration>::zero()),
+								 decltype(std::chrono::duration_values<Duration>::min()),
+								 decltype(std::chrono::duration_values<Duration>::max()),
+								 decltype(std::chrono::duration_cast<std::chrono::minutes>(std::declval<Duration>()))
+						 >
+	> : std::true_type {};
+  }//!namespace
+  template <typename Duration>
+  inline constexpr bool is_duration_v { details::MaybeDuration<Duration>::value };
 
   template <typename Duration>
-  struct MaybeDuration <Duration,
-						std::void_t<
-								decltype( std::chrono::duration_values<Duration>::zero() ),
-								decltype( std::chrono::duration_values<Duration>::min() ),
-								decltype( std::chrono::duration_values<Duration>::max() ),
-								decltype(std::chrono::duration_cast<std::chrono::minutes>(std::declval<Duration>()))
-						>
-  > : std::true_type{};
+  using IsDuration = std::enable_if_t<is_duration_v<Duration>, bool>;
 
   template <typename Duration>
-  inline constexpr bool is_duration_v { MaybeDuration<Duration>::value };
-
-  template <typename Duration>
-  using IsDuration = std::enable_if_t<MaybeDuration<Duration>::value, bool>;
-
-  template <typename Duration>
-  using IsNotDuration = std::enable_if_t<!MaybeDuration<Duration>::value, bool>;
+  using IsNotDuration = std::enable_if_t<!is_duration_v<Duration>, bool>;
 
   template <typename SomeType>
   using CanBeDuration  = std::enable_if_t<
 		  std::disjunction_v<
-		  	MaybeDuration<SomeType>,
+		  	details::MaybeDuration<SomeType>,
 		  	std::is_arithmetic<SomeType>
 		  >,
 		  bool>;
@@ -56,27 +57,29 @@ namespace culib::requirements {
    * form here\n
    * https://en.cppreference.com/w/cpp/chrono/is_clock \n
    * */
-  template<typename T, typename = void>
-  struct MaybeClock : std::false_type {};
+  namespace details {
+	template<typename T, typename = void>
+	struct MaybeClock : std::false_type { };
 
-  template<class T>
-  struct MaybeClock <T, std::void_t<
-		  typename T::rep,
-		  typename T::period,
-		  typename T::duration,
-		  typename T::time_point,
-		  decltype(T::is_steady),
-		  decltype(T::now())>
-  > : std::true_type {};
-
-  template <typename Clock>
-  bool constexpr is_clock_v { MaybeClock<Clock>::value };
-
-  template <typename Clock>
-  using IsClock = std::enable_if_t<MaybeClock<Clock>::value, bool>;
+	template<class T>
+	struct MaybeClock<T, std::void_t<
+			typename T::rep,
+			typename T::period,
+			typename T::duration,
+			typename T::time_point,
+			decltype(T::is_steady),
+			decltype(T::now())>
+	> : std::true_type {};
+  }//!namespace
 
   template <typename Clock>
-  using IsNotClock = std::enable_if_t<!MaybeClock<Clock>::value, bool>;
+  bool constexpr is_clock_v { details::MaybeClock<Clock>::value };
+
+  template <typename Clock>
+  using IsClock = std::enable_if_t<is_clock_v<Clock>, bool>;
+
+  template <typename Clock>
+  using IsNotClock = std::enable_if_t<!is_clock_v<Clock>, bool>;
 
 
 

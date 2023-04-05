@@ -26,25 +26,29 @@ namespace culib::requirements {
 	  }
   }
 
-  template <template <typename...> typename Object, typename Arg1, typename = void>
-  struct ObjectCanHaveSingleArg : std::false_type {};
+  namespace details {
+	template<template<typename...> typename Object, typename Arg1, typename = void>
+	struct ObjectCanHaveSingleArg : std::false_type { };
+	template<template<typename...> typename Object, typename Arg1>
+	struct ObjectCanHaveSingleArg<Object,
+								  Arg1,
+								  std::void_t<std::is_constructible<Object<Arg1>>>
+	> : std::true_type {};
+  }//!namespace
   template <template <typename...> typename Object, typename Arg1>
-  struct ObjectCanHaveSingleArg <Object,
-								 Arg1,
-								 std::void_t<std::is_constructible<Object<Arg1>>>
-  > : std::true_type {};
-  template <template <typename...> typename Object, typename Arg1>
-  inline constexpr bool object_can_have_single_arg_v { ObjectCanHaveSingleArg<Object, Arg1>::value };
+  inline constexpr bool object_can_have_single_arg_v { details::ObjectCanHaveSingleArg<Object, Arg1>::value };
 
-  template <template <typename...> typename Object, typename Arg1, typename Arg2, typename = void>
-  struct objectCanHaveTwoArgs : std::false_type {};
+  namespace details {
+	template <template <typename...> typename Object, typename Arg1, typename Arg2, typename = void>
+	struct objectCanHaveTwoArgs : std::false_type {};
+	template <template <typename...> typename Object, typename Arg1, typename Arg2>
+	struct objectCanHaveTwoArgs <Object,
+								 Arg1, Arg2,
+								 std::void_t<std::is_constructible<Object<Arg1, Arg2>>>
+	> : std::true_type {};
+  }//!namespace
   template <template <typename...> typename Object, typename Arg1, typename Arg2>
-  struct objectCanHaveTwoArgs <Object,
-							   Arg1, Arg2,
-							   std::void_t<std::is_constructible<Object<Arg1, Arg2>>>
-  > : std::true_type {};
-  template <template <typename...> typename Object, typename Arg1, typename Arg2>
-  inline constexpr bool object_can_have_two_args_v { objectCanHaveTwoArgs<Object, Arg1, Arg2>::value };
+  inline constexpr bool object_can_have_two_args_v { details::objectCanHaveTwoArgs<Object, Arg1, Arg2>::value };
 
 #else
 
