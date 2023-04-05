@@ -6,7 +6,7 @@ project(${PROJECT_NAME_TIME_SERIES})
 include_directories(third_part/date_time/include)
 include_directories(third_part/cds)
 
-add_library(${PROJECT_NAME_TIME_SERIES} quote.cpp)
+add_library(${PROJECT_NAME_TIME_SERIES} quote.cpp ../financial/container/rows.hpp)
 target_link_libraries(${PROJECT_NAME_TIME_SERIES}
         pthread
         )

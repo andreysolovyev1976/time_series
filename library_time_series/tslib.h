@@ -8,6 +8,7 @@
 #include "time_series/value.hpp"
 #include "time_series/element.hpp"
 #include "time_series/serie.hpp"
+#include "time_series/serie_synthetic.hpp"
 
 #ifndef TSLIB_H
 #define TSLIB_H

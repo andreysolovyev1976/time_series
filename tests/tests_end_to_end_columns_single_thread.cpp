@@ -53,13 +53,7 @@ ReturnType readFromFile (std::filesystem::path path, char const sep) {
 	return WTI;
 }
 
-
-TEST(EndToEnd, Read_CSV_SingleThread) {
-
-	using namespace time_series;
-	using namespace culib::time;
-	using namespace csv_reader;
-
+void printSample () {
 	std::string data_sample{
 R"(Date,Open,High,Low,Close,Volume
 9/23/2015 0:00,46.54,46.6,46.5,46.53,89
@@ -67,13 +61,54 @@ R"(Date,Open,High,Low,Close,Volume
 9/23/2015 0:02,46.51,46.51,46.48,46.48,30
 )"};
 	std::cout << "original data sample:\n" << data_sample;
+}
+
+TEST(EndToEnd, Read_CSV_Synthetic_SingleThread) {
+
+	using namespace time_series;
+	using namespace culib::time;
+	using namespace csv_reader;
+
 
 //	std::filesystem::path test_file {"../../tests/WTI_OHLCVminute sept2016.csv"};
 	std::filesystem::path test_file {"../../tests/WTI_OHLCVminute sept2016 short.csv"};
 
 	using ValueType = double;
 	char const comma_sep {','};
-	using SyntheticOHLCV = time_series::financial::Columns<Minutes, ValueType, 5u>;
+	using SyntheticOHLCV = time_series::SerieSynthethic<Minutes, ValueType, 5u>;
+
+	auto WTI = readFromFile<SyntheticOHLCV>(test_file, comma_sep);
+	WTI.setField (&SyntheticOHLCV::name, "CL OHLCV minute data for Sep 2016");
+
+	auto it = WTI.begin();
+	auto & [ts, open, high, low, close, volume] = it;
+	ASSERT_EQ (open, 46.54);
+	ASSERT_EQ (high, 46.6);
+	ASSERT_EQ (low, 46.5);
+	ASSERT_EQ (close, 46.53);
+	ASSERT_EQ (volume, 89);
+
+	auto column_close = WTI.getColumn ("Close");
+	auto column_four = WTI.getColumn (3);
+
+	ASSERT_TRUE (column_close.size() == 100u);
+	ASSERT_TRUE (column_four.size() == 100u);
+	ASSERT_EQ (column_close, column_four);
+}
+
+
+TEST(EndToEnd, Read_CSV_Natural_SingleThread) {
+
+	using namespace time_series;
+	using namespace culib::time;
+	using namespace csv_reader;
+
+//	std::filesystem::path test_file {"../../tests/WTI_OHLCVminute sept2016.csv"};
+	std::filesystem::path test_file {"../../tests/WTI_OHLCVminute sept2016 short.csv"};
+
+	using ValueType = double;
+	char const comma_sep {','};
+	using NaturalOHLCV = time_series::serie<Minutes, ValueType, 5u>;
 
 	auto WTI = readFromFile<SyntheticOHLCV>(test_file, comma_sep);
 	WTI.setField (&SyntheticOHLCV::name, "CL OHLCV minute data for Sep 2016");

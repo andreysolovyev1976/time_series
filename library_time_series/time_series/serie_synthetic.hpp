@@ -8,14 +8,14 @@
 #include "time_series/serie.hpp"
 #include <list>
 
-#ifndef FIN_DATA_CONTAINER_H
-#define FIN_DATA_CONTAINER_H
+#ifndef TS_SERIE_SYNTHETIC_H
+#define TS_SERIE_SYNTHETIC_H
 
-namespace time_series::financial {
+namespace time_series {
 
 
   template <typename Duration, typename ValueType, std::size_t ColumnCount = 5u>
-  class Columns {
+  class SerieSynthethic {
   public:
 	  using IndexElement = typename culib::time::Timestamp<Duration>;
 	  using Index = typename std::vector<IndexElement>;
@@ -26,8 +26,8 @@ namespace time_series::financial {
 	  using Name = typename std::string;
 	  using Headers = typename std::vector<Name>;
 
-	  Columns () { data.resize(ColumnCount); }
-	  Columns (Name n) : name (std::move(n)) { data.resize(ColumnCount); }
+	  SerieSynthethic () { data.resize(ColumnCount); }
+	  SerieSynthethic (Name n) :name (std::move(n)) { data.resize(ColumnCount); }
 
 	  template <typename Field, typename FieldType>
 	  void setField (Field field, FieldType new_value) { this->*field = std::move(new_value); }
@@ -59,9 +59,10 @@ namespace time_series::financial {
 		  return empty_column;
 	  }
 
-	  //todo looks bad, will require some work if column added
-	  auto begin() { return makeBegin<ColumnCount>(); }
-	  auto end() { return makeEnd<ColumnCount>(); }
+	  template <std::size_t Count = ColumnCount>
+	  auto begin() { return makeBegin<Count>(); }
+	  template <std::size_t Count = ColumnCount>
+	  auto end() { return makeEnd<Count>(); }
 
 	  Name name;
 	  Headers headers;
@@ -91,10 +92,8 @@ namespace time_series::financial {
 	  }
 
 	  bool headersAreSet () const { return !headers.empty(); }
-
   };
-
 
 }//!namespace
 
-#endif //FIN_DATA_CONTAINER_H
+#endif //TS_SERIE_SYNTHETIC_H

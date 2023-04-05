@@ -9,7 +9,6 @@
 #include "financial/data_structures/bid_ask.hpp"
 #include "financial/data_structures/ohlcv.hpp"
 #include "financial/data_structures/single_quote.h"
-#include "financial/container/columns.hpp"
 
 
 #ifndef FINLIB_H
