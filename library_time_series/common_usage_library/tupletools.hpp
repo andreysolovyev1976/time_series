@@ -84,4 +84,25 @@ namespace culib::tupletools {
   }
 }//!namespace
 
+
+// https://en.cppreference.com/w/cpp/utility/apply
+
+//todo add printable requirements
+//todo consider removing decorations
+template<typename... Ts>
+std::ostream& operator<<(std::ostream& os, std::tuple<Ts...> const& t){
+	std::apply
+			(
+					[&os](Ts const&... args)
+					{
+					  os << '[';
+					  std::size_t n{0};
+					  ((os << args << (++n != sizeof...(Ts) ? ", " : "")), ...);
+					  os << ']';
+					}, t
+			);
+	return os;
+}
+
+
 #endif //TUPLETOOLS_H

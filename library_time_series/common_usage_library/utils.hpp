@@ -47,9 +47,10 @@ namespace culib::utils {
 
 	  auto [ptr, ec]{std::from_chars(str.data(), last, local_result)};
 
-	  if (ec == std::errc::invalid_argument ||
-			  ec == std::errc::result_out_of_range ||
-			  ptr != last) {
+	  if (ec == std::errc::invalid_argument
+	  || ec == std::errc::result_out_of_range
+	  || ptr != last
+		) {
 		  return std::nullopt;
 	  }
 	  return {local_result};

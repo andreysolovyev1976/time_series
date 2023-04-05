@@ -1619,278 +1619,244 @@ int main () {
 #include "financial/data_structures/ohlcv.hpp"
 #include "financial/data_structures/single_quote.h"
 #include "common_usage_library/utils.hpp"
+#include "common_usage_library/itertools.hpp"
+#include "common_usage_library/tupletools.hpp"
+#include "common_usage_library/types_requirements/ctor_input.h"
 
 
 namespace const_values {
   static const std::size_t EXPECTED_LINES_COUNT {330'000u};
 }
 
+namespace csv_reader {
 
-[[nodiscard]] std::string readFile(std::filesystem::path const& file_path) {
-	std::ifstream in_file{file_path, std::ios::in | std::ios::binary};
-	if (!in_file) {
-		throw std::runtime_error("Cannot open " + file_path.string());
+  [[nodiscard]] std::string readFile(std::filesystem::path const& file_path)
+  {
+	  std::ifstream in_file{file_path, std::ios::in | std::ios::binary};
+	  if (!in_file) {
+		  throw std::runtime_error("Cannot open "+file_path.string());
+	  }
+
+	  std::string str(static_cast<std::size_t>(std::filesystem::file_size(file_path)), '\0');
+
+	  in_file.read(str.data(), str.size());
+	  if (!in_file) {
+		  throw std::runtime_error("Could not read the full contents from "+file_path.filename().string());
+	  }
+
+	  return str;
+  }
+  std::vector<std::string_view> splitStringBy(std::string const& line, char delim)
+  {
+	  std::string_view str(line);
+	  std::vector<std::string_view> result;
+	  result.reserve(::const_values::EXPECTED_LINES_COUNT);
+	  std::size_t found_delim{0};
+	  while (true) {
+		  found_delim = str.find(delim);
+		  auto substr = str.substr(0, found_delim);
+		  if (not substr.empty()) result.push_back(substr);
+		  if (found_delim==str.npos) break;
+		  else str.remove_prefix(found_delim+1);
+	  }
+	  return result;
+  }
+
+  std::vector<std::string_view> splitStringViewBy(std::string_view s, char sep)
+  {
+	  std::vector<std::string_view> result;
+	  while (!s.empty()) {
+		  size_t pos = s.find(sep);
+		  result.push_back(s.substr(0, pos));
+		  s.remove_prefix(pos!=s.npos ? pos+1 : s.size());
+	  }
+	  return result;
+  }
+
+  bool headersArePresented(auto line_iter) {
+	  auto symbol = line_iter->begin();
+	  while (std::isspace(static_cast<int>(*symbol))) ++symbol;
+	  return std::isalpha(static_cast<int>(*symbol));
+  }
+
+  std::vector<std::string> makeHeaders(auto line_iter, const char sep){
+	  if (*std::prev(line_iter->end())=='\r') { line_iter->remove_suffix(1); }//freaking windows
+	  auto tmp = splitStringViewBy(*line_iter, sep);
+	  return {std::make_move_iterator(tmp.begin()),
+			  std::make_move_iterator(tmp.end())};
+  }
+
+  template<typename DataStructure>
+  void getData (DataStructure &data_structure, auto iter, const char sep) {
+	  using ValueType = double;
+	  using Duration = culib::time::Minutes;
+
+	  //surely can be optimized, these entities are created every iteration
+	  std::stringstream ss;
+	  std::vector<ValueType> ohlcv_tmp; ohlcv_tmp.reserve(5);
+	  culib::time::Timestamp<Duration> ts;
+
+	  if (iter->back()=='\r') { iter->remove_suffix(1); }//freaking windows
+	  auto data_points = splitStringViewBy(*iter, sep);
+	  if (data_points.empty()) return;
+	  for (auto data_point : data_points) {
+		  if (data_point == *data_points.begin()) {
+			  ss.write(data_point.data(), data_point.size());
+			  date::from_stream(ss, "%m/%d/%Y %H:%M", ts.time_point);
+//			  ss.str() = std::string();
+		  }
+		  else {
+			  auto d = culib::utils::fromChars<ValueType>(data_point); //no exception
+			  if (d) { ohlcv_tmp.push_back(*d); }
+			  else { break; }
+		  }
+	  }
+	  data_structure.emplaceBack(ts, std::move(ohlcv_tmp));
+  }
+
+}//!namespace
+
+template <typename Duration, typename ValueType, std::size_t ColumnCount = 5u>
+class Columns {
+public:
+	using IndexElement = typename culib::time::Timestamp<Duration>;
+	using Index = typename std::vector<IndexElement>;
+	using DataElement = typename time_series::Value<ValueType>;
+	using DataColumn = typename time_series::Serie<Duration, DataElement, std::list>;
+	using Data = typename std::vector<DataColumn>;
+	using NewValues = typename std::vector<ValueType>;
+	using Name = typename std::string;
+	using Headers = typename std::vector<Name>;
+
+	Columns () { data.resize(ColumnCount); }
+	Columns (Name n) : name (std::move(n)) { data.resize(ColumnCount); }
+
+	template <typename Field, typename FieldType>
+	void setField (Field field, FieldType new_value) { this->*field = std::move(new_value); }
+
+	void emplaceBack(IndexElement idx, NewValues v) {
+		if (v.size() != data.size()) return; //no exception
+		index.emplace_back(idx);
+		std::size_t size = v.size();
+		for (std::size_t i = 0; i != size; ++i) {
+			data[i].emplace_back(idx, v[i]);
+		}
 	}
 
-	std::string str(static_cast<std::size_t>(std::filesystem::file_size(file_path)), '\0');
-
-	in_file.read(str.data(), str.size());
-	if (!in_file) {
-		throw std::runtime_error("Could not read the full contents from "+file_path.filename().string());
+	template <typename By>
+	auto& getColumn (By what) {
+		if constexpr (culib::requirements::is_converible_or_constructible_v<By, Name>) {
+			if (!headersAreSet() || headers.size() != (data.size() + 1)) { return empty_column; }
+			int idx {0};
+			for (auto h = std::next(headers.begin()), he = headers.end(); h != he; ++h ) { //skip Index
+				if (*h == what) { return data[idx]; }
+				else { ++idx; }
+			}
+			return empty_column;
+		}
+		else if constexpr (std::is_integral_v<By>) {
+			auto idx = static_cast<std::size_t>(what);
+			if (idx < data.size()) { return data[idx]; }
+		}
+		return empty_column;
 	}
 
-	return str;
-}
+	//todo looks bad, will require some work if column added
+ 	auto begin() { return makeBegin<ColumnCount>(); }
+	auto end() { return makeEnd<ColumnCount>(); }
 
-std::vector<std::string_view> splitStringBy(std::string const&line, char delim) {
-	std::string_view str(line);
-	std::vector<std::string_view> result;
-	result.reserve(const_values::EXPECTED_LINES_COUNT);
-	std::size_t found_delim {0};
-	while (true) {
-		found_delim = str.find(delim);
-		auto substr = str.substr(0, found_delim);
-		if (not substr.empty()) result.push_back(substr);
-		if (found_delim == str.npos) break;
-		else str.remove_prefix(found_delim + 1);
-	}
-	return result;
-}
-
-
-std::vector<std::string_view> splitStringViewBy(std::string_view s, char sep) {
-	std::vector<std::string_view> result;
-	while (!s.empty()) {
-		size_t pos = s.find(sep);
-		result.push_back(s.substr(0, pos));
-		s.remove_prefix(pos != s.npos ? pos + 1 : s.size());
-	}
-	return result;
-}
-
-
-template <typename Duration, typename ValueType>
-struct TimeSerie {
-	using Index = typename std::vector<culib::time::Timestamp<Duration>>;
-	using OHLCV = time_series::financial::OHLCV<ValueType>;
-	using Data = typename time_series::Serie<Duration, time_series::Value<ValueType>, std::vector>; //std::list
-
+	Name name;
+	Headers headers;
 	Index index;
-	std::vector<Data> data;
-	std::string name;
-	std::vector<std::string> data_headers;
+	Data data;
 
-	void emplaceBack(time_series::Element<Duration, OHLCV> slice) {
-		index.eplace_back(slice.timestamp);
-		data[0].emplace_back(slice.timestamp, slice.value.open);
-		data[1].emplace_back(slice.timestamp, slice.value.high);
-		data[2].emplace_back(slice.timestamp, slice.value.low);
-		data[3].emplace_back(slice.timestamp, slice.value.close);
-		data[4].emplace_back(slice.timestamp, slice.value.volume);
+private:
+	DataColumn empty_column;
+
+	template <std::size_t... Is>
+	auto makeBeginImpl (std::index_sequence<Is...>) {
+		return culib::itertools::zip(index.begin(), data[Is].begin()...);
 	}
+
+	template <std::size_t N>
+	auto makeBegin () {
+		return makeBeginImpl(std::make_index_sequence<N>{});
+	}
+	template <std::size_t... Is>
+	auto makeEndImpl (std::index_sequence<Is...>) {
+		return culib::itertools::zip(index.end(), data[Is].end()...);
+	}
+
+	template <std::size_t N>
+	auto makeEnd () {
+		return makeEndImpl(std::make_index_sequence<N>{});
+	}
+
+	bool headersAreSet () const { return !headers.empty(); }
+
 };
+
+template <typename ReturnType>
+ReturnType readFromFile (std::filesystem::path path, char const sep) {
+	using namespace csv_reader;
+	using namespace culib::time;
+
+	auto raw_data = readFile(path);
+	auto lines_of_data = splitStringBy(raw_data, '\n');
+
+	ReturnType WTI;
+
+	if (lines_of_data.empty()) return WTI;
+
+	auto line_iter = lines_of_data.begin();
+	if (headersArePresented(line_iter)) {
+		WTI.setField (&ReturnType::headers, makeHeaders(line_iter, sep));
+		line_iter = std::next(line_iter);
+	}
+
+	for (auto itb = line_iter, ite = lines_of_data.end(); itb!=ite; ++itb) {
+		getData(WTI, itb, sep);
+	}
+
+	return WTI;
+}
+
 
 int main () {
 
-	using namespace std::filesystem;
 	using namespace time_series;
-	using namespace time_series::financial;
-	using namespace culib;
 	using namespace culib::time;
+	using namespace csv_reader;
 
-#if 0
-	std::filesystem::path test_file = std::filesystem::canonical (
-			std::filesystem::path {
-			"/Users/elenasolovyeva/Documents/Cpp/Projects/TimeSeries/tests/WTI_OHLCVminute sept2016.csv" }
-			);
-	std::filesystem::path p = std::filesystem::current_path();
-	std::cout << p << '\n';
-
-	auto raw_data = GetFileContents(test_file);
-	std::cout << raw_data.size() << '\n';
-	auto wip = SplitBy(raw_data, '\n');
-	std::cout << wip.size() << '\n' << wip[0] << '\n' << wip[1] << '\n';
-	auto header = SplitBy(wip[0], ',');
-	std::cout << header.size() << '\n' << header[0] << ' ' << header[1] << "..." << '\n';
-	auto data_point = SplitBy(wip[1], ',');
-	std::cout << data_point.size() << '\n' << data_point[0] << ' ' << data_point[1] << "..." << '\n';;
-
-	std::cout << sizeof (TimeSerie<Minutes, double>) << ' ' << alignof (TimeSerie<Minutes, double>) << '\n';
-	std::cout << sizeof (culib::time::Timestamp<Minutes>) << ' ' << alignof (culib::time::Timestamp<Minutes>) << '\n';
-#endif
-
-#if 0
-	using ValueType = double;
-	TimeSerie<Minutes, ValueType> WTI;
-	WTI.data.resize(5u);
-	std::ifstream in_file{test_file, std::ios::in | std::ios::binary};
-	if (!in_file) {
-		throw std::runtime_error("Cannot open " + test_file.string());
-	}
-	[[maybe_unused]] char c;
-	while (std::isspace(in_file.peek())) { c = in_file.get(); }
-
-	bool const headers_presented = std::isalpha(static_cast<int>(in_file.peek())) ;
-	if (headers_presented) {
-		std::string line;
-		std::getline(in_file, line);
-		auto tmp = splitIntoWords(line, ',');
-
-		if (!tmp.empty() && (tmp[0]=="Date" || tmp[0].empty())) {
-			WTI.data_headers = {std::make_move_iterator(std::next(tmp.begin())),
-								std::make_move_iterator(tmp.end()) };
-		}
-		else {
-			WTI.data_headers = {std::make_move_iterator(tmp.begin()),
-								std::make_move_iterator(tmp.end()) };
-		}
-	}
-
-	while (in_file && !in_file.eof()) {
-		Element<Minutes, OHLCV<ValueType>> element;
-		in_file >> element;
-		std::cout << "element: " << element << '\n';
-		if (in_file.rdstate() == std::ios_base::failbit){
-			in_file.setstate(std::ios_base::goodbit);
-		}
-		else if (in_file.rdstate() == std::ios_base::badbit) {
-
-		}
-		WTI.emplaceBack(std::move(element));
-	}
-
-	std::cout << WTI.data.at(0).size();
-
-#endif
-#if 0
-
-	std::string input {
-R"(9/23/2015 0:00,46.54,46.6,46.5,46.53,89
-9/23/2015 0:01,46.53,46.54,46.51,46.52,14
-9/23/2015 0:02,46.51,46.51,46.48,46.48,30
-)"};
-
-	std::cout << input;
-	Timestamp<Minutes> ts;
-	std::cout << std::boolalpha;
-	std::cout << ts << '\n';
-	{
-		std::stringstream ss(input);
-		ss >> date::parse("%m/%d/%Y %H:%M", ts.time_point);
-		std::cout << ts << ' ';
-		for (int i = 0; i != 5; ++i) { double d; char c; ss >> c >> d; std::cout << d << ' '; }
-		std::cout << '\n';
-	}
-	{
-		std::stringstream ss(input);
-		date::from_stream(ss, "%m/%d/%Y %H:%M", ts.time_point);
-		std::cout << ts << ' ';
-		for (int i = 0; i != 5; ++i) { double d; char c; ss >> c >> d; std::cout << d << ' '; }
-	}
-#endif
-
-
-#if 0
-	std::string input {
-R"(9/23/2015 0:00,46.54,46.6,46.5,46.53,89
-9/23/2015 0:01,46.53,46.54,46.51,46.52,14
-9/23/2015 0:02,46.51,46.51,46.48,46.48,30
-)"};
-
-	auto wip = SplitBy(input, '\n');
-	std::stringstream ss;
-	for (auto line : wip) {
-		auto data_points = SplitBy(line, ',');
-		if (data_points.empty()) continue;
-		for (auto data_point : data_points) {
-			if (data_point == *data_points.begin()) {
-				Timestamp<Minutes> ts;
-				ss.write(data_point.data(), data_point.size());
-				date::from_stream(ss, "%m/%d/%Y %H:%M", ts.time_point);
-				ss.str() = std::string();
-				std::cout << ts << ' ';
-			}
-			else {
-				auto d = culib::utils::fromChars<double>(data_point);
-				std::cout << d << ' ';
-			}
-		}
-		std::cout << '\n';
-	}
-#endif
-
-#if 1
-
-	std::string data_sample {
+	std::string data_sample{
 R"(Date,Open,High,Low,Close,Volume
 9/23/2015 0:00,46.54,46.6,46.5,46.53,89
 9/23/2015 0:01,46.53,46.54,46.51,46.52,14
 9/23/2015 0:02,46.51,46.51,46.48,46.48,30
 )"};
-	std::cout << "data sample:\n" << data_sample;
+	std::cout << "original data sample:\n" << data_sample;
 
-
-	std::cout << "data read as:\n";
-	std::filesystem::path test_file = std::filesystem::canonical (
-			std::filesystem::path {
-					"/Users/elenasolovyeva/Documents/Cpp/Projects/TimeSeries/tests/WTI_OHLCVminute sept2016.csv" }
-	);
+//	std::filesystem::path test_file {"../../tests/WTI_OHLCVminute sept2016.csv"};
+	std::filesystem::path test_file {"../../tests/WTI_OHLCVminute sept2016 short.csv"};
 
 	using ValueType = double;
-	TimeSerie<Minutes, ValueType> WTI;
-	WTI.data.resize(5u);
-	for (auto & column : WTI.data) column.reserve(::const_values::EXPECTED_LINES_COUNT);
+	char const comma_sep {','};
+	using SyntheticOHLCV = Columns<Minutes, ValueType, 5u>;
 
-	auto raw_data = readFile(test_file);
-	auto wip = splitStringBy(raw_data, '\n');
-	if (wip.empty()) return 1;
-	auto line_iter = wip.begin();
+	auto WTI = readFromFile<SyntheticOHLCV>(test_file, comma_sep);
+	WTI.setField (&SyntheticOHLCV::name, "CL OHLCV minute data for Sep 2016");
 
-	auto symbol = line_iter->begin();
-	while (std::isspace(static_cast<int>(*symbol))) ++symbol;
-	bool const headers_presented = std::isalpha(static_cast<int>(*symbol));
-	if (headers_presented) {
-		if (*std::prev(line_iter->end()) == '\r') line_iter->remove_suffix(1); //fucking windows
-		auto tmp = splitStringViewBy(*line_iter, ',');
-
-		if (!tmp.empty() && (*tmp.begin()=="Date" || tmp.begin()->empty())) {
-			WTI.data_headers = {std::make_move_iterator(std::next(tmp.begin())),
-								std::make_move_iterator(tmp.end()) };
-		}
-		else {
-			WTI.data_headers = {std::make_move_iterator(tmp.begin()),
-								std::make_move_iterator(tmp.end()) };
-		}
-		line_iter = std::next(line_iter);
+	auto it = WTI.begin();
+	for (int i = 0; i != 3; ++i) {
+		std::cout << *it << '\n';
+		++it;
 	}
 
-	int count {0}, cout_limit {3};
-	std::stringstream ss;
-	for (auto itb = line_iter, ite = wip.end(); itb != ite; ++itb) {
-		auto data_points = splitStringViewBy(*itb, ',');
-		if (data_points.empty()) continue;
-		for (auto data_point : data_points) {
-			if (data_point == *data_points.begin()) {
-				Timestamp<Minutes> ts;
-				ss.write(data_point.data(), data_point.size());
-				date::from_stream(ss, "%m/%d/%Y %H:%M", ts.time_point);
-				ss.str() = std::string();
-				if (count < cout_limit)
-					std::cout << ts << ' ';
-			}
-			else {
-				auto d = culib::utils::fromChars<double>(data_point);
-				if (count < cout_limit && d.has_value())
-					std::cout << d.value() << ' ';
-			}
-		}
-		if (count < cout_limit)
-			std::cout << '\n';
-	++count;
-	}
+	auto column_close = WTI.getColumn ("Close");
+	auto column_four = WTI.getColumn (3);
+	std::cout << std::boolalpha;
+	std::cout << (column_close == column_four) << '\n';
+	for (auto elem : column_close) std::cout << elem << '\n';
 
-
-#endif
 }
-
 #endif

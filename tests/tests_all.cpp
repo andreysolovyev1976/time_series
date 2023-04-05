@@ -30,6 +30,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char **argv) {
 // 	OHLCV
 // 	BidAsk
 // DONE fix timestamp
+// test operator >> for timestamp
 
 
 
@@ -49,3 +50,4 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char **argv) {
 // add own unique_ptr / shrared_ptr on polymorphic allocator
 // Fenvick tree is required instead of accumulate for own container
 // offload to videocard
+

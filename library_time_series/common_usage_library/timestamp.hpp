@@ -278,21 +278,30 @@ typedef duration<     long, ratio<3600> > hours;
 	  return os;
   }
 
+  /**
+   * @details
+   * This is blocked due to inability to provide \n
+   * default fmt string, ie %F %T is not going to work \n
+   * if there is no seconds in timestamp. \n
+   * Unfortunately a user should declare and define these \n
+   * operators by himself. \n
+   *
+   * */
   template<typename Duration>
   std::istream& operator >> (std::istream& is, Timestamp<Duration>& timestamp){
-	  is >> date::parse("%F %T", timestamp.time_point);
+//	  is >> date::parse("%F %T", timestamp.time_point);
+	throw std::runtime_error("Please block this one and define it by yourself");
 	  return is;
   }
 
 
   template<typename Duration>
-  Timestamp<Duration> fromString(std::string input, const std::string& input_fmt = "%F %T"){
+  Timestamp<Duration> fromString(std::string input, const std::string& input_fmt /* = "%F %T" */ ){
 	  Timestamp<Duration> timestamp;
 	  std::stringstream ss(std::move(input));
 	  date::from_stream(ss, input_fmt.c_str(), timestamp.time_point);
 	  return timestamp;
   }
-
 
 #ifndef __cpp_concepts
   template<typename Duration, typename Number,
