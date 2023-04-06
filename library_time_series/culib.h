@@ -10,6 +10,7 @@
 #include "common_usage_library/itertools.hpp"
 #include "common_usage_library/joins.hpp"
 #include "common_usage_library/memuse.hpp"
+#include "common_usage_library/memresource.hpp"
 #include "common_usage_library/randomer.hpp"
 #include "common_usage_library/timestamp.hpp"
 #include "common_usage_library/tupletools.hpp"

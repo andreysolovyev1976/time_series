@@ -78,7 +78,6 @@ add_executable(${PROJECT_NAME_TEST}
         tests_serie_container.cpp
         tests_serie_itertools.cpp
         tests_serie_joins.cpp
-
         tests_serie_fun_apply.cpp
 
         tests_financial_container.cpp

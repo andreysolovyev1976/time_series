@@ -31,6 +31,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char **argv) {
 // 	BidAsk
 // DONE fix timestamp
 // test operator >> for timestamp
+// test Element for user defined classes
 
 
 

@@ -48,6 +48,7 @@ template<typename T>
 class ValueCtorsMultiField : public testing::Test {};
 TYPED_TEST_SUITE(ValueCtorsMultiField, value_multifield);
 
+struct S{};
 using test_value = testing::Types<
 		double,
 		int,
@@ -58,13 +59,13 @@ using test_value = testing::Types<
 		time_series::financial::OHLCV<time_series::value::traits::ValueTypeDefault>,
 		time_series::financial::OHLCV<std::int64_t>,
 		time_series::financial::BidAsk<time_series::value::traits::ValueTypeDefault>,
-		time_series::financial::BidAsk<std::int64_t>
+		time_series::financial::BidAsk<std::int64_t>,
+		std::string,
+		std::vector<int>,
+		S
 >;
 
-struct S{};
 using test_element_throw = testing::Types<
-		std::string,
-		S
 >;
 
 

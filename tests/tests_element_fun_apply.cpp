@@ -6,7 +6,7 @@
 
 template <typename Type, typename U>
 Type initWithValue (const U init_value) {
-	using T = typename Type::elem_type;
+	using T = typename Type::mapped_type;
 	T t = init_value;
 	return Type(t);
 }

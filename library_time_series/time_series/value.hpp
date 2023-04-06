@@ -10,7 +10,7 @@
 #include "common_usage_library/types_requirements/operators.h"
 #include "common_usage_library/timestamp.hpp"
 #include "time_series/const_values.h"
-#include "time_series/value_traits.h"
+#include "time_series/value_interface.h"
 
 #ifndef BASE_VALUE_H
 #define BASE_VALUE_H
