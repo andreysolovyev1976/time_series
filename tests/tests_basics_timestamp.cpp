@@ -140,11 +140,11 @@ TEST(BasicsTimestamp, UpCast) {
 	using namespace culib::time;
 
 	TS initial;
-	auto s = initial.castTo<Seconds>();
+	auto s = initial.upcastTo<Seconds>();
 	ASSERT_EQ(s.time_point, std::chrono::floor<Seconds>(initial.time_point));
-	auto m = s.castTo<Minutes>();
+	auto m = s.upcastTo<Minutes>();
 	ASSERT_EQ(m.time_point, std::chrono::floor<Minutes>(s.time_point));
-	auto h = m.castTo<Hours>();
+	auto h = m.upcastTo<Hours>();
 	ASSERT_EQ(h.time_point, std::chrono::floor<Hours>(m.time_point));
 
 	// auto err = h.castTo<Seconds>(); //compile error

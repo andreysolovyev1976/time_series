@@ -19,13 +19,13 @@
 #define TS_ELEMENT_H
 
 namespace time_series {
-
+  
 #ifndef __cpp_concepts
-  template <typename Duration = culib::time::Seconds,
-		  typename ElemType = Value<value::traits::ValueTypeDefault>,
-          culib::requirements::IsDuration<Duration> = true>
+  template <typename Duration = culib::time::Seconds
+		  , typename ElemType = Value<value::traits::ValueTypeDefault>
+				  >
 #else
-  template<culib::requirements::IsDuration Duration = culib::time::Seconds,
+  template<typename Duration = culib::time::Seconds,
 		  typename ElemType = Value<value::traits::ValueTypeDefault> >
 #endif
   struct Element final {
@@ -93,10 +93,9 @@ namespace time_series {
 
 
 #ifndef __cpp_concepts
-  template <typename Duration, typename ElemType,
-          culib::requirements::IsDuration<Duration> = true>
+  template <typename Duration, typename ElemType>
 #else
-  template<culib::requirements::IsDuration Duration, typename ElemType >
+  template<typename Duration, typename ElemType >
 #endif
   struct ElementHasher {
 	  size_t operator () (const Element<Duration, ElemType>& element) const {
@@ -106,28 +105,25 @@ namespace time_series {
 
 
 #ifndef __cpp_concepts
-  template <typename Duration, typename ElemType,
-          culib::requirements::IsDuration<Duration> = true>
+  template <typename Duration, typename ElemType>
 #else
-  template<culib::requirements::IsDuration Duration, typename ElemType>
+  template<typename Duration, typename ElemType>
 #endif
   Element<Duration, ElemType>::Element (const ElemType &e) : value (e)
   {}
-  
+
 #ifndef __cpp_concepts
-  template <typename Duration, typename ElemType,
-          culib::requirements::IsDuration<Duration> = true>
+  template <typename Duration, typename ElemType>
 #else
-  template<culib::requirements::IsDuration Duration, typename ElemType>
+  template<typename Duration, typename ElemType>
 #endif
   Element<Duration, ElemType>::Element (ElemType &&e) : value (std::move(e))
   {}
 
 #ifndef __cpp_concepts
-  template <typename Duration, typename ElemType,
-          culib::requirements::IsDuration<Duration> = true>
+  template <typename Duration, typename ElemType>
 #else
-  template<culib::requirements::IsDuration Duration, typename ElemType>
+  template<typename Duration, typename ElemType>
 #endif
   Element<Duration, ElemType>::Element (Element<Duration, ElemType>::value_type &&p)
 		  : timestamp (std::move(p.first))
@@ -135,10 +131,9 @@ namespace time_series {
   {}
 
 #ifndef __cpp_concepts
-  template <typename Duration, typename ElemType,
-          culib::requirements::IsDuration<Duration> = true>
+  template <typename Duration, typename ElemType>
 #else
-  template<culib::requirements::IsDuration Duration, typename ElemType>
+  template<typename Duration, typename ElemType>
 #endif
   Element<Duration, ElemType>::Element (const Element<Duration, ElemType>::value_type &p)
 		  : timestamp (p.first)
@@ -146,21 +141,19 @@ namespace time_series {
   {}
 
 #ifndef __cpp_concepts
-  template <typename Duration, typename ElemType,
-          culib::requirements::IsDuration<Duration> = true>
+  template <typename Duration, typename ElemType>
 #else
-  template<culib::requirements::IsDuration Duration, typename ElemType>
+  template<typename Duration, typename ElemType>
 #endif
   Element<Duration, ElemType>::Element (culib::time::Timestamp<Duration> ts, ElemType &&value)
 		  : timestamp (ts)
 		  , value (std::move(value))
   {}
-  
+
 #ifndef __cpp_concepts
-  template <typename Duration, typename ElemType,
-          culib::requirements::IsDuration<Duration> = true>
+  template <typename Duration, typename ElemType>
 #else
-  template<culib::requirements::IsDuration Duration, typename ElemType>
+  template<typename Duration, typename ElemType>
 #endif
   Element<Duration, ElemType>::Element (culib::time::Timestamp<Duration> ts, ElemType const& value)
 		  : timestamp (ts)
@@ -168,100 +161,90 @@ namespace time_series {
   {}
 
 #ifndef __cpp_concepts
-  template <typename Duration, typename ElemType,
-          culib::requirements::IsDuration<Duration> = true>
+  template <typename Duration, typename ElemType>
 #else
-  template<culib::requirements::IsDuration Duration, typename ElemType>
+  template<typename Duration, typename ElemType>
 #endif
   const typename Element<Duration, ElemType>::value_type& Element<Duration, ElemType>::operator () () const & {
 	  return {timestamp, value}; //todo: check what is a subject for reference - a pair itself or two referencies of the respective fields
   }
 
 #ifndef __cpp_concepts
-  template <typename Duration, typename ElemType,
-          culib::requirements::IsDuration<Duration> = true>
+  template <typename Duration, typename ElemType>
 #else
-  template<culib::requirements::IsDuration Duration, typename ElemType>
+  template<typename Duration, typename ElemType>
 #endif
   typename Element<Duration, ElemType>::value_type& Element<Duration, ElemType>::operator()() & {
 	  return {timestamp, value}; //todo: check what is a subject for reference - a pair itself or two referencies of the respective fields
   }
 
 #ifndef __cpp_concepts
-  template <typename Duration, typename ElemType,
-          culib::requirements::IsDuration<Duration> = true>
+  template <typename Duration, typename ElemType>
 #else
-  template<culib::requirements::IsDuration Duration, typename ElemType>
+  template<typename Duration, typename ElemType>
 #endif
   Element<Duration, ElemType>::operator typename Element<Duration, ElemType>::value_type () const {
 	  return {timestamp, value};
   }
 
 #ifndef __cpp_concepts
-  template <typename Duration, typename ElemType,
-          culib::requirements::IsDuration<Duration> = true>
+  template <typename Duration, typename ElemType>
 #else
-  template<culib::requirements::IsDuration Duration, typename ElemType>
+  template<typename Duration, typename ElemType>
 #endif
   Element<Duration, ElemType>::operator typename Element<Duration, ElemType>::mapped_type () const {
 	  return value;
   }
 
 #ifndef __cpp_concepts
-  template <typename Duration, typename ElemType,
-          culib::requirements::IsDuration<Duration> = true>
+  template <typename Duration, typename ElemType>
 #else
-  template<culib::requirements::IsDuration Duration, typename ElemType>
+  template<typename Duration, typename ElemType>
 #endif
   Element<Duration, ElemType>::operator Element<Duration, ElemType>::key_type () const {
 	  return timestamp;
   }
 
 #ifndef __cpp_concepts
-  template <typename Duration, typename ElemType,
-          culib::requirements::IsDuration<Duration> = true>
+  template <typename Duration, typename ElemType>
 #else
-  template<culib::requirements::IsDuration Duration, typename ElemType>
+  template<typename Duration, typename ElemType>
 #endif
   const typename Element<Duration, ElemType>::key_type& Element<Duration, ElemType>::first () const & {
 	  return timestamp;
   }
 
 #ifndef __cpp_concepts
-  template <typename Duration, typename ElemType,
-          culib::requirements::IsDuration<Duration> = true>
+  template <typename Duration, typename ElemType>
 #else
-  template<culib::requirements::IsDuration Duration, typename ElemType>
+  template<typename Duration, typename ElemType>
 #endif
   typename Element<Duration, ElemType>::key_type& Element<Duration, ElemType>::first () & {
 	  return timestamp;
   }
 
 #ifndef __cpp_concepts
-  template <typename Duration, typename ElemType,
-          culib::requirements::IsDuration<Duration> = true>
+  template <typename Duration, typename ElemType>
 #else
-  template<culib::requirements::IsDuration Duration, typename ElemType>
+  template<typename Duration, typename ElemType>
 #endif
   const typename Element<Duration, ElemType>::mapped_type& Element<Duration, ElemType>::second () const & {
 	  return value;
   }
 
 #ifndef __cpp_concepts
-  template <typename Duration, typename ElemType,
-          culib::requirements::IsDuration<Duration> = true>
+  template <typename Duration, typename ElemType>
 #else
-  template<culib::requirements::IsDuration Duration, typename ElemType>
+  template<typename Duration, typename ElemType>
 #endif
   typename Element<Duration, ElemType>::mapped_type& Element<Duration, ElemType>::second () & {
 	  return value;
   }
 
 #ifndef __cpp_concepts
-  template <typename Duration, typename ElemType,
-          culib::requirements::IsDuration<Duration> = true>
+  template <typename Duration, typename ElemType>
 #else
-  template<culib::requirements::IsDuration Duration, typename ElemType>
+  template<typename Duration, typename ElemType>
 #endif
   Element<Duration, ElemType>& Element<Duration, ElemType>::operator = (const ElemType &e) {
 	  value = e;
@@ -269,10 +252,9 @@ namespace time_series {
   }
 
 #ifndef __cpp_concepts
-  template <typename Duration, typename ElemType,
-          culib::requirements::IsDuration<Duration> = true>
+  template <typename Duration, typename ElemType>
 #else
-  template<culib::requirements::IsDuration Duration, typename ElemType>
+  template<typename Duration, typename ElemType>
 #endif
   Element<Duration, ElemType>& Element<Duration, ElemType>::operator = (ElemType &&e)  {
 	  value = std::move(e);
@@ -280,10 +262,9 @@ namespace time_series {
   }
 
 #ifndef __cpp_concepts
-  template <typename Duration, typename ElemType,
-          culib::requirements::IsDuration<Duration> = true>
+  template <typename Duration, typename ElemType>
 #else
-  template<culib::requirements::IsDuration Duration, typename ElemType>
+  template<typename Duration, typename ElemType>
 #endif
   Element<Duration, ElemType>& Element<Duration, ElemType>::operator = (value_type &&p) {
 	  timestamp = std::move(p.first);
@@ -292,10 +273,9 @@ namespace time_series {
   }
 
 #ifndef __cpp_concepts
-  template <typename Duration, typename ElemType,
-          culib::requirements::IsDuration<Duration> = true>
+  template <typename Duration, typename ElemType>
 #else
-  template<culib::requirements::IsDuration Duration, typename ElemType>
+  template<typename Duration, typename ElemType>
 #endif
   Element<Duration, ElemType>& Element<Duration, ElemType>::operator = (const value_type &p) {
 	  timestamp = p.first;
@@ -304,10 +284,9 @@ namespace time_series {
   }
 
 #ifndef __cpp_concepts
-  template <typename Duration, typename ElemType,
-          culib::requirements::IsDuration<Duration> = true>
+  template <typename Duration, typename ElemType>
 #else
-  template<culib::requirements::IsDuration Duration, typename ElemType>
+  template<typename Duration, typename ElemType>
 #endif
   std::string Element<Duration, ElemType>::toString () const {
 	  using namespace std::string_literals;
@@ -320,10 +299,9 @@ namespace time_series {
   }
 
 #ifndef __cpp_concepts
-  template <typename Duration, typename ElemType,
-          culib::requirements::IsDuration<Duration> = true>
+  template <typename Duration, typename ElemType>
 #else
-  template<culib::requirements::IsDuration Duration, typename ElemType>
+  template<typename Duration, typename ElemType>
 #endif
   Element<Duration, ElemType>::operator std::string () const {
 	  return toString();
@@ -331,10 +309,9 @@ namespace time_series {
 
 
 #ifndef __cpp_concepts
-  template <typename Duration, typename ElemType,
-          culib::requirements::IsDuration<Duration> = true>
+  template <typename Duration, typename ElemType>
 #else
-  template<culib::requirements::IsDuration Duration, typename ElemType>
+  template<typename Duration, typename ElemType>
 #endif
   template <typename Fn, typename... Args>
   decltype(auto) Element<Duration, ElemType>::applyFunction (Fn&& fn, Args&& ...args) & {
@@ -350,47 +327,42 @@ namespace time_series {
   }
 
 #ifndef __cpp_concepts
-  template <typename Duration, typename ElemType,
-          culib::requirements::IsDuration<Duration> = true>
+  template <typename Duration, typename ElemType>
 #else
-  template<culib::requirements::IsDuration Duration, typename ElemType>
+  template<typename Duration, typename ElemType>
 #endif
   template<std::size_t Index>
   decltype(auto) Element<Duration, ElemType>::get() &  { return getImpl<Index>(*this); }
 
 #ifndef __cpp_concepts
-  template <typename Duration, typename ElemType,
-          culib::requirements::IsDuration<Duration> = true>
+  template <typename Duration, typename ElemType>
 #else
-  template<culib::requirements::IsDuration Duration, typename ElemType>
+  template<typename Duration, typename ElemType>
 #endif
   template<std::size_t Index>
   decltype(auto) Element<Duration, ElemType>::get() && { return getImpl<Index>(*this); }
 
 #ifndef __cpp_concepts
-  template <typename Duration, typename ElemType,
-          culib::requirements::IsDuration<Duration> = true>
+  template <typename Duration, typename ElemType>
 #else
-  template<culib::requirements::IsDuration Duration, typename ElemType>
+  template<typename Duration, typename ElemType>
 #endif
   template<std::size_t Index>
   decltype(auto) Element<Duration, ElemType>::get() const &  { return getImpl<Index>(*this); }
 
 #ifndef __cpp_concepts
-  template <typename Duration, typename ElemType,
-          culib::requirements::IsDuration<Duration> = true>
+  template <typename Duration, typename ElemType>
 #else
-  template<culib::requirements::IsDuration Duration, typename ElemType>
+  template<typename Duration, typename ElemType>
 #endif
   template<std::size_t Index>
   decltype(auto) Element<Duration, ElemType>::get() const && { return getImpl<Index>(*this); }
 
 
 #ifndef __cpp_concepts
-  template <typename Duration, typename ElemType,
-          culib::requirements::IsDuration<Duration> = true>
+  template <typename Duration, typename ElemType>
 #else
-  template<culib::requirements::IsDuration Duration, typename ElemType>
+  template<typename Duration, typename ElemType>
 #endif
   template<std::size_t Index, typename ThisType>
   auto&& Element<Duration, ElemType>::getImpl(ThisType&& t) {
@@ -400,10 +372,9 @@ namespace time_series {
   }
 
 #ifndef __cpp_concepts
-  template <typename Duration, typename ElemType,
-          culib::requirements::IsDuration<Duration> = true>
+  template <typename Duration, typename ElemType>
 #else
-  template<culib::requirements::IsDuration Duration, typename ElemType>
+  template<typename Duration, typename ElemType>
 #endif
   template<std::size_t Index, typename ThisType>
   auto&& Element<Duration, ElemType>::getImpl(ThisType&& t) const {
@@ -420,20 +391,18 @@ namespace time_series {
   
   
 #ifndef __cpp_concepts
-  template <typename Duration, typename ElemType,
-          culib::requirements::IsDuration<Duration> = true>
+  template <typename Duration, typename ElemType>
 #else
-  template<culib::requirements::IsDuration Duration, typename ElemType>
+  template<typename Duration, typename ElemType>
 #endif
   bool operator == (const Element<Duration, ElemType>& lhs, const Element<Duration, ElemType>& rhs) {
 	  return lhs.timestamp == rhs.timestamp && lhs.value == rhs.value;
   }
 #ifndef __cpp_concepts
   template <typename Duration, typename ElemType, typename Other,
-		  culib::requirements::IsDuration<Duration> = true,
 		  culib::requirements::BinOperatorsExist<ElemType, Other> = true>
 #else
-  template <culib::requirements::IsDuration Duration, typename ElemType, typename Other>
+  template <typename Duration, typename ElemType, typename Other>
   requires culib::requirements::BinOperatorsExist<ElemType, Other>
 #endif
   bool operator == (const Element<Duration, ElemType>& lhs, const Other& rhs) {
@@ -441,10 +410,9 @@ namespace time_series {
   }
 #ifndef __cpp_concepts
   template <typename Duration, typename ElemType, typename Other,
-		  culib::requirements::IsDuration<Duration> = true,
 		  culib::requirements::BinOperatorsExist<ElemType, Other> = true>
 #else
-  template <culib::requirements::IsDuration Duration, typename ElemType, typename Other>
+  template <typename Duration, typename ElemType, typename Other>
   requires culib::requirements::BinOperatorsExist<ElemType, Other>
 #endif
   bool operator == (const Other& lhs, const Element<Duration, ElemType>& rhs) {
@@ -452,20 +420,18 @@ namespace time_series {
   }
 
 #ifndef __cpp_concepts
-  template <typename Duration, typename ElemType,
-          culib::requirements::IsDuration<Duration> = true>
+  template <typename Duration, typename ElemType>
 #else
-  template<culib::requirements::IsDuration Duration, typename ElemType>
+  template<typename Duration, typename ElemType>
 #endif
   bool operator != (const Element<Duration, ElemType>& lhs, const Element<Duration, ElemType>& rhs) {
 	  return !(lhs == rhs);
   }
 #ifndef __cpp_concepts
   template <typename Duration, typename ElemType, typename Other,
-		  culib::requirements::IsDuration<Duration> = true,
 		  culib::requirements::BinOperatorsExist<ElemType, Other> = true>
 #else
-  template <culib::requirements::IsDuration Duration, typename ElemType, typename Other>
+  template <typename Duration, typename ElemType, typename Other>
   requires culib::requirements::BinOperatorsExist<ElemType, Other>
 #endif
   bool operator != (const Element<Duration, ElemType>& lhs, const Other& rhs) {
@@ -473,10 +439,9 @@ namespace time_series {
   }
 #ifndef __cpp_concepts
   template <typename Duration, typename ElemType, typename Other,
-		  culib::requirements::IsDuration<Duration> = true,
 		  culib::requirements::BinOperatorsExist<ElemType, Other> = true>
 #else
-  template <culib::requirements::IsDuration Duration, typename ElemType, typename Other>
+  template <typename Duration, typename ElemType, typename Other>
   requires culib::requirements::BinOperatorsExist<ElemType, Other>
 #endif
   bool operator != (const Other& lhs, const Element<Duration, ElemType>& rhs) {
@@ -484,20 +449,18 @@ namespace time_series {
   }
 
 #ifndef __cpp_concepts
-  template <typename Duration, typename ElemType,
-          culib::requirements::IsDuration<Duration> = true>
+  template <typename Duration, typename ElemType>
 #else
-  template<culib::requirements::IsDuration Duration, typename ElemType>
+  template<typename Duration, typename ElemType>
 #endif
   bool operator < (const Element<Duration, ElemType>& lhs, const Element<Duration, ElemType>& rhs) {
 	  return lhs.timestamp != rhs.timestamp ? lhs.timestamp < rhs.timestamp : lhs.value < rhs.value;
   }
 #ifndef __cpp_concepts
   template <typename Duration, typename ElemType, typename Other,
-		  culib::requirements::IsDuration<Duration> = true,
 		  culib::requirements::BinOperatorsExist<ElemType, Other> = true>
 #else
-  template <culib::requirements::IsDuration Duration, typename ElemType, typename Other>
+  template <typename Duration, typename ElemType, typename Other>
   requires culib::requirements::BinOperatorsExist<ElemType, Other>
 #endif
   bool operator < (const Element<Duration, ElemType>& lhs, const Other& rhs) {
@@ -505,10 +468,9 @@ namespace time_series {
   }
 #ifndef __cpp_concepts
   template <typename Duration, typename ElemType, typename Other,
-		  culib::requirements::IsDuration<Duration> = true,
 		  culib::requirements::BinOperatorsExist<ElemType, Other> = true>
 #else
-  template <culib::requirements::IsDuration Duration, typename ElemType, typename Other>
+  template <typename Duration, typename ElemType, typename Other>
   requires culib::requirements::BinOperatorsExist<ElemType, Other>
 #endif
   bool operator < (const Other& lhs, const Element<Duration, ElemType>& rhs) {
@@ -516,20 +478,18 @@ namespace time_series {
   }
 
 #ifndef __cpp_concepts
-  template <typename Duration, typename ElemType,
-          culib::requirements::IsDuration<Duration> = true>
+  template <typename Duration, typename ElemType>
 #else
-  template<culib::requirements::IsDuration Duration, typename ElemType>
+  template<typename Duration, typename ElemType>
 #endif
   bool operator > (const Element<Duration, ElemType>& lhs, const Element<Duration, ElemType>& rhs) {
 	  return (!(lhs == rhs) && !(lhs < rhs));
   }
 #ifndef __cpp_concepts
   template <typename Duration, typename ElemType, typename Other,
-		  culib::requirements::IsDuration<Duration> = true,
 		  culib::requirements::BinOperatorsExist<ElemType, Other> = true>
 #else
-  template <culib::requirements::IsDuration Duration, typename ElemType, typename Other>
+  template <typename Duration, typename ElemType, typename Other>
   requires culib::requirements::BinOperatorsExist<ElemType, Other>
 #endif
   bool operator > (const Element<Duration, ElemType>& lhs, const Other& rhs) {
@@ -537,10 +497,9 @@ namespace time_series {
   }
 #ifndef __cpp_concepts
   template <typename Duration, typename ElemType, typename Other,
-		  culib::requirements::IsDuration<Duration> = true,
 		  culib::requirements::BinOperatorsExist<ElemType, Other> = true>
 #else
-  template <culib::requirements::IsDuration Duration, typename ElemType, typename Other>
+  template <typename Duration, typename ElemType, typename Other>
   requires culib::requirements::BinOperatorsExist<ElemType, Other>
 #endif
   bool operator > (const Other& lhs, const Element<Duration, ElemType>& rhs) {
@@ -548,20 +507,18 @@ namespace time_series {
   }
 
 #ifndef __cpp_concepts
-  template <typename Duration, typename ElemType,
-          culib::requirements::IsDuration<Duration> = true>
+  template <typename Duration, typename ElemType>
 #else
-  template<culib::requirements::IsDuration Duration, typename ElemType>
+  template<typename Duration, typename ElemType>
 #endif
   bool operator <= (const Element<Duration, ElemType>& lhs, const Element<Duration, ElemType>& rhs) {
 	  return ((lhs == rhs) || (lhs < rhs));
   }
 #ifndef __cpp_concepts
   template <typename Duration, typename ElemType, typename Other,
-		  culib::requirements::IsDuration<Duration> = true,
 		  culib::requirements::BinOperatorsExist<ElemType, Other> = true>
 #else
-  template <culib::requirements::IsDuration Duration, typename ElemType, typename Other>
+  template <typename Duration, typename ElemType, typename Other>
   requires culib::requirements::BinOperatorsExist<ElemType, Other>
 #endif
   bool operator <= (const Element<Duration, ElemType>& lhs, const Other& rhs) {
@@ -569,10 +526,9 @@ namespace time_series {
   }
 #ifndef __cpp_concepts
   template <typename Duration, typename ElemType, typename Other,
-		  culib::requirements::IsDuration<Duration> = true,
 		  culib::requirements::BinOperatorsExist<ElemType, Other> = true>
 #else
-  template <culib::requirements::IsDuration Duration, typename ElemType, typename Other>
+  template <typename Duration, typename ElemType, typename Other>
   requires culib::requirements::BinOperatorsExist<ElemType, Other>
 #endif
   bool operator <= (const Other& lhs, const Element<Duration, ElemType>& rhs) {
@@ -580,20 +536,18 @@ namespace time_series {
   }
 
 #ifndef __cpp_concepts
-  template <typename Duration, typename ElemType,
-          culib::requirements::IsDuration<Duration> = true>
+  template <typename Duration, typename ElemType>
 #else
-  template<culib::requirements::IsDuration Duration, typename ElemType>
+  template<typename Duration, typename ElemType>
 #endif
   bool operator >= (const Element<Duration, ElemType>& lhs, const Element<Duration, ElemType>& rhs){
 	  return ((lhs == rhs) || (lhs > rhs));
   }
 #ifndef __cpp_concepts
   template <typename Duration, typename ElemType, typename Other,
-		  culib::requirements::IsDuration<Duration> = true,
 		  culib::requirements::BinOperatorsExist<ElemType, Other> = true>
 #else
-  template <culib::requirements::IsDuration Duration, typename ElemType, typename Other>
+  template <typename Duration, typename ElemType, typename Other>
   requires culib::requirements::BinOperatorsExist<ElemType, Other>
 #endif
   bool operator >= (const Element<Duration, ElemType>& lhs, const Other& rhs){
@@ -601,10 +555,9 @@ namespace time_series {
   }
 #ifndef __cpp_concepts
   template <typename Duration, typename ElemType, typename Other,
-		  culib::requirements::IsDuration<Duration> = true,
 		  culib::requirements::BinOperatorsExist<ElemType, Other> = true>
 #else
-  template <culib::requirements::IsDuration Duration, typename ElemType, typename Other>
+  template <typename Duration, typename ElemType, typename Other>
   requires culib::requirements::BinOperatorsExist<ElemType, Other>
 #endif
   bool operator >= (const Other& lhs, const Element<Duration, ElemType>& rhs) {
@@ -614,10 +567,9 @@ namespace time_series {
 
 
 #ifndef __cpp_concepts
-  template <typename Duration, typename ElemType,
-          culib::requirements::IsDuration<Duration> = true>
+  template <typename Duration, typename ElemType>
 #else
-  template<culib::requirements::IsDuration Duration, typename ElemType>
+  template<typename Duration, typename ElemType>
 #endif
   Element<Duration, ElemType> operator * (const Element<Duration, ElemType>& lhs, const Element<Duration, ElemType>& rhs) {
 	  return Element<Duration, ElemType> {
@@ -626,10 +578,9 @@ namespace time_series {
   }
 #ifndef __cpp_concepts
   template <typename Duration, typename ElemType, typename Other,
-		  culib::requirements::IsDuration<Duration> = true,
 		  culib::requirements::BinOperatorsExist<ElemType, Other> = true>
 #else
-  template <culib::requirements::IsDuration Duration, typename ElemType, typename Other>
+  template <typename Duration, typename ElemType, typename Other>
   requires culib::requirements::BinOperatorsExist<ElemType, Other>
 #endif
   Element<Duration, ElemType> operator * (const Element<Duration, ElemType>& lhs, Other &&rhs) {
@@ -639,10 +590,9 @@ namespace time_series {
   }
 #ifndef __cpp_concepts
   template <typename Duration, typename ElemType, typename Other,
-		  culib::requirements::IsDuration<Duration> = true,
 		  culib::requirements::BinOperatorsExist<ElemType, Other> = true>
 #else
-  template <culib::requirements::IsDuration Duration, typename ElemType, typename Other>
+  template <typename Duration, typename ElemType, typename Other>
   requires culib::requirements::BinOperatorsExist<ElemType, Other>
 #endif
   Element<Duration, ElemType> operator * (Other &&lhs, const Element<Duration, ElemType>& rhs) {
@@ -651,10 +601,9 @@ namespace time_series {
 			  .value = lhs * rhs.value };
   }
 #ifndef __cpp_concepts
-  template <typename Duration, typename ElemType,
-          culib::requirements::IsDuration<Duration> = true>
+  template <typename Duration, typename ElemType>
 #else
-  template<culib::requirements::IsDuration Duration, typename ElemType>
+  template<typename Duration, typename ElemType>
 #endif
   Element<Duration, ElemType> operator / (const Element<Duration, ElemType>& lhs, const Element<Duration, ElemType>& rhs) {
 	  return Element<Duration, ElemType> {
@@ -663,10 +612,9 @@ namespace time_series {
   }
 #ifndef __cpp_concepts
   template <typename Duration, typename ElemType, typename Other,
-		  culib::requirements::IsDuration<Duration> = true,
 		  culib::requirements::BinOperatorsExist<ElemType, Other> = true>
 #else
-  template <culib::requirements::IsDuration Duration, typename ElemType, typename Other>
+  template <typename Duration, typename ElemType, typename Other>
   requires culib::requirements::BinOperatorsExist<ElemType, Other>
 #endif
   Element<Duration, ElemType> operator / (const Element<Duration, ElemType>& lhs, Other &&rhs) {
@@ -676,10 +624,9 @@ namespace time_series {
   }
 #ifndef __cpp_concepts
   template <typename Duration, typename ElemType, typename Other,
-		  culib::requirements::IsDuration<Duration> = true,
 		  culib::requirements::BinOperatorsExist<ElemType, Other> = true>
 #else
-  template <culib::requirements::IsDuration Duration, typename ElemType, typename Other>
+  template <typename Duration, typename ElemType, typename Other>
   requires culib::requirements::BinOperatorsExist<ElemType, Other>
 #endif
   Element<Duration, ElemType> operator / (Other &&lhs, const Element<Duration, ElemType>& rhs) {
@@ -688,10 +635,9 @@ namespace time_series {
 			  .value = lhs / rhs.value };
   }
 #ifndef __cpp_concepts
-  template <typename Duration, typename ElemType,
-          culib::requirements::IsDuration<Duration> = true>
+  template <typename Duration, typename ElemType>
 #else
-  template<culib::requirements::IsDuration Duration, typename ElemType>
+  template<typename Duration, typename ElemType>
 #endif
   Element<Duration, ElemType> operator + (const Element<Duration, ElemType>& lhs, const Element<Duration, ElemType>& rhs) {
 	  return Element<Duration, ElemType> {
@@ -700,10 +646,9 @@ namespace time_series {
   }
 #ifndef __cpp_concepts
   template <typename Duration, typename ElemType, typename Other,
-		  culib::requirements::IsDuration<Duration> = true,
 		  culib::requirements::BinOperatorsExist<ElemType, Other> = true>
 #else
-  template <culib::requirements::IsDuration Duration, typename ElemType, typename Other>
+  template <typename Duration, typename ElemType, typename Other>
   requires culib::requirements::BinOperatorsExist<ElemType, Other>
 #endif
   Element<Duration, ElemType> operator + (const Element<Duration, ElemType>& lhs, Other &&rhs) {
@@ -713,10 +658,9 @@ namespace time_series {
   }
 #ifndef __cpp_concepts
   template <typename Duration, typename ElemType, typename Other,
-		  culib::requirements::IsDuration<Duration> = true,
 		  culib::requirements::BinOperatorsExist<ElemType, Other> = true>
 #else
-  template <culib::requirements::IsDuration Duration, typename ElemType, typename Other>
+  template <typename Duration, typename ElemType, typename Other>
   requires culib::requirements::BinOperatorsExist<ElemType, Other>
 #endif
   Element<Duration, ElemType> operator + (Other &&rhs, const Element<Duration, ElemType>& lhs) {
@@ -725,10 +669,9 @@ namespace time_series {
 			  .value = lhs + rhs.data };
   }
 #ifndef __cpp_concepts
-  template <typename Duration, typename ElemType,
-          culib::requirements::IsDuration<Duration> = true>
+  template <typename Duration, typename ElemType>
 #else
-  template<culib::requirements::IsDuration Duration, typename ElemType>
+  template<typename Duration, typename ElemType>
 #endif
   Element<Duration, ElemType> operator - (const Element<Duration, ElemType>& lhs, const Element<Duration, ElemType>& rhs) {
 	  return Element<Duration, ElemType> {
@@ -737,10 +680,9 @@ namespace time_series {
   }
 #ifndef __cpp_concepts
   template <typename Duration, typename ElemType, typename Other,
-		  culib::requirements::IsDuration<Duration> = true,
 		  culib::requirements::BinOperatorsExist<ElemType, Other> = true>
 #else
-  template <culib::requirements::IsDuration Duration, typename ElemType, typename Other>
+  template <typename Duration, typename ElemType, typename Other>
   requires culib::requirements::BinOperatorsExist<ElemType, Other>
 #endif
   Element<Duration, ElemType> operator - (const Element<Duration, ElemType>& lhs, Other &&rhs) {
@@ -750,10 +692,9 @@ namespace time_series {
   }
 #ifndef __cpp_concepts
   template <typename Duration, typename ElemType, typename Other,
-		  culib::requirements::IsDuration<Duration> = true,
 		  culib::requirements::BinOperatorsExist<ElemType, Other> = true>
 #else
-  template <culib::requirements::IsDuration Duration, typename ElemType, typename Other>
+  template <typename Duration, typename ElemType, typename Other>
   requires culib::requirements::BinOperatorsExist<ElemType, Other>
 #endif
   Element<Duration, ElemType> operator - (Other &&rhs, const Element<Duration, ElemType>& lhs) {
@@ -764,10 +705,9 @@ namespace time_series {
 
 
 #ifndef __cpp_concepts
-  template <typename Duration, typename ElemType,
-          culib::requirements::IsDuration<Duration> = true>
+  template <typename Duration, typename ElemType>
 #else
-  template<culib::requirements::IsDuration Duration, typename ElemType>
+  template<typename Duration, typename ElemType>
 #endif
   Element<Duration, ElemType>& operator += (Element<Duration, ElemType>& lhs, const Element<Duration, ElemType>& rhs) {
 	  lhs.timestamp = {0};
@@ -776,10 +716,9 @@ namespace time_series {
   }
 #ifndef __cpp_concepts
   template <typename Duration, typename ElemType, typename Other,
-		  culib::requirements::IsDuration<Duration> = true,
 		  culib::requirements::BinOperatorsExist<ElemType, Other> = true>
 #else
-  template <culib::requirements::IsDuration Duration, typename ElemType, typename Other>
+  template <typename Duration, typename ElemType, typename Other>
   requires culib::requirements::BinOperatorsExist<ElemType, Other>
 #endif
   Element<Duration, ElemType>& operator += (Element<Duration, ElemType>& lhs, Other &&rhs) {
@@ -788,10 +727,9 @@ namespace time_series {
   }
 
 #ifndef __cpp_concepts
-  template <typename Duration, typename ElemType,
-          culib::requirements::IsDuration<Duration> = true>
+  template <typename Duration, typename ElemType>
 #else
-  template<culib::requirements::IsDuration Duration, typename ElemType>
+  template<typename Duration, typename ElemType>
 #endif
   Element<Duration, ElemType>& operator -= (Element<Duration, ElemType>& lhs, const Element<Duration, ElemType>& rhs) {
 	  lhs.timestamp = {0};
@@ -800,10 +738,9 @@ namespace time_series {
   }
 #ifndef __cpp_concepts
   template <typename Duration, typename ElemType, typename Other,
-		  culib::requirements::IsDuration<Duration> = true,
 		  culib::requirements::BinOperatorsExist<ElemType, Other> = true>
 #else
-  template <culib::requirements::IsDuration Duration, typename ElemType, typename Other>
+  template <typename Duration, typename ElemType, typename Other>
   requires culib::requirements::BinOperatorsExist<ElemType, Other>
 #endif
   Element<Duration, ElemType>& operator -= (Element<Duration, ElemType>& lhs, Other &&rhs) {
@@ -812,10 +749,9 @@ namespace time_series {
   }
 
 #ifndef __cpp_concepts
-  template <typename Duration, typename ElemType,
-          culib::requirements::IsDuration<Duration> = true>
+  template <typename Duration, typename ElemType>
 #else
-  template<culib::requirements::IsDuration Duration, typename ElemType>
+  template<typename Duration, typename ElemType>
 #endif
   Element<Duration, ElemType>& operator *= (Element<Duration, ElemType>& lhs, const Element<Duration, ElemType>& rhs) {
 	  lhs.timestamp = {0};
@@ -824,10 +760,9 @@ namespace time_series {
   }
 #ifndef __cpp_concepts
   template <typename Duration, typename ElemType, typename Other,
-		  culib::requirements::IsDuration<Duration> = true,
 		  culib::requirements::BinOperatorsExist<ElemType, Other> = true>
 #else
-  template <culib::requirements::IsDuration Duration, typename ElemType, typename Other>
+  template <typename Duration, typename ElemType, typename Other>
   requires culib::requirements::BinOperatorsExist<ElemType, Other>
 #endif
   Element<Duration, ElemType>& operator *= (Element<Duration, ElemType>& lhs, Other &&rhs) {
@@ -836,10 +771,9 @@ namespace time_series {
   }
 
 #ifndef __cpp_concepts
-  template <typename Duration, typename ElemType,
-          culib::requirements::IsDuration<Duration> = true>
+  template <typename Duration, typename ElemType>
 #else
-  template<culib::requirements::IsDuration Duration, typename ElemType>
+  template<typename Duration, typename ElemType>
 #endif
   Element<Duration, ElemType>& operator /= (Element<Duration, ElemType>& lhs, const Element<Duration, ElemType>& rhs) {
 	  lhs.timestamp = {0};
@@ -848,10 +782,9 @@ namespace time_series {
   }
 #ifndef __cpp_concepts
   template <typename Duration, typename ElemType, typename Other,
-		  culib::requirements::IsDuration<Duration> = true,
 		  culib::requirements::BinOperatorsExist<ElemType, Other> = true>
 #else
-  template <culib::requirements::IsDuration Duration, typename ElemType, typename Other>
+  template <typename Duration, typename ElemType, typename Other>
   requires culib::requirements::BinOperatorsExist<ElemType, Other>
 #endif
   Element<Duration, ElemType>& operator /= (Element<Duration, ElemType>& lhs, Other &&rhs) {
@@ -861,10 +794,9 @@ namespace time_series {
 
 
 #ifndef __cpp_concepts
-  template <typename Duration, typename ElemType,
-          culib::requirements::IsDuration<Duration> = true>
+  template <typename Duration, typename ElemType>
 #else
-  template<culib::requirements::IsDuration Duration, typename ElemType>
+  template<typename Duration, typename ElemType>
 #endif
   std::ostream& operator << (std::ostream& os, const Element<Duration, ElemType>& element) {
 	  return os << element.timestamp << ' ' << element.value;
@@ -893,24 +825,22 @@ namespace time_series {
 /**
  * @details
  * Template specialization for std:: namespace \n
- * to make a structural binding available\n\n
+ * to make a structured binding available\n\n
  *
  * */
 
 namespace std {
 #ifndef __cpp_concepts
-  template <typename Duration, typename ElemType,
-          culib::requirements::IsDuration<Duration> = true>
+  template <typename Duration, typename ElemType>
 #else
-  template<culib::requirements::IsDuration Duration, typename ElemType>
+  template<typename Duration, typename ElemType>
 #endif
   struct tuple_size<time_series::Element<Duration, ElemType>> : integral_constant<std::size_t, 2u> {};
 
 #ifndef __cpp_concepts
-  template<std::size_t Index, typename Duration, typename ElemType,
-		  culib::requirements::IsDuration<Duration> = true>
+  template<std::size_t Index, typename Duration, typename ElemType>
 #else
-  template<std::size_t Index, culib::requirements::IsDuration Duration, typename ElemType>
+  template<std::size_t Index, typename Duration, typename ElemType>
 #endif
   struct tuple_element<Index, time_series::Element<Duration, ElemType>>
 		  : tuple_element<Index, tuple<

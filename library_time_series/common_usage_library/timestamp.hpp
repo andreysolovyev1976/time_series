@@ -135,7 +135,7 @@ namespace culib::time {
 	  template<requirements::IsDuration DurationTo>
 	  requires details::ConversionAllowed<Duration, DurationTo>
 #endif
-	decltype(auto) castTo () const noexcept {
+	decltype(auto) upcastTo () const noexcept {
 		  Timestamp<DurationTo> result;
 		  result.time_point = std::chrono::time_point_cast<DurationTo>(time_point);
 		  return result;

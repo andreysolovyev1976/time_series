@@ -11,6 +11,7 @@
 #include <string>
 #include <stdexcept>
 #include <initializer_list>
+#include <cmath>
 
 #ifndef FIN_OHLCV_H
 #define FIN_OHLCV_H
@@ -45,6 +46,8 @@ namespace time_series::financial {
 	  OHLCV& operator = (const Input &input);
 
 	  std::string toString() const;
+
+	  void collideWith (OHLCV const& other);
 
 	  template<std::size_t Index>
 	  decltype(auto) get() &;
@@ -129,6 +132,18 @@ namespace time_series::financial {
 	  msg.append(volume.toString());
 	  return msg;
   }
+
+
+
+  template <typename ValueType>
+  void OHLCV<ValueType>::collideWith (OHLCV<ValueType> const& other) {
+//	  open = open; //no changes required
+	  high = std::max(high, other.high);
+	  low = std::min(low, other.low);
+	  close = other.close;
+	  volume += other.volume;
+  }
+
 
   template <typename ValueType>
   template<std::size_t Index>
@@ -1205,7 +1220,7 @@ namespace time_series::financial {
 /**
  * @details
  * Template specialization for std:: namespace \n
- * to make a structural binding available\n\n
+ * to make a structured binding available\n\n
  *
  * */
 

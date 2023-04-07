@@ -5,6 +5,7 @@
 #pragma once
 
 #include "time_series/element.hpp"
+#include "time_series/serie_requirements.h"
 #include "common_usage_library/types_requirements/container.h"
 #include "common_usage_library/types_requirements/object_args_count.h"
 #include "common_usage_library/types_requirements/numerics.h"
@@ -12,6 +13,7 @@
 #include <list>
 #include <cstddef>
 #include <stdexcept>
+#include <iterator>
 
 #ifdef __cpp_concepts
 #include <concepts>
@@ -84,11 +86,51 @@ namespace time_series {
 	  using duration_type = Duration;
 	  using elem_type = ElemType;
 
-	  struct serie_tag {}; //tag to identify a container as a TimeSerie
+	  struct serie_regular_tag {}; //tag to identify a container as a TimeSerie
 
 	  template <typename Fn, typename Iter>
 	  Serie& applyFunction (Fn &&fn, Iter b = container_type::begin(), Iter e = container_type::end());
-  };
+
+#ifndef __cpp_concepts
+	  template <typename NewDuration
+	          >
+//			  , time_series::requirements::IsCollisionAllowed<ElemType> = true>
+#else
+	  template <typename NewDuration>
+	  requires time_series::requirements::IsCollisionAllowed<ElemType>
+#endif
+	  Serie<NewDuration, ElemType> upcastTo () const {
+		  using new_elem_t = Element<NewDuration, ElemType>;
+		  Serie<NewDuration, ElemType> new_serie;
+		  auto new_elem_iter = std::inserter(new_serie, new_serie.end());
+		  for (auto itb = this->begin(), ite = this->end(); itb != ite; ++itb) {
+			  auto const& [ts, elem] = *itb;
+			  auto new_ts = ts.template upcastTo<NewDuration>();
+			  if (itb == this->begin() || new_ts != new_serie.back().timestamp) {
+				  *new_elem_iter = new_elem_t(new_ts, elem);
+			  }
+			  else {
+				  auto& [_, curr_elem] = new_serie.back();
+				  curr_elem.collideWith(elem);
+			  }
+		  }
+	  	return new_serie;
+	  }
+
+#if 0
+#ifndef __cpp_concepts
+	  template <typename NewDuration,
+			  time_series::requirements::IsNotCollisionAllowed<ElemType> = true>
+#else
+	  template <typename NewDuration>
+	  requires !time_series::requirements::IsCollisionAllowed<ElemType>
+#endif
+	  Serie<NewDuration, ElemType> upcastTo () const {
+		  throw std::invalid_argument ("Can't upcast your ElemValue");
+	  }
+#endif
+
+	  };
 
 }//!namespace
 

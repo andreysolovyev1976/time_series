@@ -1173,13 +1173,13 @@ namespace time_series::financial {
 
 
   template <typename ValueType>
-  std::ostream& operator << (std::ostream& os, const BidAsk<ValueType>& ohlcv) {
+  std::ostream& operator << (std::ostream& os, const BidAsk<ValueType>& bid_ask) {
 	  return os
-			  << ohlcv.bid << ", "
-			  << ohlcv.ask << ", "
-			  << ohlcv.middle << ", "
-			  << ohlcv.price << ", "
-			  << ohlcv.volume;
+			  << bid_ask.bid << ", "
+			  << bid_ask.ask << ", "
+			  << bid_ask.middle << ", "
+			  << bid_ask.price << ", "
+			  << bid_ask.volume;
   }//!operator
   template <typename ValueType>
   std::istream& operator >> (std::istream& is, BidAsk<ValueType>& bid_ask) {
@@ -1215,7 +1215,7 @@ namespace time_series::financial {
 /**
  * @details
  * Template specialization for std:: namespace \n
- * to make a structural binding available\n\n
+ * to make a structured binding available\n\n
  *
  * */
 

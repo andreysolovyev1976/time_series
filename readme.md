@@ -13,6 +13,7 @@ see bench
 //write on a stack size of different systems, as well as their thread size - see the notes 
 
 //for Value<ValueType> comparison to double is defined
+If you do upcast of the serie you'd better have upcast defined for a mapped_type
 
 //list the defines
 //list the global objects
@@ -30,6 +31,8 @@ list is used for better multithreading
 problem of rading date
 input is different - IB gives you an instance of C++ object, Coinbase - json, and C/T SV files something else
 input should be implemented by lib user
+
+
 
 
 ## Zip in C++
