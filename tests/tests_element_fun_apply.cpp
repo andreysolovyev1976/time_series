@@ -28,6 +28,11 @@ void modifyValuesChaining (T& t, U value) {
 	t += value;
 }
 
+template<typename T>
+class ElementFnApplication : public testing::Test {};
+TYPED_TEST_SUITE(ElementFnApplication, test_element);
+
+
 TYPED_TEST (ElementFnApplication, ApplyFunctionInPlace) {
 	const int init_value {10};
 	TypeParam t1 = initWithValue<TypeParam>(init_value);

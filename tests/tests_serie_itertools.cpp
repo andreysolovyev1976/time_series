@@ -115,7 +115,8 @@ TEST(SerieItertools, NonContainers) {
 	struct NotOkContainer { int value {42}; };
 	[[maybe_unused]] NotOkContainer not_ok;
 
-//	auto z = iterators::zip(ts, not_ok); //doesn't compile
-	//todo: add compile time test
+#if defined (WRONG_ITERATOR_COMPILE_FAILURE)
+	auto z = iterators::zip(ts, not_ok);
+#endif
 }
 

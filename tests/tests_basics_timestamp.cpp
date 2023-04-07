@@ -147,5 +147,7 @@ TEST(BasicsTimestamp, UpCast) {
 	auto h = m.upcastTo<Hours>();
 	ASSERT_EQ(h.time_point, std::chrono::floor<Hours>(m.time_point));
 
-	// auto err = h.castTo<Seconds>(); //compile error
+#if defined (WRONG_TIMESTAMP_CAST_COMPILE_FAILURE)
+	 auto err = h.castTo<Seconds>();
+#endif
 }

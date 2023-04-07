@@ -7,6 +7,14 @@
 using namespace culib;
 using namespace time_series;
 
+template<typename T>
+class ValueArithmeticsSingletons : public testing::Test {};
+TYPED_TEST_SUITE(ValueArithmeticsSingletons, value_single_field);
+
+template<typename T>
+class ValueArithmeticsMultiField : public testing::Test {};
+TYPED_TEST_SUITE(ValueArithmeticsMultiField, value_multifield);
+
 
 TYPED_TEST(ValueArithmeticsSingletons, Addition) {
 	if constexpr (std::is_floating_point_v<typename TypeParam::value_type>) {

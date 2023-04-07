@@ -6,6 +6,15 @@
 #include "typed_tests_list.h"
 
 
+template<typename T>
+class ValueCompareSingletons : public testing::Test {};
+TYPED_TEST_SUITE(ValueCompareSingletons, value_single_field);
+
+template<typename T>
+class ValueCompareMultiField : public testing::Test {};
+TYPED_TEST_SUITE(ValueCompareMultiField, value_multifield);
+
+
 TYPED_TEST(ValueCompareSingletons, Equal) {
 	TypeParam v1(-1.5), v2(2.0);
 	double v3 {2.0};

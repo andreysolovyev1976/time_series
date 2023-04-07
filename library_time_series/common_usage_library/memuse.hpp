@@ -14,7 +14,7 @@
 
 namespace culib::memory {
 
-//-----------------------------------------------------------------------------
+  //-----------------------------------------------------------------------------
 //
 // Source code for MIPT masters course on C++
 // Slides: https://sourceforge.net/projects/cpp-lects-rus
@@ -35,6 +35,7 @@ namespace culib::memory {
 //----------------------------------------------------------------------------
 
   namespace details {
+	template <typename... ProtectionPack>
 	struct heap_allocation_stats_t {
 	public:
 		heap_allocation_stats_t(heap_allocation_stats_t const&) = delete;
@@ -52,7 +53,9 @@ namespace culib::memory {
 		inline auto dump_to(std::ostream& os) { os << memory << " : " << alloc << '\n'; }
 
 	private:
-		heap_allocation_stats_t() { }
+		heap_allocation_stats_t() {
+			static_assert(sizeof...(ProtectionPack) == 0u, "Don't provide template params to heap_stat");
+		}
 
 	public:
 		std::size_t memory{0};
@@ -61,17 +64,17 @@ namespace culib::memory {
   }//!namespace
 
   static
-  decltype(auto) heap_stats = []() -> details::heap_allocation_stats_t& {
-	return details::heap_allocation_stats_t::get_instance();
+  decltype(auto) heap_stats = []() -> details::heap_allocation_stats_t<>& {
+	return details::heap_allocation_stats_t<>::get_instance();
   }();
 
-  decltype(auto) operator<<(std::ostream& os, details::heap_allocation_stats_t const&) {
+  template <typename... ProtectionPack>
+  decltype(auto) operator<<(std::ostream& os, details::heap_allocation_stats_t<> const&) {
 	  heap_stats.dump_to(os);
 	  return os;
   }
 
 }//!namespace
-
 
 #ifdef UTILS_MEM_OPERATORS_OVERLOADED
 

@@ -4,13 +4,17 @@
 
 #include "typed_tests_list.h"
 
+
+template<typename T>
+class ElementComparison : public testing::Test {};
+TYPED_TEST_SUITE(ElementComparison, test_element);
+
 TYPED_TEST (ElementComparison, EQ) {
 	TypeParam t1 {};
 	TypeParam t2 = t1;
 	ASSERT_EQ(t1, t2);
 	ASSERT_EQ(t2, t1);
 }
-
 
 TYPED_TEST (ElementComparison, NE) {
 	TypeParam t1 {};

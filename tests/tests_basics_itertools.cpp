@@ -211,7 +211,7 @@ TEST(BasicsItertools, MoveIteratorsCheck) {
 	ASSERT_EQ(c, s1_at_0_copy);
 }
 
-#ifdef WRONG_ITERATOR_COMPILE_FAILURE
+#if defined (WRONG_ITERATOR_COMPILE_FAILURE)
 TEST(BasicsItertools, Failure_NonContainers) {
 	struct NotOkContainer { int value {42}; };
 	[[maybe_unused]] NotOkContainer not_ok;

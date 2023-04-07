@@ -19,6 +19,8 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char **argv) {
 // test double < int , int < double, double < string, string < double
 // test change of epsilon
 // test arithmetics and comparison with other field, than default
+// element ctors
+// value ctors
 // test pmr:: containers
 // test
 // 	operator value_type () const;
@@ -27,6 +29,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char **argv) {
 // test structured bindings for Element, OHLCV, BidAsk for rvalue- lvalue refs
 // test operator >> for timestamp
 // test Element for user defined classes
+// DONE test multiple include of culib, heap_alloc_t fails that
 // DONE timestamp works poorly with high_res clock
 // DONE fix timestamp
 // DONE test structured bindings access for Element, OHLCV, BidAsk
@@ -51,6 +54,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char **argv) {
 // offload to videocard
 // get pre-compiled headers by introducing CMakeLists.txt in the library_time_series folder
 // is it a floor or a ceiling for a timepoint?
+// add compile time test
 // DONE check that const version of getImpl is required for structural bindings
 // DONE duration cast
 

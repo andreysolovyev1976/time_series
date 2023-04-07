@@ -35,20 +35,9 @@ using value_multifield = testing::Types<
 		time_series::financial::BidAsk<std::int64_t>
 >;
 
-/**
- * @brief
- * Ctors
- */
 
-template<typename T>
-class ValueCtorsSingletons : public testing::Test {};
-TYPED_TEST_SUITE(ValueCtorsSingletons, value_single_field);
-
-template<typename T>
-class ValueCtorsMultiField : public testing::Test {};
-TYPED_TEST_SUITE(ValueCtorsMultiField, value_multifield);
-
-struct S{};
+struct UserDefined{};
+inline bool operator == (UserDefined, UserDefined) { return true; } //for tests
 using test_value = testing::Types<
 		double,
 		int,
@@ -62,45 +51,9 @@ using test_value = testing::Types<
 		time_series::financial::BidAsk<std::int64_t>,
 		std::string,
 		std::vector<int>,
-		S
+		UserDefined
 >;
 
-using test_element_throw = testing::Types<
->;
-
-
-/**
- * @brief
- * Comparison
- */
-
-template<typename T>
-class ValueCompareSingletons : public testing::Test {};
-TYPED_TEST_SUITE(ValueCompareSingletons, value_single_field);
-
-template<typename T>
-class ValueCompareMultiField : public testing::Test {};
-TYPED_TEST_SUITE(ValueCompareMultiField, value_multifield);
-
-
-/**
- * @brief
- * Arithmetics
- */
-
-template<typename T>
-class ValueArithmeticsSingletons : public testing::Test {};
-TYPED_TEST_SUITE(ValueArithmeticsSingletons, value_single_field);
-
-template<typename T>
-class ValueArithmeticsMultiField : public testing::Test {};
-TYPED_TEST_SUITE(ValueArithmeticsMultiField, value_multifield);
-
-
-/**
- * @brief
- * Element Comparison
- */
 
 using test_element = testing::Types<
 		  time_series::Element<culib::time::Microseconds, double>
@@ -114,14 +67,6 @@ using test_element = testing::Types<
 		, time_series::Element<culib::time::Microseconds, time_series::financial::BidAsk<time_series::value::traits::ValueTypeDefault>>
 		, time_series::Element<culib::time::Microseconds, time_series::financial::BidAsk<std::int64_t>>
 		>;
-
-template<typename T>
-class ElementComparison : public testing::Test {};
-TYPED_TEST_SUITE(ElementComparison, test_element);
-
-template<typename T>
-class ElementFnApplication : public testing::Test {};
-TYPED_TEST_SUITE(ElementFnApplication, test_element);
 
 
 #if 0

@@ -149,8 +149,8 @@ TEST(EndToEnd, SingleThread_Upcast) {
 
 	auto it_curr = std::next(WTI.begin());
 	auto it_prev = WTI.begin();
-	int count{0};
-	for (auto const& [ts, ohlcv] : upcastedWTI) {++count;
+
+	for (auto const& [ts, ohlcv] : upcastedWTI) {
 		auto const & [open_comb, high_comb, low_comb, close_comb, volume_comb] = ohlcv;
 		auto const & [open_curr, high_curr, low_curr, close_curr, volume_curr] = it_curr->second();
 		auto const & [open_prev, high_prev, low_prev, close_prev, volume_prev] = it_prev->second();
@@ -161,9 +161,29 @@ TEST(EndToEnd, SingleThread_Upcast) {
 			ASSERT_EQ (high_comb, std::max(high_curr, high_prev));
 			ASSERT_EQ (low_comb, std::min(low_curr, low_prev));
 			ASSERT_EQ (close_comb, close_curr);
-			ASSERT_EQ (volume_comb, volume_curr+volume_prev) << ts << ' ' << ohlcv << ' ' << count << '\n';
+			ASSERT_EQ (volume_comb, volume_curr+volume_prev);
 		}
 		it_curr = std::next(it_curr, 2);
 		it_prev = std::next(it_prev, 2);
 	}
 }
+
+TEST(EndToEnd, SingleThread_Upcast_Fail) {
+//	std::filesystem::path test_file {"../../tests/WTI_OHLCVminute sept2016.csv"};
+	std::filesystem::path test_file {"../../tests/WTI_OHLCVminute sept2016 short.csv"};
+
+	using ValueType = double;
+	char const comma_sep {','};
+	using SyntheticOHLCV = time_series::SerieSynthethic<Minutes, ValueType, 5u>;
+
+	auto WTI = readFromFile<SyntheticOHLCV>(test_file, comma_sep);
+	WTI.setField (&SyntheticOHLCV::name, "CL OHLCV minute data for Sep 2016");
+	auto close = WTI.getColumn("Close");
+
+	ASSERT_TRUE(true);
+
+#if defined (WRONG_TYPE_UPCAST_COMPILE_FAILURE)
+	auto upcastedClose = close.upcastTo<TwoMinutes>();
+#endif
+}
+

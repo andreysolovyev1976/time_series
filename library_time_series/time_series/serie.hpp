@@ -93,7 +93,7 @@ namespace time_series {
 
 #ifndef __cpp_concepts
 	  template <typename NewDuration,
-			  typename... DummyArgs,
+			  typename... ProtectionPack,
 			  typename DummyArg = ElemType,
 	          time_series::requirements::IsCollisionAllowed<DummyArg> = true>
 #else
@@ -101,7 +101,7 @@ namespace time_series {
 	  requires time_series::requirements::IsCollisionAllowed<ElemType>
 #endif
 	  Serie<NewDuration, ElemType> upcastTo () const {
-		  static_assert(sizeof...(DummyArgs)==0u, "Do not specify template arguments for Serie.upcastTo() besides new Duration !");
+		  static_assert(sizeof...(ProtectionPack)==0u, "Do not specify template arguments for Serie.upcastTo() besides new Duration !");
 
 		  using new_elem_t = Element<NewDuration, ElemType>;
 		  Serie<NewDuration, ElemType> new_serie;

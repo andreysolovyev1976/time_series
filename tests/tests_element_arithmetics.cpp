@@ -7,8 +7,16 @@
 using namespace culib;
 using namespace time_series;
 
+template<typename T>
+class ElementArithmeticsSingletons : public testing::Test {};
+TYPED_TEST_SUITE(ElementArithmeticsSingletons, value_single_field);
 
-TYPED_TEST(ValueArithmeticsSingletons, Addition) {
+template<typename T>
+class ElementArithmeticsMultiField : public testing::Test {};
+TYPED_TEST_SUITE(ElementArithmeticsMultiField, value_multifield);
+
+
+TYPED_TEST(ElementArithmeticsSingletons, Addition) {
 	if constexpr (std::is_floating_point_v<typename TypeParam::value_type>) {
 
 		TypeParam v1(-1.5), v2(2.5), v3(1.0), v4(-1.0), v5(-2.5);
@@ -45,7 +53,7 @@ TYPED_TEST(ValueArithmeticsSingletons, Addition) {
 
 	}
 }
-TYPED_TEST(ValueArithmeticsSingletons, AssignAddition)
+TYPED_TEST(ElementArithmeticsSingletons, AssignAddition)
 {
 	if constexpr (std::is_floating_point_v<typename TypeParam::value_type>) {
 		TypeParam v1(-1.5), v2(2.5), v3(1.0), v4(-1.0), v5(-2.5);
@@ -108,7 +116,7 @@ TYPED_TEST(ValueArithmeticsSingletons, AssignAddition)
 		ASSERT_EQ(t, v2);
 	}
 }
-TYPED_TEST(ValueArithmeticsSingletons, Subtraction) {
+TYPED_TEST(ElementArithmeticsSingletons, Subtraction) {
 	if constexpr (std::is_floating_point_v<typename TypeParam::value_type>) {
 		TypeParam v1(-1.5), v2(2.5), v3(1.0), v4(-1.0), v5(-2.5);
 		TypeParam t;
@@ -151,7 +159,7 @@ TYPED_TEST(ValueArithmeticsSingletons, Subtraction) {
 		ASSERT_EQ(t, -1);
 	}
 }
-TYPED_TEST(ValueArithmeticsSingletons, AssignSubtraction) {
+TYPED_TEST(ElementArithmeticsSingletons, AssignSubtraction) {
 	if constexpr (std::is_floating_point_v<typename TypeParam::value_type>) {
 		TypeParam v1(-1.5), v2(2.5), v3(1.0), v4(-1.0), v5(-2.5);
 		TypeParam t;
@@ -191,7 +199,7 @@ TYPED_TEST(ValueArithmeticsSingletons, AssignSubtraction) {
 		ASSERT_EQ(t, -2);
 	}
 }
-TYPED_TEST(ValueArithmeticsSingletons, Division) {
+TYPED_TEST(ElementArithmeticsSingletons, Division) {
 	if constexpr (std::is_floating_point_v<typename TypeParam::value_type>) {
 
 		TypeParam v1(-1.5), v2(2.5), v3(1.0), v4(-1.0), v5(-2.5);
@@ -235,7 +243,7 @@ TYPED_TEST(ValueArithmeticsSingletons, Division) {
 
 	}
 }
-TYPED_TEST(ValueArithmeticsSingletons, AssignDivision) {
+TYPED_TEST(ElementArithmeticsSingletons, AssignDivision) {
 	if constexpr (std::is_floating_point_v<typename TypeParam::value_type>) {
 		TypeParam v1(-1.5), v2(2.5), v3(1.0), v4(-1.0), v5(-2.5);
 		TypeParam t;
@@ -285,7 +293,7 @@ TYPED_TEST(ValueArithmeticsSingletons, AssignDivision) {
 		ASSERT_EQ(t, 0);
 	}
 }
-TYPED_TEST(ValueArithmeticsSingletons, Multiplication) {
+TYPED_TEST(ElementArithmeticsSingletons, Multiplication) {
 	if constexpr (std::is_floating_point_v<typename TypeParam::value_type>) {
 		TypeParam v1(-1.5), v2(2.5), v3(1.0), v4(-1.0), v5(-2.5);
 		TypeParam t;
@@ -322,7 +330,7 @@ TYPED_TEST(ValueArithmeticsSingletons, Multiplication) {
 
 	}
 }
-TYPED_TEST(ValueArithmeticsSingletons, AssignMultiplication) {
+TYPED_TEST(ElementArithmeticsSingletons, AssignMultiplication) {
 	if constexpr (std::is_floating_point_v<typename TypeParam::value_type>) {
 		TypeParam v1(-1.5), v2(2.5), v3(1.0), v4(-1.0), v5(-2.5);
 		TypeParam t;
@@ -364,7 +372,7 @@ TYPED_TEST(ValueArithmeticsSingletons, AssignMultiplication) {
 }
 
 
-TYPED_TEST(ValueArithmeticsMultiField, Addition) {
+TYPED_TEST(ElementArithmeticsMultiField, Addition) {
 	if constexpr (std::is_floating_point_v<typename TypeParam::value_type>) {
 		TypeParam v1({-12.2, 12.3, 12.0, 11.5, 12.7});
 		TypeParam v2({22.2, 22.3, 22.5, 12.9, 15.9});
@@ -390,7 +398,7 @@ TYPED_TEST(ValueArithmeticsMultiField, Addition) {
 
 	}
 }
-TYPED_TEST(ValueArithmeticsMultiField, AssignAddition) {
+TYPED_TEST(ElementArithmeticsMultiField, AssignAddition) {
 	if constexpr (std::is_floating_point_v<typename TypeParam::value_type>) {
 		TypeParam v1({-12.2, 12.3, 12.0, 11.5, 12.7});
 		TypeParam v2({22.2, 22.3, 22.5, 12.9, 15.9});
@@ -417,7 +425,7 @@ TYPED_TEST(ValueArithmeticsMultiField, AssignAddition) {
 
 	}
 }
-TYPED_TEST(ValueArithmeticsMultiField, Subtraction) {
+TYPED_TEST(ElementArithmeticsMultiField, Subtraction) {
 	if constexpr (std::is_floating_point_v<typename TypeParam::value_type>) {
 
 		TypeParam v1({-12.2, 12.3, 12.0, 11.5, 12.7});
@@ -447,7 +455,7 @@ TYPED_TEST(ValueArithmeticsMultiField, Subtraction) {
 
 	}
 }
-TYPED_TEST(ValueArithmeticsMultiField, AssignSubtraction) {
+TYPED_TEST(ElementArithmeticsMultiField, AssignSubtraction) {
 	if constexpr (std::is_floating_point_v<typename TypeParam::value_type>) {
 		TypeParam v1({-12.2, 12.3, 12.0, 11.5, 12.7});
 		TypeParam v2({22.2, 22.3, 22.5, 12.9, 15.9});
@@ -479,7 +487,7 @@ TYPED_TEST(ValueArithmeticsMultiField, AssignSubtraction) {
 
 	}
 }
-TYPED_TEST(ValueArithmeticsMultiField, Division) {
+TYPED_TEST(ElementArithmeticsMultiField, Division) {
 	if constexpr (std::is_floating_point_v<typename TypeParam::value_type>) {
 
 		TypeParam v1({-12.3, 12.3, 12.0, 11.1, 12.12});
@@ -511,7 +519,7 @@ TYPED_TEST(ValueArithmeticsMultiField, Division) {
 
 	}
 }
-TYPED_TEST(ValueArithmeticsMultiField, AssignDivision) {
+TYPED_TEST(ElementArithmeticsMultiField, AssignDivision) {
 	if constexpr (std::is_floating_point_v<typename TypeParam::value_type>) {
 
 		TypeParam v1({-12.3, 12.3, 12.0, 11.1, 12.12});
@@ -544,7 +552,7 @@ TYPED_TEST(ValueArithmeticsMultiField, AssignDivision) {
 
 	}
 }
-TYPED_TEST(ValueArithmeticsMultiField, Multiplication) {
+TYPED_TEST(ElementArithmeticsMultiField, Multiplication) {
 	if constexpr (std::is_floating_point_v<typename TypeParam::value_type>) {
 
 		TypeParam t({0.5, -0.5, -0.75, -0.666667, -0.75});
@@ -578,7 +586,7 @@ TYPED_TEST(ValueArithmeticsMultiField, Multiplication) {
 
 	}
 }
-TYPED_TEST(ValueArithmeticsMultiField, AssignMultiplication)
+TYPED_TEST(ElementArithmeticsMultiField, AssignMultiplication)
 {
 	if constexpr (std::is_floating_point_v<typename TypeParam::value_type>) {
 		TypeParam t({0.5, -0.5, -0.75, -0.666667, -0.75});

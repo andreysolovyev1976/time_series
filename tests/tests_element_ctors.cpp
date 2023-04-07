@@ -19,7 +19,10 @@ TYPED_TEST(ElementCtorsOk, CtorFromElemTypes) {
 
 
 TEST (ElementCtorsNotOk, CtorsFailRequirements) {
-//	time_series::Element<int, int> fail_duration_requirements; //compile time fails
+
+#if defined (WRONG_ELEMENT_CTOR_COMPILE_FAILURE)
+	time_series::Element<int, int> fail_duration_requirements;
+#endif
 }
 
 

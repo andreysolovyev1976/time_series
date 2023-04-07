@@ -5,6 +5,11 @@
 //#define UTILS_MEM_OUTPUT_ALLOCATION_PTR
 //add_compile_definitions (UTILS_MEM_OUTPUT_ALLOCATION_PTR)
 //add_compile_definitions WRONG_ITERATOR_COMPILE_FAILURE)
+//add_compile_definitions WRONG_TYPE_UPCAST_COMPILE_FAILURE
+//add_compile_definitions WRONG_TIMESTAMP_CAST_COMPILE_FAILURE
+//add_compile_definitions WRONG_ELEMENT_CTOR_COMPILE_FAILURE
+//add_compile_definitions WRONG_VALUE_CTOR_COMPILE_FAILURE
+
 
 //write on the std::array helper in serie container 
 
@@ -28,7 +33,7 @@ if full stack then mem volume is about 8Mb
 list is used for better multithreading
 
 //input
-problem of rading date
+problem of reading date
 input is different - IB gives you an instance of C++ object, Coinbase - json, and C/T SV files something else
 input should be implemented by lib user
 

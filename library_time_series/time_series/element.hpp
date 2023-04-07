@@ -50,19 +50,18 @@ namespace time_series {
 	  Element& operator = (value_type &&p);
 	  Element& operator = (const value_type &p);
 
-	  const value_type& operator () () const &;
-	  value_type& operator()() &;
+	  const value_type& operator () () const;
+	  value_type& operator()();
 	  operator value_type () const;
 	  operator mapped_type () const;
 	  operator key_type () const;
 
-	  const key_type& first () const &;
-	  key_type& first () &;
-	  const mapped_type& second () const &;
-	  mapped_type& second () &;
+	  const key_type& first () const;
+	  key_type& first ();
+	  const mapped_type& second () const;
+	  mapped_type& second ();
 
 	  std::string toString () const;
-	  operator std::string () const;
 
 	  template <typename Fn, typename... Args>
 	  decltype(auto) applyFunction (Fn&& fn, Args&& ...args) &;
@@ -165,7 +164,7 @@ namespace time_series {
 #else
   template<typename Duration, typename ElemType>
 #endif
-  const typename Element<Duration, ElemType>::value_type& Element<Duration, ElemType>::operator () () const & {
+  const typename Element<Duration, ElemType>::value_type& Element<Duration, ElemType>::operator () () const {
 	  return {timestamp, value}; //todo: check what is a subject for reference - a pair itself or two referencies of the respective fields
   }
 
@@ -174,7 +173,7 @@ namespace time_series {
 #else
   template<typename Duration, typename ElemType>
 #endif
-  typename Element<Duration, ElemType>::value_type& Element<Duration, ElemType>::operator()() & {
+  typename Element<Duration, ElemType>::value_type& Element<Duration, ElemType>::operator()() {
 	  return {timestamp, value}; //todo: check what is a subject for reference - a pair itself or two referencies of the respective fields
   }
 
@@ -210,7 +209,7 @@ namespace time_series {
 #else
   template<typename Duration, typename ElemType>
 #endif
-  const typename Element<Duration, ElemType>::key_type& Element<Duration, ElemType>::first () const & {
+  const typename Element<Duration, ElemType>::key_type& Element<Duration, ElemType>::first () const {
 	  return timestamp;
   }
 
@@ -219,7 +218,7 @@ namespace time_series {
 #else
   template<typename Duration, typename ElemType>
 #endif
-  typename Element<Duration, ElemType>::key_type& Element<Duration, ElemType>::first () & {
+  typename Element<Duration, ElemType>::key_type& Element<Duration, ElemType>::first () {
 	  return timestamp;
   }
 
@@ -228,7 +227,7 @@ namespace time_series {
 #else
   template<typename Duration, typename ElemType>
 #endif
-  const typename Element<Duration, ElemType>::mapped_type& Element<Duration, ElemType>::second () const & {
+  const typename Element<Duration, ElemType>::mapped_type& Element<Duration, ElemType>::second () const {
 	  return value;
   }
 
@@ -237,7 +236,7 @@ namespace time_series {
 #else
   template<typename Duration, typename ElemType>
 #endif
-  typename Element<Duration, ElemType>::mapped_type& Element<Duration, ElemType>::second () & {
+  typename Element<Duration, ElemType>::mapped_type& Element<Duration, ElemType>::second () {
 	  return value;
   }
 
@@ -297,16 +296,6 @@ namespace time_series {
 	  res.append(value.toString());
 	  return res;
   }
-
-#ifndef __cpp_concepts
-  template <typename Duration, typename ElemType>
-#else
-  template<typename Duration, typename ElemType>
-#endif
-  Element<Duration, ElemType>::operator std::string () const {
-	  return toString();
-  }
-
 
 #ifndef __cpp_concepts
   template <typename Duration, typename ElemType>

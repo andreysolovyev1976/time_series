@@ -4,6 +4,15 @@
 
 #include "typed_tests_list.h"
 
+template<typename T>
+class ValueCtorsSingletons : public testing::Test {};
+TYPED_TEST_SUITE(ValueCtorsSingletons, value_single_field);
+
+template<typename T>
+class ValueCtorsMultiField : public testing::Test {};
+TYPED_TEST_SUITE(ValueCtorsMultiField, value_multifield);
+
+
 TYPED_TEST(ValueCtorsSingletons, DefaultCtor) {
 	ASSERT_NO_THROW(TypeParam ());
 }
@@ -75,8 +84,10 @@ TYPED_TEST(ValueCtorsSingletons, MoveCtor) {
 TYPED_TEST(ValueCtorsSingletons, CompileError) {
 	struct S {};
 	[[maybe_unused]] S s;
-	// time_series::Value<base::Seconds> d (s); //todo: make a compile time test
-
+#if defined (WRONG_VALUE_CTOR_COMPILE_FAILURE)
+	TypeParam d (s);
+#endif
+	ASSERT_TRUE(true);
 }
 
 
@@ -114,7 +125,11 @@ TYPED_TEST(ValueCtorsMultiField, ValueMoveCtor) {
 TYPED_TEST(ValueCtorsMultiField, CompileError) {
 	struct S {};
 	[[maybe_unused]] S s;
-	// time_series::Value<base::Seconds> d (s); //todo: make a compile time test
+#if defined (WRONG_VALUE_CTOR_COMPILE_FAILURE)
+	TypeParam d (s);
+#endif
+	ASSERT_TRUE(true);
+
 }
 
 

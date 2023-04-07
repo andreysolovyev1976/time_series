@@ -51,11 +51,10 @@ namespace time_series {
 
 	  std::string toString () const;
 
-	  operator std::string () const;
 	  operator ValueType () const;
 
-	  ValueType const& operator()() const &;
-	  ValueType& operator()() &;
+	  ValueType const& operator()() const;
+	  ValueType& operator()();
   };
 
   template <typename ValueType>
@@ -116,22 +115,17 @@ namespace time_series {
 	  return culib::utils::toChars(value);
   }
 
-
-  template <typename ValueType>
-  Value<ValueType>::operator std::string () const {
-	  return toString();
-  }
   template <typename ValueType>
   Value<ValueType>::operator ValueType () const {
 	  return value;
   }
 
   template <typename ValueType>
-  ValueType const& Value<ValueType>::operator()() const & {
+  ValueType const& Value<ValueType>::operator()() const {
 	  return value;
   }
   template <typename ValueType>
-  ValueType& Value<ValueType>::operator()() & {
+  ValueType& Value<ValueType>::operator()() {
 	  return value;
   }
 
