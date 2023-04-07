@@ -92,14 +92,17 @@ namespace time_series {
 	  Serie& applyFunction (Fn &&fn, Iter b = container_type::begin(), Iter e = container_type::end());
 
 #ifndef __cpp_concepts
-	  template <typename NewDuration
-	          >
-//			  , time_series::requirements::IsCollisionAllowed<ElemType> = true>
+	  template <typename NewDuration,
+			  typename... DummyArgs,
+			  typename DummyArg = ElemType,
+	          time_series::requirements::IsCollisionAllowed<DummyArg> = true>
 #else
 	  template <typename NewDuration>
 	  requires time_series::requirements::IsCollisionAllowed<ElemType>
 #endif
 	  Serie<NewDuration, ElemType> upcastTo () const {
+		  static_assert(sizeof...(DummyArgs)==0u, "Do not specify template arguments for Serie.upcastTo() besides new Duration !");
+
 		  using new_elem_t = Element<NewDuration, ElemType>;
 		  Serie<NewDuration, ElemType> new_serie;
 		  auto new_elem_iter = std::inserter(new_serie, new_serie.end());
@@ -117,20 +120,8 @@ namespace time_series {
 	  	return new_serie;
 	  }
 
-#if 0
-#ifndef __cpp_concepts
-	  template <typename NewDuration,
-			  time_series::requirements::IsNotCollisionAllowed<ElemType> = true>
-#else
-	  template <typename NewDuration>
-	  requires !time_series::requirements::IsCollisionAllowed<ElemType>
-#endif
-	  Serie<NewDuration, ElemType> upcastTo () const {
-		  throw std::invalid_argument ("Can't upcast your ElemValue");
-	  }
-#endif
 
-	  };
+	};
 
 }//!namespace
 

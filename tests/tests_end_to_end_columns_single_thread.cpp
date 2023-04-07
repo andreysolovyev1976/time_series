@@ -167,9 +167,3 @@ TEST(EndToEnd, SingleThread_Upcast) {
 		it_prev = std::next(it_prev, 2);
 	}
 }
-TEST (EndToEnd, Playground) {
-	using ElemType = OHLCV<double>;
-	std::cout << std::boolalpha;
-	std::cout << std::is_invocable_v<decltype(std::declval<ElemType>().collideWith), ElemType> << '\n';
-
-}
