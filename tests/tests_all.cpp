@@ -10,7 +10,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char **argv) {
 //	testing::GTEST_FLAG(filter) = "Ctors*:Assignments*:Constructible*:Compare*:Arithmetics*";
 //	testing::GTEST_FLAG(filter) = "ElementFnApplication*";
 //	testing::GTEST_FLAG(filter) = "ElementFnApplication/1.*";
-	testing::GTEST_FLAG(filter) = "*Arithmetics*.*";
+//	testing::GTEST_FLAG(filter) = "ElementArithmetics*.*";
 	return RUN_ALL_TESTS();
 }
 
@@ -19,8 +19,8 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char **argv) {
 // test double < int , int < double, double < string, string < double
 // test change of epsilon
 // test arithmetics and comparison with other field, than default
-// element ctors
-// value ctors
+// element ctors copy and move
+// value ctors copy and move
 // test pmr:: containers
 // test
 // 	operator value_type () const;
@@ -34,6 +34,8 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char **argv) {
 // DONE timestamp works poorly with high_res clock
 // DONE fix timestamp
 // DONE test structured bindings access for Element, OHLCV, BidAsk
+// DONE element ctors basic
+// DONE value ctors basic
 
 
 
@@ -56,6 +58,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char **argv) {
 // offload to videocard
 // get pre-compiled headers by introducing CMakeLists.txt in the library_time_series folder
 // is it a floor or a ceiling for a timepoint?
+// think what to do with a timestamp when making arithmetic operations over Elements
 // add compile time test
 // DONE check that const version of getImpl is required for structural bindings
 // DONE duration cast

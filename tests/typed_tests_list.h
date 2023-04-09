@@ -35,7 +35,7 @@ using value_multifield = testing::Types<
 		time_series::financial::BidAsk<std::int64_t>
 >;
 
-//preserve order inside of this - some tests depend on it
+//preserve order inside this - some tests depend on it
 using test_values_single_and_multi_field = testing::Types<
 		time_series::Value<time_series::value::traits::ValueTypeDefault>,
 		time_series::Value<std::int64_t>,
@@ -82,18 +82,18 @@ using test_element = testing::Types<
 		>;
 
 using element_single_field = testing::Types<
-		time_series::Element<culib::time::Microseconds, double>
-		, time_series::Element<culib::time::Microseconds, int>
-		, time_series::Element<culib::time::Microseconds, time_series::Value<time_series::value::traits::ValueTypeDefault>>
-		, time_series::Element<culib::time::Microseconds, time_series::Value<std::int64_t>>
-		, time_series::Element<culib::time::Microseconds, time_series::financial::SingleQuote<time_series::value::traits::ValueTypeDefault>>
-		, time_series::Element<culib::time::Microseconds, time_series::financial::SingleQuote<std::int64_t>>
+		time_series::Element<culib::time::Seconds, double>
+		, time_series::Element<culib::time::Seconds, int>
+		, time_series::Element<culib::time::Seconds, time_series::Value<time_series::value::traits::ValueTypeDefault>>
+		, time_series::Element<culib::time::Seconds, time_series::Value<std::int64_t>>
+		, time_series::Element<culib::time::Seconds, time_series::financial::SingleQuote<time_series::value::traits::ValueTypeDefault>>
+		, time_series::Element<culib::time::Seconds, time_series::financial::SingleQuote<std::int64_t>>
 >;
 using element_multifield = testing::Types<
-		time_series::Element<culib::time::Microseconds, time_series::financial::OHLCV<time_series::value::traits::ValueTypeDefault>>
-		, time_series::Element<culib::time::Microseconds, time_series::financial::OHLCV<std::int64_t>>
-		, time_series::Element<culib::time::Microseconds, time_series::financial::BidAsk<time_series::value::traits::ValueTypeDefault>>
-		, time_series::Element<culib::time::Microseconds, time_series::financial::BidAsk<std::int64_t>>
+		time_series::Element<culib::time::Seconds, time_series::financial::OHLCV<time_series::value::traits::ValueTypeDefault>>
+		, time_series::Element<culib::time::Seconds, time_series::financial::OHLCV<std::int64_t>>
+		, time_series::Element<culib::time::Seconds, time_series::financial::BidAsk<time_series::value::traits::ValueTypeDefault>>
+		, time_series::Element<culib::time::Seconds, time_series::financial::BidAsk<std::int64_t>>
 >;
 
 
