@@ -43,6 +43,8 @@ namespace time_series::financial {
 #endif
 	  BidAsk& operator = (const Input &input);
 
+	  bool containsZero () const;
+
 	  std::string toString() const;
 
 	  template<std::size_t Index>
@@ -112,6 +114,10 @@ namespace time_series::financial {
 	  return *this;
   }
 
+  template <typename ValueType>
+  bool BidAsk< ValueType>::containsZero () const {
+	  return bid == 0 || ask == 0 || middle == 0 || price == 0 || volume == 0;
+  }
 
   template <typename ValueType>
   std::string BidAsk< ValueType>::toString() const {
@@ -823,6 +829,9 @@ namespace time_series::financial {
 
   template <typename ValueType>
   BidAsk<ValueType> operator / (const BidAsk<ValueType>& lhs, const BidAsk<ValueType>& rhs) {
+
+	  if (rhs.containsZero()) { throw std::invalid_argument("Trying division by zero"); }
+
 	  BidAsk<ValueType> res;
 	  res.bid = lhs.bid / rhs.bid;
 	  res.ask = lhs.ask / rhs.ask;
@@ -849,6 +858,9 @@ namespace time_series::financial {
 #endif
 
   BidAsk<ValueType> operator / (const BidAsk<ValueType>& lhs, const Other &rhs) {
+
+	  if (rhs == 0) { throw std::invalid_argument("Trying division by zero"); }
+
 	  BidAsk<ValueType> res;
 	  res.bid = lhs.bid / rhs;
 	  res.ask = lhs.ask / rhs;
@@ -877,6 +889,9 @@ namespace time_series::financial {
 #endif
 
   BidAsk<ValueType> operator / (const Other &lhs, const BidAsk<ValueType>& rhs) {
+
+	  if (rhs.containsZero()) { throw std::invalid_argument("Trying division by zero"); }
+
 	  BidAsk<ValueType> res;
 	  res.bid = lhs / rhs.bid;
 	  res.ask = lhs / rhs.ask;
@@ -1136,6 +1151,9 @@ namespace time_series::financial {
 
   template <typename ValueType>
   BidAsk<ValueType>& operator /= (BidAsk<ValueType>& lhs, const BidAsk<ValueType>& rhs) {
+
+	  if (rhs.containsZero()) { throw std::invalid_argument("Trying division by zero"); }
+
 	  lhs.bid /= rhs.bid;
 	  lhs.ask /= rhs.ask;
 	  lhs.middle /= rhs.middle;
@@ -1161,6 +1179,9 @@ namespace time_series::financial {
 #endif
 
   BidAsk<ValueType>& operator /= (BidAsk<ValueType>& lhs, const Other &rhs) {
+
+	  if (rhs == 0) { throw std::invalid_argument("Trying division by zero"); }
+
 	  lhs.bid /= rhs;
 	  lhs.ask /= rhs;
 	  lhs.middle /= rhs;

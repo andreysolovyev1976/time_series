@@ -396,6 +396,7 @@ namespace time_series {
   }
   template <typename ValueType>
   Value<ValueType> operator / (const Value<ValueType>& lhs, const Value<ValueType>& rhs) {
+	  if (rhs == 0) { throw std::invalid_argument("Trying division by zero"); }
 	  Value<ValueType> res;
 	  res.value = lhs.value / rhs.value;
 	  return res;
@@ -411,6 +412,7 @@ namespace time_series {
 		  culib::requirements::BinOperatorsExist<ValueType, Other>
 #endif
   Value<ValueType> operator / (const Value<ValueType>& lhs, Other &&rhs) {
+	  if (rhs == 0) { throw std::invalid_argument("Trying division by zero"); }
 	  Value<ValueType> res;
 	  res.value = lhs.value / std::forward<Other>(rhs);
 	  return res;
@@ -426,6 +428,7 @@ namespace time_series {
 		  culib::requirements::BinOperatorsExist<ValueType, Other>
 #endif
   Value<ValueType> operator / (Other &&lhs, const Value<ValueType>& rhs) {
+	  if (rhs == 0) { throw std::invalid_argument("Trying division by zero"); }
 	  Value<ValueType> res;
 	  res.value = std::forward<Other>(lhs) / rhs.value;
 	  return res;
@@ -563,6 +566,7 @@ namespace time_series {
   }
   template <typename ValueType>
   Value<ValueType>& operator /= (Value<ValueType>& lhs, const Value<ValueType>& rhs) {
+	  if (rhs == 0) { throw std::invalid_argument("Trying division by zero"); }
 	  lhs.value /= rhs.value;
 	  return lhs;
   }
@@ -577,6 +581,7 @@ namespace time_series {
 		  culib::requirements::BinOperatorsExist<ValueType, Other>
 #endif
   Value<ValueType>& operator /= (Value<ValueType>& lhs, Other &&rhs) {
+	  if (rhs == 0) { throw std::invalid_argument("Trying division by zero"); }
 	  lhs.value /= std::forward<Other>(rhs);
 	  return lhs;
   }

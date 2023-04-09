@@ -3,6 +3,7 @@
 //
 
 #include "typed_tests_list.h"
+#include <type_traits>
 
 template<typename T>
 class ValueCtorsSingletons : public testing::Test {};
@@ -46,7 +47,6 @@ TYPED_TEST(ValueCtorsSingletons, CtorFromFloat) {
 	ASSERT_NO_THROW(TypeParam (1.42+1.42));
 	ASSERT_NO_THROW(TypeParam (1.42+1));
 	ASSERT_NO_THROW(TypeParam ( [](){return 42.42;}() ));
-//	ASSERT_EQ(s2, TypeParam ("42"s));
 }
 TYPED_TEST(ValueCtorsSingletons, CtorFromString) {
 	using namespace std::string_literals;
@@ -54,13 +54,22 @@ TYPED_TEST(ValueCtorsSingletons, CtorFromString) {
 	ASSERT_NO_THROW(TypeParam ("-1"s));
 	ASSERT_NO_THROW(TypeParam ("0"s));
 	ASSERT_NO_THROW(TypeParam ("1"s));
-	ASSERT_NO_THROW(TypeParam ("+1"s));
-	ASSERT_NO_THROW(TypeParam ("42.0"s));
-	ASSERT_NO_THROW(TypeParam ("-1.42"s));
-	ASSERT_NO_THROW(TypeParam ("0.0"s));
-	ASSERT_NO_THROW(TypeParam ("0.0005"s));
-	ASSERT_NO_THROW(TypeParam ("1.42"s));
-	ASSERT_NO_THROW(TypeParam ("+1.42"s));
+	if constexpr(std::is_floating_point_v<typename TypeParam::value_type>) {
+		ASSERT_NO_THROW(TypeParam("42.0"s));
+		ASSERT_NO_THROW(TypeParam("-1.42"s));
+		ASSERT_NO_THROW(TypeParam("0.0"s));
+		ASSERT_NO_THROW(TypeParam("0.0005"s));
+		ASSERT_NO_THROW(TypeParam("1.42"s));
+	}
+	else {
+		ASSERT_ANY_THROW(TypeParam("42.0"s));
+		ASSERT_ANY_THROW(TypeParam("-1.42"s));
+		ASSERT_ANY_THROW(TypeParam("0.0"s));
+		ASSERT_ANY_THROW(TypeParam("0.0005"s));
+		ASSERT_ANY_THROW(TypeParam("1.42"s));
+	}
+	ASSERT_ANY_THROW(TypeParam ("+1"s));
+	ASSERT_ANY_THROW(TypeParam ("+1.42"s));
 }
 TYPED_TEST(ValueCtorsSingletons, CopyCtor) {
 	TypeParam v (42.5);
@@ -131,6 +140,3 @@ TYPED_TEST(ValueCtorsMultiField, CompileError) {
 	ASSERT_TRUE(true);
 
 }
-
-
-//todo: add copy and move ctors f

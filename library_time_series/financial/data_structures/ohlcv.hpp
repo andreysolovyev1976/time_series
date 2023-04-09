@@ -45,6 +45,8 @@ namespace time_series::financial {
 #endif
 	  OHLCV& operator = (const Input &input);
 
+	  bool containsZero () const;
+
 	  std::string toString() const;
 
 	  void collideWith (OHLCV const& other);
@@ -116,6 +118,12 @@ namespace time_series::financial {
 	  volume = input;
 	  return *this;
   }
+
+  template <typename ValueType>
+  bool OHLCV<ValueType>::containsZero () const {
+	  return open == 0 || high == 0 || low == 0 || close == 0 || volume == 0;
+  }
+
 
   template <typename ValueType>
   std::string OHLCV<ValueType>::toString() const {
@@ -829,6 +837,9 @@ namespace time_series::financial {
 
   template <typename ValueType>
   OHLCV<ValueType> operator / (const OHLCV<ValueType>& lhs, const OHLCV<ValueType>& rhs) {
+
+	  if (rhs.containsZero()) { throw std::invalid_argument("Trying division by zero"); }
+
 	  OHLCV<ValueType> res;
 	  res.open= lhs.open / rhs.open;
 	  res.high= lhs.high / rhs.high;
@@ -855,6 +866,9 @@ namespace time_series::financial {
 		  culib::requirements::BinOperatorsExist<Value<ValueType>, Other>
 #endif
   OHLCV<ValueType> operator / (const OHLCV<ValueType>& lhs, const Other &rhs) {
+
+	  if (rhs == 0) { throw std::invalid_argument("Trying division by zero"); }
+
 	  OHLCV<ValueType> res;
 	  res.open = lhs.open / rhs;
 	  res.high = lhs.high / rhs;
@@ -883,6 +897,9 @@ namespace time_series::financial {
 		  culib::requirements::BinOperatorsExist<Value<ValueType>, Other>
 #endif
   OHLCV<ValueType> operator / (const Other &lhs, const OHLCV<ValueType>& rhs) {
+
+	  if (rhs.containsZero()) { throw std::invalid_argument("Trying division by zero"); }
+
 	  OHLCV<ValueType> res;
 	  res.open = lhs / rhs.open;
 	  res.high = lhs / rhs.high;
@@ -1140,6 +1157,9 @@ namespace time_series::financial {
 
   template <typename ValueType>
   OHLCV<ValueType>& operator /= (OHLCV<ValueType>& lhs, const OHLCV<ValueType>& rhs) {
+
+	  if (rhs.containsZero()) { throw std::invalid_argument("Trying division by zero"); }
+
 	  lhs.open /= rhs.open;
 	  lhs.high /= rhs.high;
 	  lhs.low /= rhs.low;
@@ -1165,6 +1185,9 @@ namespace time_series::financial {
 		  culib::requirements::BinOperatorsExist<Value<ValueType>, Other>
 #endif
   OHLCV<ValueType>& operator /= (OHLCV<ValueType>& lhs, const Other &rhs) {
+
+	  if (rhs == 0) { throw std::invalid_argument("Trying division by zero"); }
+
 	  lhs.open /= rhs;
 	  lhs.high /= rhs;
 	  lhs.low /= rhs;

@@ -15,14 +15,14 @@ using elem_sq_t = time_series::Element<duration_t, sq_t>;
 using elem_bid_ask_t = time_series::Element<duration_t, bid_ask_t>;
 using elem_ohlcv_t = time_series::Element<duration_t, ohlcv_t>;
 
-TEST(ElementStructuralBindings, Read_SingleValue) {
+TEST(ElementStructuredBindings, Read_SingleValue) {
 	ts_t ts;
 	elem_sq_t elem (ts, 1);
 	auto const [ts_elem, sq_elem] = elem;
 	ASSERT_EQ(ts, ts_elem);
 	ASSERT_EQ(sq_elem, 1);
 }
-TEST(ElementStructuralBindings, Read_BidAsk) {
+TEST(ElementStructuredBindings, Read_BidAsk) {
 	ts_t ts;
 	elem_bid_ask_t elem (ts, {1, 2, 3, 4, 5});
 	auto const [ts_elem, bid_ask_elem] = elem;
@@ -41,7 +41,7 @@ TEST(ElementStructuralBindings, Read_BidAsk) {
 	ASSERT_EQ(price, 4);
 	ASSERT_EQ(volume, 5);
 }
-TEST(ElementStructuralBindings, Read_OHLCV) {
+TEST(ElementStructuredBindings, Read_OHLCV) {
 	ts_t ts;
 	elem_ohlcv_t elem (ts, {1, 2, 3, 4, 5});
 	auto const [ts_elem, ohlcv_elem] = elem;
@@ -59,7 +59,7 @@ TEST(ElementStructuralBindings, Read_OHLCV) {
 	ASSERT_EQ(close, 4);
 	ASSERT_EQ(volume, 5);
 }
-TEST(ElementStructuralBindings, Assign_SingleValue) {
+TEST(ElementStructuredBindings, Assign_SingleValue) {
 	ts_t ts;
 	elem_sq_t elem (ts, 1);
 	auto & [ts_elem, sq_elem] = elem;
@@ -70,7 +70,7 @@ TEST(ElementStructuralBindings, Assign_SingleValue) {
 	ASSERT_EQ(elem.value, 2);
 	ASSERT_EQ(ts, ts_elem);
 }
-TEST(ElementStructuralBindings, Assign_BidAsk) {
+TEST(ElementStructuredBindings, Assign_BidAsk) {
 	ts_t ts;
 	elem_bid_ask_t elem (ts, {1, 2, 3, 4, 5});
 	auto & [ts_elem, bid_ask_elem] = elem;
@@ -96,7 +96,7 @@ TEST(ElementStructuralBindings, Assign_BidAsk) {
 
 	ASSERT_EQ(ts, ts_elem);
 }
-TEST(ElementStructuralBindings, Assign_OHLCV) {
+TEST(ElementStructuredBindings, Assign_OHLCV) {
 	ts_t ts;
 	elem_ohlcv_t elem (ts, {1, 2, 3, 4, 5});
 	auto & [ts_elem, ohlcv_elem] = elem;
@@ -122,7 +122,7 @@ TEST(ElementStructuralBindings, Assign_OHLCV) {
 
 	ASSERT_EQ(ts, ts_elem);
 }
-TEST(ElementStructuralBindings, LValueRef) {
+TEST(ElementStructuredBindings, LValueRef) {
 	ts_t ts;
 	elem_ohlcv_t elem ({1, 2, 3, 4, 5});
 	auto & [ts_elem, ohlcv_elem] = elem;
@@ -136,7 +136,7 @@ TEST(ElementStructuralBindings, LValueRef) {
 	ASSERT_TRUE(std::is_lvalue_reference_v<decltype(close)>);
 	ASSERT_TRUE(std::is_lvalue_reference_v<decltype(volume)>);
 }
-TEST(ElementStructuralBindings, LValueRefConst) {
+TEST(ElementStructuredBindings, LValueRefConst) {
 	ts_t ts;
 	elem_ohlcv_t elem ({1, 2, 3, 4, 5});
 	auto const& [ts_elem, ohlcv_elem] = elem;
@@ -158,7 +158,7 @@ TEST(ElementStructuralBindings, LValueRefConst) {
 	ASSERT_TRUE(std::is_const_v<decltype(close)>);
 	ASSERT_TRUE(std::is_const_v<decltype(volume)>);
 }
-TEST(ElementStructuralBindings, RValueRef) {
+TEST(ElementStructuredBindings, RValueRef) {
 	ts_t ts;
 	elem_ohlcv_t elem ({1, 2, 3, 4, 5});
 	auto && [ts_elem, ohlcv_elem] = elem;
@@ -172,7 +172,7 @@ TEST(ElementStructuralBindings, RValueRef) {
 	ASSERT_TRUE(std::is_rvalue_reference_v<decltype(close)>);
 	ASSERT_TRUE(std::is_rvalue_reference_v<decltype(volume)>);
 }
-TEST(ElementStructuralBindings, RValueRefConst) {
+TEST(ElementStructuredBindings, RValueRefConst) {
 
 	auto const&& [ts_elem, ohlcv_elem] = elem_ohlcv_t ({1, 2, 3, 4, 5});
 	auto const&& [open, high, low, close, volume] = elem_ohlcv_t ({1, 2, 3, 4, 5}).value;

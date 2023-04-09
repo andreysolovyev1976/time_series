@@ -37,7 +37,9 @@ problem of reading date
 input is different - IB gives you an instance of C++ object, Coinbase - json, and C/T SV files something else
 input should be implemented by lib user
 
-
+//exception
+division by zero
+incorrect input from st
 
 
 ## Zip in C++

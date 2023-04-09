@@ -50,7 +50,6 @@ TYPED_TEST(ValueArithmeticsSingletons, Addition) {
 		ASSERT_EQ(t, 2);
 		t = t+v8+2;
 		ASSERT_EQ(t, 6);
-
 	}
 }
 TYPED_TEST(ValueArithmeticsSingletons, AssignAddition)
@@ -86,11 +85,8 @@ TYPED_TEST(ValueArithmeticsSingletons, AssignAddition)
 		ASSERT_EQ(t, v2);
 	}
 	else if (std::is_integral_v<typename TypeParam::value_type>){
-		TypeParam v1(-1.5), v2(2.5), v3(1.0), v4(-1.0), v5(-2.5);
+		TypeParam v1(-1), v2(2), v3(1), v5(-2);
 		TypeParam t;
-		double v6{2.0};
-		double v7{-1.5};
-		int v8{2};
 
 		t += v1;
 		t += v2;
@@ -98,22 +94,22 @@ TYPED_TEST(ValueArithmeticsSingletons, AssignAddition)
 
 		t = 0;
 		t += v1;
-		t += v4;
-		ASSERT_EQ(v5, v1+v4);
+		t += v1;
+		ASSERT_EQ(v5, v1+v1);
 
 		t = 0;
 		t += v3;
-		ASSERT_EQ(t, v3);
+		ASSERT_EQ(t, 1);
 
 		t = v2;
-		t += v7;
-		ASSERT_EQ(t, v3);
-		t += v6;
-		ASSERT_EQ(t, 3);
-		t += v8;
-		ASSERT_EQ(t, 5);
 		t += v5;
-		ASSERT_EQ(t, v2);
+		ASSERT_EQ(t, 0);
+		t += v2;
+		ASSERT_EQ(t, 2);
+		t += v2;
+		ASSERT_EQ(t, 4);
+		t += v5;
+		ASSERT_EQ(t, 2);
 	}
 }
 TYPED_TEST(ValueArithmeticsSingletons, Subtraction) {
@@ -155,7 +151,6 @@ TYPED_TEST(ValueArithmeticsSingletons, Subtraction) {
 		t = t-v6;
 		t = t-v7;
 		t = t-v8;
-		ASSERT_EQ(t, 0);
 		ASSERT_EQ(t, -1);
 	}
 }
@@ -240,7 +235,6 @@ TYPED_TEST(ValueArithmeticsSingletons, Division) {
 		ASSERT_EQ(t, v1);
 		t = t / v7;
 		ASSERT_EQ(t, 0);
-
 	}
 }
 TYPED_TEST(ValueArithmeticsSingletons, AssignDivision) {
@@ -293,6 +287,13 @@ TYPED_TEST(ValueArithmeticsSingletons, AssignDivision) {
 		ASSERT_EQ(t, 0);
 	}
 }
+TYPED_TEST(ValueArithmeticsSingletons, DivisionByZeroThrows) {
+	TypeParam v1(-1.0);
+	TypeParam zero(0.0);
+
+	ASSERT_THROW ( v1 / 0, std::invalid_argument);
+	ASSERT_THROW ( v1 / zero, std::invalid_argument);
+}
 TYPED_TEST(ValueArithmeticsSingletons, Multiplication) {
 	if constexpr (std::is_floating_point_v<typename TypeParam::value_type>) {
 		TypeParam v1(-1.5), v2(2.5), v3(1.0), v4(-1.0), v5(-2.5);
@@ -309,7 +310,7 @@ TYPED_TEST(ValueArithmeticsSingletons, Multiplication) {
 		t = t*v6;
 		t = t*v7;
 		t = t*v8;
-		ASSERT_EQ(t, 12);
+		ASSERT_EQ(t, 15);
 	}
 	else if (std::is_integral_v<typename TypeParam::value_type>){
 		TypeParam v1(-1.5), v2(2.5), v3(1.0), v4(-1.0), v5(-2.5);
@@ -327,7 +328,6 @@ TYPED_TEST(ValueArithmeticsSingletons, Multiplication) {
 		t = t*v7;
 		t = t*v8;
 		ASSERT_EQ(t, 12);
-
 	}
 }
 TYPED_TEST(ValueArithmeticsSingletons, AssignMultiplication) {
@@ -395,7 +395,25 @@ TYPED_TEST(ValueArithmeticsMultiField, Addition) {
 		ASSERT_EQ(t, check);
 	}
 	else if (std::is_integral_v<typename TypeParam::value_type>) {
+		TypeParam v1({-12, 12, 10, 11, 12});
+		TypeParam v2({22, 22, 22, 12, 15});
+		auto t = v1+v2;
+		TypeParam check({10, 34, 32, 23, 27});
 
+		ASSERT_TRUE(t==check);
+		ASSERT_TRUE(t!=v1);
+		ASSERT_TRUE(t!=v2);
+
+		double v3{2.0};
+		double v4{-1};
+		int v5{2};
+		t = t+v3;
+		t = v4+t;
+		t = t+v5;
+
+		// volume is ignored
+		check = TypeParam({13, 37, 35, 26, 0});
+		ASSERT_EQ(t, check);
 	}
 }
 TYPED_TEST(ValueArithmeticsMultiField, AssignAddition) {
@@ -422,12 +440,30 @@ TYPED_TEST(ValueArithmeticsMultiField, AssignAddition) {
 		ASSERT_EQ(t, check);
 	}
 	else if (std::is_integral_v<typename TypeParam::value_type>) {
+		TypeParam v1({-12, 12, 10, 11, 12});
+		TypeParam v2({22, 22, 22, 12, 15});
+		auto t = v1;
+		t += v2;
+		TypeParam check({10, 34, 32, 23, 27});
 
+		ASSERT_TRUE(t==check);
+		ASSERT_TRUE(t!=v1);
+		ASSERT_TRUE(t!=v2);
+
+		double v3{2.0};
+		double v4{-1};
+		int v5{2};
+		t += v3;
+		t = v4+t;
+		t += v5;
+
+		// volume is ignored
+		check = TypeParam({13, 37, 35, 26, 0});
+		ASSERT_EQ(t, check);
 	}
 }
 TYPED_TEST(ValueArithmeticsMultiField, Subtraction) {
 	if constexpr (std::is_floating_point_v<typename TypeParam::value_type>) {
-
 		TypeParam v1({-12.2, 12.3, 12.0, 11.5, 12.7});
 		TypeParam v2({22.2, 22.3, 22.5, 12.9, 15.9});
 		auto t = v2-v1;
@@ -452,7 +488,28 @@ TYPED_TEST(ValueArithmeticsMultiField, Subtraction) {
 		ASSERT_EQ(t, check);
 	}
 	else if (std::is_integral_v<typename TypeParam::value_type>) {
+		TypeParam v1({-12, 12, 10, 11, 13});
+		TypeParam v2({22, 22, 22, 12, 15});
 
+		auto t = v2-v1;
+		TypeParam check({34, 10, 12, 1, 2});
+		ASSERT_EQ(t, check);
+
+		double v3{2.0};
+		double v4{-1};
+		int v5{2};
+
+		t = financial::operator-<typename TypeParam::value_type, decltype(v3), true>(t, v3);
+		check = TypeParam({32, 8, 10, -1, 0});
+		ASSERT_EQ(t, check);
+
+		t = v4-t;
+		check = TypeParam({-33, -9, -11, 0, 0});
+		ASSERT_EQ(t, check);
+
+		t = t-v5;
+		check = TypeParam({-35, -11, -13, -2, 0});
+		ASSERT_EQ(t, check);
 	}
 }
 TYPED_TEST(ValueArithmeticsMultiField, AssignSubtraction) {
@@ -484,9 +541,50 @@ TYPED_TEST(ValueArithmeticsMultiField, AssignSubtraction) {
 		ASSERT_EQ(t, check);
 	}
 	else if (std::is_integral_v<typename TypeParam::value_type>) {
+		TypeParam v1({-12, 12, 10, 11, 13});
+		TypeParam v2({22, 22, 22, 12, 15});
 
+		auto t = v2;
+		t -= v1;
+		TypeParam check({34, 10, 12, 1, 2});
+		ASSERT_EQ(t, check);
+
+		double v3{2.0};
+		double v4{-1};
+		int v5{2};
+
+		t = financial::operator-<typename TypeParam::value_type, decltype(v3), true>(t, v3);
+		check = TypeParam({32, 8, 10, -1, 0});
+		ASSERT_EQ(t, check);
+
+		t -= v4;
+		check = TypeParam({33, 9, 11, 0, 0});
+		ASSERT_EQ(t, check);
+
+		t -= v5;
+		check = TypeParam({31, 7, 9, -2, 0});
+		ASSERT_EQ(t, check);
 	}
 }
+
+TYPED_TEST(ValueArithmeticsMultiField, VolumeTooParam) {
+	if constexpr (std::is_floating_point_v<typename TypeParam::value_type>) {
+		TypeParam v1({-12.2, 12.3, 12.0, 11.5, 12.7});
+		double v3{2.0};
+		auto t = financial::operator-<typename TypeParam::value_type, decltype(v3), true>(v1, v3);
+		auto check = TypeParam({-14.2, 10.3, 10, 9.5, 10.7});
+		ASSERT_EQ(t, check);
+
+	}
+	else if (std::is_integral_v<typename TypeParam::value_type>) {
+		TypeParam v1({-12, 12, 10, 11, 13});
+		double v3{2};
+		auto t = financial::operator-<typename TypeParam::value_type, decltype(v3), true>(v1, v3);
+		auto check = TypeParam({-14, 10, 8, 9, 11});
+		ASSERT_EQ(t, check);
+	}
+}
+
 TYPED_TEST(ValueArithmeticsMultiField, Division) {
 	if constexpr (std::is_floating_point_v<typename TypeParam::value_type>) {
 
@@ -507,6 +605,7 @@ TYPED_TEST(ValueArithmeticsMultiField, Division) {
 		check = TypeParam({-1.5, 1.5, 2.25, 2, 0});
 		ASSERT_EQ(t, check);
 
+		t = TypeParam({-1.5, 1.5, 2.25, 2, 1});
 		t = v4/t;
 		check = TypeParam({1, -1, -0.666667, -0.75, 0});
 		ASSERT_EQ(t, check);
@@ -516,7 +615,31 @@ TYPED_TEST(ValueArithmeticsMultiField, Division) {
 		ASSERT_EQ(t, check);
 	}
 	else if (std::is_integral_v<typename TypeParam::value_type>) {
+		TypeParam v1({-1, 1, 2, -1, -2});
+		TypeParam v2({2, -2, 0, -1, 2});
+		auto t = v2/v1;
+		TypeParam check({-2, -2, 0, 1, -1});
 
+		ASSERT_EQ(t, check);
+		ASSERT_TRUE(t!=v1);
+		ASSERT_TRUE(t!=v2);
+
+		double v3{2.0};
+		double v4{-1.5};
+		int v5{2};
+
+		t = t/v3;
+		check = TypeParam({-1, -1, 0, 0, 0});
+		ASSERT_EQ(t, check);
+
+		t = TypeParam ({6, -6, 4, -4, 2});
+		t = 24/t;
+		check = TypeParam({4, -4, 6, -6, 0});
+		ASSERT_EQ(t, check);
+
+		t = t/v5;
+		check = TypeParam({2, -2, 3, -3, 0});
+		ASSERT_EQ(t, check);
 	}
 }
 TYPED_TEST(ValueArithmeticsMultiField, AssignDivision) {
@@ -549,8 +672,49 @@ TYPED_TEST(ValueArithmeticsMultiField, AssignDivision) {
 		ASSERT_EQ(t, check);
 	}
 	else if (std::is_integral_v<typename TypeParam::value_type>) {
+		TypeParam v1({-1, 1, 2, -1, -2});
+		TypeParam v2({2, -2, 0, -1, 2});
+		auto t = v2;
+		t /= v1;
+		TypeParam check({-2, -2, 0, 1, -1});
 
+		ASSERT_EQ(t, check);
+		ASSERT_TRUE(t!=v1);
+		ASSERT_TRUE(t!=v2);
+
+		double v3{2.0};
+		double v4{-1.5};
+		int v5{2};
+
+		t /= v3;
+		check = TypeParam({-1, -1, 0, 0, -1});
+		ASSERT_EQ(t, check);
+
+		t = TypeParam ({6, -6, 4, -4, 2});
+		t = 24/t;
+		check = TypeParam({4, -4, 6, -6, 0});
+		ASSERT_EQ(t, check);
+
+		t /= v5;
+		check = TypeParam({2, -2, 3, -3, 0});
+		ASSERT_EQ(t, check);
 	}
+}
+TYPED_TEST(ValueArithmeticsMultiField, DivisionByZeroThrows) {
+	TypeParam v1({-1, 1, 2, -1, -2});
+	TypeParam zero(0.0);
+
+	ASSERT_THROW ( v1 / 0, std::invalid_argument);
+	ASSERT_THROW ( v1 / zero, std::invalid_argument);
+
+	TypeParam v2({-1, 0, 2, -1, -2});
+	ASSERT_TRUE (v2.containsZero());
+
+	TypeParam v3({-1, 1, 2, -1, 0});
+	ASSERT_TRUE (v2.containsZero());
+
+	ASSERT_THROW ( v1 / v3, std::invalid_argument);
+
 }
 TYPED_TEST(ValueArithmeticsMultiField, Multiplication) {
 	if constexpr (std::is_floating_point_v<typename TypeParam::value_type>) {
@@ -583,11 +747,33 @@ TYPED_TEST(ValueArithmeticsMultiField, Multiplication) {
 		ASSERT_TRUE(t!=v1);
 	}
 	else if (std::is_integral_v<typename TypeParam::value_type>) {
+		TypeParam t({3, -3, -2, -1, 2});
+		double v3{2.0};
+		double v4{-1.5};
+		int v5{2};
 
+		TypeParam check;
+
+		t = t * v3;
+		check = TypeParam({6, -6, -4, -2, 0}); //volume is not taken into consideration
+		ASSERT_EQ(t, check);
+
+		t = t * v4;
+		check = TypeParam({-9, 9, 6, 3, 0});
+		ASSERT_EQ(t, check);
+
+		t = t * v5;
+		check = TypeParam({-18, 18, 12, 6, 0});
+		ASSERT_EQ(t, check);
+
+		TypeParam v1({-1, 1, 0, 2, 2});
+		t = t * v1;
+		check = TypeParam({18, 18, 0, 12, 0});
+		ASSERT_EQ(t, check);
+		ASSERT_TRUE(t!=v1);
 	}
 }
-TYPED_TEST(ValueArithmeticsMultiField, AssignMultiplication)
-{
+TYPED_TEST(ValueArithmeticsMultiField, AssignMultiplication){
 	if constexpr (std::is_floating_point_v<typename TypeParam::value_type>) {
 		TypeParam t({0.5, -0.5, -0.75, -0.666667, -0.75});
 		double v3{2.0};
@@ -615,7 +801,30 @@ TYPED_TEST(ValueArithmeticsMultiField, AssignMultiplication)
 		ASSERT_TRUE(t!=v1);
 	}
 	else if (std::is_integral_v<typename TypeParam::value_type>) {
+		TypeParam t({3, -3, -2, -1, 2});
+		double v3{2.0};
+		double v4{-1.5};
+		int v5{2};
 
+		TypeParam check;
+
+		t *= v3;
+		check = TypeParam({6, -6, -4, -2, 2}); //volume is not taken into consideration
+		ASSERT_EQ(t, check);
+
+		t *= v4;
+		check = TypeParam({-9, 9, 6, 3, 2});
+		ASSERT_EQ(t, check);
+
+		t *= v5;
+		check = TypeParam({-18, 18, 12, 6, 2});
+		ASSERT_EQ(t, check);
+
+		TypeParam v1({-1, 1, 0, 2, 2});
+		t *= v1;
+		check = TypeParam({18, 18, 0, 12, 4});
+		ASSERT_EQ(t, check);
+		ASSERT_TRUE(t!=v1);
 	}
 }
 

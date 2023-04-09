@@ -10,7 +10,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char **argv) {
 //	testing::GTEST_FLAG(filter) = "Ctors*:Assignments*:Constructible*:Compare*:Arithmetics*";
 //	testing::GTEST_FLAG(filter) = "ElementFnApplication*";
 //	testing::GTEST_FLAG(filter) = "ElementFnApplication/1.*";
-//	testing::GTEST_FLAG(filter) = "EndToEnd.*";
+	testing::GTEST_FLAG(filter) = "*Arithmetics*.*";
 	return RUN_ALL_TESTS();
 }
 
@@ -29,6 +29,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char **argv) {
 // test structured bindings for Element, OHLCV, BidAsk for rvalue- lvalue refs
 // test operator >> for timestamp
 // test Element for user defined classes
+// check division operator / and operator /= for ohlcv - seems like it works differently for Volume
 // DONE test multiple include of culib, heap_alloc_t fails that
 // DONE timestamp works poorly with high_res clock
 // DONE fix timestamp
@@ -44,6 +45,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char **argv) {
 // operator += should be made inside of a class
 // noexcept everywhere it is possible
 // series - make joins for the series
+// joins, make them in term of iterators
 // joins, make joins possible if any of arg is a tuple of args
 // joins, make them for pair of iterators
 // joins, make them for range
