@@ -40,6 +40,21 @@ TEST (ElementCtorsNotOk, CtorsFailRequirements) {
 #endif
 }
 
-
-
-//todo: add copy and move ctors f
+TYPED_TEST(ElementCtorsOk, CopyCtor) {
+	TypeParam value{};
+	ts_t ts;
+	elem_ms_t<TypeParam> d_value(ts, value);
+	auto copy_value = d_value;
+	if constexpr (!std::is_same_v<TypeParam, std::vector<int>>) {
+		ASSERT_EQ(copy_value, d_value);
+	}
+}
+TYPED_TEST(ElementCtorsOk, MoveCtor) {
+	TypeParam value{};
+	ts_t ts;
+	elem_ms_t<TypeParam> d_value(ts, value);
+	auto move_value = std::move(d_value);
+	if constexpr (!std::is_same_v<TypeParam, std::vector<int>>) {
+		ASSERT_EQ(move_value, d_value);
+	}
+}

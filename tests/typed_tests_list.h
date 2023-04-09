@@ -12,6 +12,7 @@
 #include "time_series/element.hpp"
 
 #include <cstdint>
+#include <iostream>
 
 #ifndef FIN_VALUE_TYPED_TESTS_LIST_H
 #define FIN_VALUE_TYPED_TESTS_LIST_H
@@ -48,9 +49,12 @@ using test_values_single_and_multi_field = testing::Types<
 >;
 
 
-
-struct UserDefined{};
+inline std::ostream& operator << (std::ostream& os, const std::vector<int>&) { return os; } //for tests
+struct UserDefined{}; //for tests
 inline bool operator == (UserDefined, UserDefined) { return true; } //for tests
+inline std::ostream& operator << (std::ostream& os, UserDefined) { return os; } //for tests
+
+
 using test_value = testing::Types<
 		double,
 		int,

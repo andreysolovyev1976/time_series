@@ -497,8 +497,8 @@ TYPED_TEST(ElementArithmeticsMultiField, Subtraction) {
 		double v4{-1.5};
 		int v5{2};
 
-//		t = financial::operator-<typename TypeParam::value_type, decltype(v3), true>(t, v3);
-		check = TypeParam({32.4, 8, 8.5, -0.6, 1.2});
+		t = t - v3;
+		check = TypeParam({32.4, 8, 8.5, -0.6, 0});
 		ASSERT_EQ(t, check);
 
 		t = v4-t;
@@ -521,7 +521,7 @@ TYPED_TEST(ElementArithmeticsMultiField, Subtraction) {
 		double v4{-1};
 		int v5{2};
 
-//		t = financial::operator-<typename TypeParam::value_type, decltype(v3), true>(t, v3);
+		t = t - v3;
 		check = TypeParam({32, 8, 10, -1, 0});
 		ASSERT_EQ(t, check);
 
@@ -550,16 +550,16 @@ TYPED_TEST(ElementArithmeticsMultiField, AssignSubtraction) {
 		double v4{-1.5};
 		int v5{2};
 
-//		t = financial::operator-=<typename TypeParam::value_type, decltype(v3), true>(t, v3);
-		check = TypeParam({32.4, 8, 8.5, -0.6, 1.2});
+		t -= v3;
+		check = TypeParam({32.4, 8, 8.5, -0.6, 3.2});
 		ASSERT_EQ(t, check);
 
 		t -= v4;
-		check = TypeParam({33.9, 9.5, 10, 0.9, 1.2});
+		check = TypeParam({33.9, 9.5, 10, 0.9, 3.2});
 		ASSERT_EQ(t, check);
 
 		t -= v5;
-		check = TypeParam({31.9, 7.5, 8, -1.1, 1.2});
+		check = TypeParam({31.9, 7.5, 8, -1.1, 3.2});
 		ASSERT_EQ(t, check);
 	}
 	else if (isIntegral<TypeParam>()) {
@@ -575,25 +575,28 @@ TYPED_TEST(ElementArithmeticsMultiField, AssignSubtraction) {
 		double v4{-1};
 		int v5{2};
 
-//		t = financial::operator-<typename TypeParam::value_type, decltype(v3), true>(t, v3);
-		check = TypeParam({32, 8, 10, -1, 0});
+		t -= v3;
+		check = TypeParam({32, 8, 10, -1, 2});
 		ASSERT_EQ(t, check);
 
 		t -= v4;
-		check = TypeParam({33, 9, 11, 0, 0});
+		check = TypeParam({33, 9, 11, 0, 2});
 		ASSERT_EQ(t, check);
 
 		t -= v5;
-		check = TypeParam({31, 7, 9, -2, 0});
+		check = TypeParam({31, 7, 9, -2, 2});
 		ASSERT_EQ(t, check);
 	}
 }
-#if 0
 TYPED_TEST(ElementArithmeticsMultiField, VolumeTooParam) {
+	ASSERT_TRUE (false);
 	if constexpr (isFloating<TypeParam>()) {
 		TypeParam v1({-12.2, 12.3, 12.0, 11.5, 12.7});
 		double v3{2.0};
+#if 0
 		auto t = financial::operator-<typename TypeParam::value_type, decltype(v3), true>(v1, v3);
+#endif
+		auto t = v1;
 		auto check = TypeParam({-14.2, 10.3, 10, 9.5, 10.7});
 		ASSERT_EQ(t, check);
 
@@ -601,12 +604,14 @@ TYPED_TEST(ElementArithmeticsMultiField, VolumeTooParam) {
 	else if (isIntegral<TypeParam>()) {
 		TypeParam v1({-12, 12, 10, 11, 13});
 		double v3{2};
-		auto t = financial::operator-<typename TypeParam::value_type, decltype(v3), true>(v1, v3);
+#if 0
+//		auto t = financial::operator-<typename TypeParam::value_type, decltype(v3), true>(v1, v3);
+#endif
+		auto t = v1;
 		auto check = TypeParam({-14, 10, 8, 9, 11});
 		ASSERT_EQ(t, check);
 	}
 }
-#endif
 TYPED_TEST(ElementArithmeticsMultiField, Division) {
 	if constexpr (isFloating<TypeParam>()) {
 		TypeParam v1({-12.3, 12.3, 12.0, 11.1, 12.12});

@@ -10,7 +10,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char **argv) {
 //	testing::GTEST_FLAG(filter) = "Ctors*:Assignments*:Constructible*:Compare*:Arithmetics*";
 //	testing::GTEST_FLAG(filter) = "ElementFnApplication*";
 //	testing::GTEST_FLAG(filter) = "ElementFnApplication/1.*";
-//	testing::GTEST_FLAG(filter) = "ElementArithmetics*.*";
+//	testing::GTEST_FLAG(filter) = "ValueCompare*.*";
 	return RUN_ALL_TESTS();
 }
 
@@ -19,8 +19,6 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char **argv) {
 // test double < int , int < double, double < string, string < double
 // test change of epsilon
 // test arithmetics and comparison with other field, than default
-// element ctors copy and move
-// value ctors copy and move
 // test pmr:: containers
 // test
 // 	operator value_type () const;
@@ -35,7 +33,9 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char **argv) {
 // DONE fix timestamp
 // DONE test structured bindings access for Element, OHLCV, BidAsk
 // DONE element ctors basic
+// DONE element ctors copy and move
 // DONE value ctors basic
+// DONE value ctors copy and move
 
 
 

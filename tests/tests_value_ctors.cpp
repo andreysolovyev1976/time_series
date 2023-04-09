@@ -4,6 +4,8 @@
 
 #include "typed_tests_list.h"
 #include <type_traits>
+#include <string>
+#include <vector>
 
 template<typename T>
 class ValueCtorsSingletons : public testing::Test {};
@@ -139,4 +141,20 @@ TYPED_TEST(ValueCtorsMultiField, CompileError) {
 #endif
 	ASSERT_TRUE(true);
 
+}
+
+/**
+ * @details
+ * Other options for value
+ * */
+
+TEST (ValueCtorsOtherOption, UserDefined) {
+	struct UserDefinedDummy {};
+	ASSERT_NO_THROW ([[maybe_unused]] time_series::Value<UserDefinedDummy> d);
+}
+TEST (ValueCtorsOtherOption, String) {
+	ASSERT_NO_THROW ([[maybe_unused]] time_series::Value<std::string> d);
+}
+TEST (ValueCtorsOtherOption, Vector) {
+	ASSERT_NO_THROW ([[maybe_unused]] time_series::Value<std::vector<int>> d);
 }

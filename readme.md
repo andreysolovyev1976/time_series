@@ -41,6 +41,10 @@ input should be implemented by lib user
 division by zero
 incorrect input from st
 
+//comparison 
+for complex types by Close
+some shit with VolumeToo
+
 
 ## Zip in C++
 ### Reasoning

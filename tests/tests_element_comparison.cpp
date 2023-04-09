@@ -24,25 +24,17 @@ TYPED_TEST (ElementComparison, NE) {
 }
 
 TYPED_TEST (ElementComparison, LT) {
-	[[maybe_unused]] double v1 {0.000005};
-	[[maybe_unused]] double v2 {0.000006};
-	[[maybe_unused]] double v3 {0.000005};
+	ASSERT_TRUE(false);
 }
 
 TYPED_TEST (ElementComparison, GT) {
-	[[maybe_unused]] double v1 {0.000005};
-	[[maybe_unused]] double v2 {0.000006};
-	[[maybe_unused]] double v3 {0.000005};
+	ASSERT_TRUE(false);
 }
 
 TYPED_TEST (ElementComparison, LE) {
-	[[maybe_unused]] double v1 {0.000005};
-	[[maybe_unused]] double v2 {0.000006};
-	[[maybe_unused]] double v3 {0.000005};
+	ASSERT_TRUE(false);
 }
 
 TYPED_TEST (ElementComparison, GE) {
-	[[maybe_unused]] double v1 {0.000005};
-	[[maybe_unused]] double v2 {0.000006};
-	[[maybe_unused]] double v3 {0.000005};
+	ASSERT_TRUE(false);
 }
