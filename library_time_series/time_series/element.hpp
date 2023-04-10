@@ -40,12 +40,18 @@ namespace time_series {
 	  using value_type = std::pair<key_type, mapped_type>;
 
 	  Element() = default;
-	  Element (const ElemType &e);
+	  Element(Element const&) = default;
+	  Element(Element &&) = default;
+	  Element& operator = (Element const&) = default;
+	  Element& operator = (Element &&) = default;
+
+	  Element (const ElemType & e);
 	  Element (ElemType &&e);
 	  Element (const value_type &p);
 	  Element (value_type &&p);
 	  Element (culib::time::Timestamp<Duration> ts, ElemType && value);
 	  Element (culib::time::Timestamp<Duration> ts, ElemType const& value);
+
 	  Element& operator = (const ElemType &e);
 	  Element& operator = (ElemType &&e);
 	  Element& operator = (value_type &&p);
@@ -102,11 +108,7 @@ namespace time_series {
   };
 
 
-#ifndef __cpp_concepts
   template <typename Duration, typename ElemType>
-#else
-  template<typename Duration, typename ElemType >
-#endif
   struct ElementHasher {
 	  size_t operator () (const Element<Duration, ElemType>& element) const {
 		  return element.timestamp.time_point.time_since_epoch().count();
@@ -114,190 +116,113 @@ namespace time_series {
   };
 
 
-#ifndef __cpp_concepts
+
   template <typename Duration, typename ElemType>
-#else
-  template<typename Duration, typename ElemType>
-#endif
   Element<Duration, ElemType>::Element (const ElemType &e) : value (e)
   {}
 
-#ifndef __cpp_concepts
   template <typename Duration, typename ElemType>
-#else
-  template<typename Duration, typename ElemType>
-#endif
   Element<Duration, ElemType>::Element (ElemType &&e) : value (std::move(e))
   {}
 
-#ifndef __cpp_concepts
-  template <typename Duration, typename ElemType>
-#else
-  template<typename Duration, typename ElemType>
-#endif
+template <typename Duration, typename ElemType>
   Element<Duration, ElemType>::Element (Element<Duration, ElemType>::value_type &&p)
 		  : timestamp (std::move(p.first))
 		  , value (std::move(p.second))
   {}
 
-#ifndef __cpp_concepts
-  template <typename Duration, typename ElemType>
-#else
-  template<typename Duration, typename ElemType>
-#endif
+template <typename Duration, typename ElemType>
   Element<Duration, ElemType>::Element (const Element<Duration, ElemType>::value_type &p)
 		  : timestamp (p.first)
 		  , value (p.second)
   {}
 
-#ifndef __cpp_concepts
-  template <typename Duration, typename ElemType>
-#else
-  template<typename Duration, typename ElemType>
-#endif
+template <typename Duration, typename ElemType>
   Element<Duration, ElemType>::Element (culib::time::Timestamp<Duration> ts, ElemType &&value)
 		  : timestamp (ts)
 		  , value (std::move(value))
   {}
 
-#ifndef __cpp_concepts
-  template <typename Duration, typename ElemType>
-#else
-  template<typename Duration, typename ElemType>
-#endif
+template <typename Duration, typename ElemType>
   Element<Duration, ElemType>::Element (culib::time::Timestamp<Duration> ts, ElemType const& value)
 		  : timestamp (ts)
 		  , value (value)
   {}
 
-#ifndef __cpp_concepts
-  template <typename Duration, typename ElemType>
-#else
-  template<typename Duration, typename ElemType>
-#endif
-  const typename Element<Duration, ElemType>::value_type& Element<Duration, ElemType>::operator () () const {
-	  return {timestamp, value}; //todo: check what is a subject for reference - a pair itself or two referencies of the respective fields
-  }
 
-#ifndef __cpp_concepts
   template <typename Duration, typename ElemType>
-#else
-  template<typename Duration, typename ElemType>
-#endif
-  typename Element<Duration, ElemType>::value_type& Element<Duration, ElemType>::operator()() {
-	  return {timestamp, value}; //todo: check what is a subject for reference - a pair itself or two referencies of the respective fields
-  }
-
-#ifndef __cpp_concepts
-  template <typename Duration, typename ElemType>
-#else
-  template<typename Duration, typename ElemType>
-#endif
-  Element<Duration, ElemType>::operator typename Element<Duration, ElemType>::value_type () const {
-	  return {timestamp, value};
-  }
-
-#ifndef __cpp_concepts
-  template <typename Duration, typename ElemType>
-#else
-  template<typename Duration, typename ElemType>
-#endif
-  Element<Duration, ElemType>::operator typename Element<Duration, ElemType>::mapped_type () const {
-	  return value;
-  }
-
-#ifndef __cpp_concepts
-  template <typename Duration, typename ElemType>
-#else
-  template<typename Duration, typename ElemType>
-#endif
-  Element<Duration, ElemType>::operator Element<Duration, ElemType>::key_type () const {
-	  return timestamp;
-  }
-
-#ifndef __cpp_concepts
-  template <typename Duration, typename ElemType>
-#else
-  template<typename Duration, typename ElemType>
-#endif
-  const typename Element<Duration, ElemType>::key_type& Element<Duration, ElemType>::first () const {
-	  return timestamp;
-  }
-
-#ifndef __cpp_concepts
-  template <typename Duration, typename ElemType>
-#else
-  template<typename Duration, typename ElemType>
-#endif
-  typename Element<Duration, ElemType>::key_type& Element<Duration, ElemType>::first () {
-	  return timestamp;
-  }
-
-#ifndef __cpp_concepts
-  template <typename Duration, typename ElemType>
-#else
-  template<typename Duration, typename ElemType>
-#endif
-  const typename Element<Duration, ElemType>::mapped_type& Element<Duration, ElemType>::second () const {
-	  return value;
-  }
-
-#ifndef __cpp_concepts
-  template <typename Duration, typename ElemType>
-#else
-  template<typename Duration, typename ElemType>
-#endif
-  typename Element<Duration, ElemType>::mapped_type& Element<Duration, ElemType>::second () {
-	  return value;
-  }
-
-#ifndef __cpp_concepts
-  template <typename Duration, typename ElemType>
-#else
-  template<typename Duration, typename ElemType>
-#endif
   Element<Duration, ElemType>& Element<Duration, ElemType>::operator = (const ElemType &e) {
 	  value = e;
 	  return *this;
   }
 
-#ifndef __cpp_concepts
-  template <typename Duration, typename ElemType>
-#else
-  template<typename Duration, typename ElemType>
-#endif
+template <typename Duration, typename ElemType>
   Element<Duration, ElemType>& Element<Duration, ElemType>::operator = (ElemType &&e)  {
 	  value = std::move(e);
 	  return *this;
   }
 
-#ifndef __cpp_concepts
-  template <typename Duration, typename ElemType>
-#else
-  template<typename Duration, typename ElemType>
-#endif
+template <typename Duration, typename ElemType>
   Element<Duration, ElemType>& Element<Duration, ElemType>::operator = (value_type &&p) {
 	  timestamp = std::move(p.first);
 	  value = std::move(p.second);
 	  return *this;
   }
 
-#ifndef __cpp_concepts
-  template <typename Duration, typename ElemType>
-#else
-  template<typename Duration, typename ElemType>
-#endif
+template <typename Duration, typename ElemType>
   Element<Duration, ElemType>& Element<Duration, ElemType>::operator = (const value_type &p) {
 	  timestamp = p.first;
 	  value = p.second;
 	  return *this;
   }
 
-#ifndef __cpp_concepts
-  template <typename Duration, typename ElemType>
-#else
-  template<typename Duration, typename ElemType>
-#endif
+
+template <typename Duration, typename ElemType>
+  const typename Element<Duration, ElemType>::value_type& Element<Duration, ElemType>::operator () () const {
+	  return {timestamp, value}; //todo: check what is a subject for reference - a pair itself or two referencies of the respective fields
+  }
+
+template <typename Duration, typename ElemType>
+  typename Element<Duration, ElemType>::value_type& Element<Duration, ElemType>::operator()() {
+	  return {timestamp, value}; //todo: check what is a subject for reference - a pair itself or two referencies of the respective fields
+  }
+
+template <typename Duration, typename ElemType>
+  Element<Duration, ElemType>::operator typename Element<Duration, ElemType>::value_type () const {
+	  return {timestamp, value};
+  }
+
+template <typename Duration, typename ElemType>
+  Element<Duration, ElemType>::operator typename Element<Duration, ElemType>::mapped_type () const {
+	  return value;
+  }
+
+template <typename Duration, typename ElemType>
+  Element<Duration, ElemType>::operator Element<Duration, ElemType>::key_type () const {
+	  return timestamp;
+  }
+
+template <typename Duration, typename ElemType>
+  const typename Element<Duration, ElemType>::key_type& Element<Duration, ElemType>::first () const {
+	  return timestamp;
+  }
+
+template <typename Duration, typename ElemType>
+  typename Element<Duration, ElemType>::key_type& Element<Duration, ElemType>::first () {
+	  return timestamp;
+  }
+
+template <typename Duration, typename ElemType>
+  const typename Element<Duration, ElemType>::mapped_type& Element<Duration, ElemType>::second () const {
+	  return value;
+  }
+
+template <typename Duration, typename ElemType>
+  typename Element<Duration, ElemType>::mapped_type& Element<Duration, ElemType>::second () {
+	  return value;
+  }
+
+template <typename Duration, typename ElemType>
   std::string Element<Duration, ElemType>::toString () const {
 	  using namespace std::string_literals;
 	  std::string res;
@@ -323,11 +248,7 @@ namespace time_series {
 	  		return value.containsZero();
 	  }
 
-#ifndef __cpp_concepts
-  template <typename Duration, typename ElemType>
-#else
-  template<typename Duration, typename ElemType>
-#endif
+template <typename Duration, typename ElemType>
   template <typename Fn, typename... Args>
   decltype(auto) Element<Duration, ElemType>::applyFunction (Fn&& fn, Args&& ...args) & {
 	  if constexpr (std::is_same_v<std::invoke_result_t<Fn, ElemType&, Args...>, void>) {
@@ -341,44 +262,24 @@ namespace time_series {
 	  }
   }
 
-#ifndef __cpp_concepts
-  template <typename Duration, typename ElemType>
-#else
-  template<typename Duration, typename ElemType>
-#endif
+template <typename Duration, typename ElemType>
   template<std::size_t Index>
   decltype(auto) Element<Duration, ElemType>::get() &  { return getImpl<Index>(*this); }
 
-#ifndef __cpp_concepts
-  template <typename Duration, typename ElemType>
-#else
-  template<typename Duration, typename ElemType>
-#endif
+template <typename Duration, typename ElemType>
   template<std::size_t Index>
   decltype(auto) Element<Duration, ElemType>::get() && { return getImpl<Index>(*this); }
 
-#ifndef __cpp_concepts
-  template <typename Duration, typename ElemType>
-#else
-  template<typename Duration, typename ElemType>
-#endif
+template <typename Duration, typename ElemType>
   template<std::size_t Index>
   decltype(auto) Element<Duration, ElemType>::get() const &  { return getImpl<Index>(*this); }
 
-#ifndef __cpp_concepts
-  template <typename Duration, typename ElemType>
-#else
-  template<typename Duration, typename ElemType>
-#endif
+template <typename Duration, typename ElemType>
   template<std::size_t Index>
   decltype(auto) Element<Duration, ElemType>::get() const && { return getImpl<Index>(*this); }
 
 
-#ifndef __cpp_concepts
-  template <typename Duration, typename ElemType>
-#else
-  template<typename Duration, typename ElemType>
-#endif
+template <typename Duration, typename ElemType>
   template<std::size_t Index, typename ThisType>
   auto&& Element<Duration, ElemType>::getImpl(ThisType&& t) {
 	  static_assert(Index < 2u, "Index out of bounds for Element");
@@ -386,11 +287,7 @@ namespace time_series {
 	  if constexpr (Index == 1) return std::forward<ThisType>(t).value;
   }
 
-#ifndef __cpp_concepts
-  template <typename Duration, typename ElemType>
-#else
-  template<typename Duration, typename ElemType>
-#endif
+template <typename Duration, typename ElemType>
   template<std::size_t Index, typename ThisType>
   auto&& Element<Duration, ElemType>::getImpl(ThisType&& t) const {
 	  static_assert(Index < 2u, "Index out of bounds for Element");
@@ -403,13 +300,9 @@ namespace time_series {
    * Operators\n
    * -----------------------------------------------------\n
    * */
-  
-  
-#ifndef __cpp_concepts
-  template <typename Duration, typename ElemType>
-#else
-  template<typename Duration, typename ElemType>
-#endif
+
+
+template <typename Duration, typename ElemType>
   bool operator == (const Element<Duration, ElemType>& lhs, const Element<Duration, ElemType>& rhs) {
 	  return lhs.timestamp == rhs.timestamp && lhs.value == rhs.value;
   }
@@ -438,11 +331,7 @@ namespace time_series {
 	  return lhs==rhs.value;
   }
 
-#ifndef __cpp_concepts
-  template <typename Duration, typename ElemType>
-#else
-  template<typename Duration, typename ElemType>
-#endif
+template <typename Duration, typename ElemType>
   bool operator != (const Element<Duration, ElemType>& lhs, const Element<Duration, ElemType>& rhs) {
 	  return !(lhs == rhs);
   }
@@ -471,11 +360,7 @@ namespace time_series {
 	  return !(rhs==lhs);
   }
 
-#ifndef __cpp_concepts
-  template <typename Duration, typename ElemType>
-#else
-  template<typename Duration, typename ElemType>
-#endif
+template <typename Duration, typename ElemType>
   bool operator < (const Element<Duration, ElemType>& lhs, const Element<Duration, ElemType>& rhs) {
 	  return lhs.timestamp != rhs.timestamp ? lhs.timestamp < rhs.timestamp : lhs.value < rhs.value;
   }
@@ -504,11 +389,7 @@ namespace time_series {
 	  return lhs < rhs.value;
   }
 
-#ifndef __cpp_concepts
-  template <typename Duration, typename ElemType>
-#else
-  template<typename Duration, typename ElemType>
-#endif
+template <typename Duration, typename ElemType>
   bool operator > (const Element<Duration, ElemType>& lhs, const Element<Duration, ElemType>& rhs) {
 	  return (!(lhs == rhs) && !(lhs < rhs));
   }
@@ -537,11 +418,7 @@ namespace time_series {
 	  return (!(lhs == rhs) && !(lhs < rhs));
   }
 
-#ifndef __cpp_concepts
-  template <typename Duration, typename ElemType>
-#else
-  template<typename Duration, typename ElemType>
-#endif
+template <typename Duration, typename ElemType>
   bool operator <= (const Element<Duration, ElemType>& lhs, const Element<Duration, ElemType>& rhs) {
 	  return ((lhs == rhs) || (lhs < rhs));
   }
@@ -570,11 +447,7 @@ namespace time_series {
 	  return ((lhs == rhs) || (lhs < rhs));
   }
 
-#ifndef __cpp_concepts
-  template <typename Duration, typename ElemType>
-#else
-  template<typename Duration, typename ElemType>
-#endif
+template <typename Duration, typename ElemType>
   bool operator >= (const Element<Duration, ElemType>& lhs, const Element<Duration, ElemType>& rhs){
 	  return ((lhs == rhs) || (lhs > rhs));
   }
@@ -605,11 +478,7 @@ namespace time_series {
 
 
 
-#ifndef __cpp_concepts
-  template <typename Duration, typename ElemType>
-#else
-  template<typename Duration, typename ElemType>
-#endif
+template <typename Duration, typename ElemType>
   Element<Duration, ElemType> operator * (const Element<Duration, ElemType>& lhs, const Element<Duration, ElemType>& rhs) {
 	  Element<Duration, ElemType> res;
 	  res.timestamp = lhs.timestamp;
@@ -646,11 +515,7 @@ namespace time_series {
 	  res.value = lhs * rhs.value;
 	  return res;
   }
-#ifndef __cpp_concepts
-  template <typename Duration, typename ElemType>
-#else
-  template<typename Duration, typename ElemType>
-#endif
+template <typename Duration, typename ElemType>
   Element<Duration, ElemType> operator / (const Element<Duration, ElemType>& lhs, const Element<Duration, ElemType>& rhs) {
 	  bool divider_is_zero {false};
 	  if constexpr (time_series::requirements::has_method_contains_zero_v<ElemType>) {
@@ -712,11 +577,7 @@ namespace time_series {
 	  res.value = lhs / rhs.value;
 	  return res;
   }
-#ifndef __cpp_concepts
-  template <typename Duration, typename ElemType>
-#else
-  template<typename Duration, typename ElemType>
-#endif
+template <typename Duration, typename ElemType>
   Element<Duration, ElemType> operator + (const Element<Duration, ElemType>& lhs, const Element<Duration, ElemType>& rhs) {
 	  Element<Duration, ElemType> res;
 	  res.timestamp = lhs.timestamp;
@@ -753,11 +614,7 @@ namespace time_series {
 	  res.value = lhs + rhs.value;
 	  return res;
   }
-#ifndef __cpp_concepts
-  template <typename Duration, typename ElemType>
-#else
-  template<typename Duration, typename ElemType>
-#endif
+template <typename Duration, typename ElemType>
   Element<Duration, ElemType> operator - (const Element<Duration, ElemType>& lhs, const Element<Duration, ElemType>& rhs) {
 	  Element<Duration, ElemType> res;
 	  res.timestamp = lhs.timestamp;
@@ -796,11 +653,7 @@ namespace time_series {
   }
 
 
-#ifndef __cpp_concepts
-  template <typename Duration, typename ElemType>
-#else
-  template<typename Duration, typename ElemType>
-#endif
+template <typename Duration, typename ElemType>
   Element<Duration, ElemType>& operator += (Element<Duration, ElemType>& lhs, const Element<Duration, ElemType>& rhs) {
 	  lhs.value += rhs.value;
 	  return lhs;
@@ -819,11 +672,7 @@ namespace time_series {
 	  return lhs;
   }
 
-#ifndef __cpp_concepts
-  template <typename Duration, typename ElemType>
-#else
-  template<typename Duration, typename ElemType>
-#endif
+template <typename Duration, typename ElemType>
   Element<Duration, ElemType>& operator -= (Element<Duration, ElemType>& lhs, const Element<Duration, ElemType>& rhs) {
 	  lhs.value -= rhs.value;
 	  return lhs;
@@ -842,11 +691,7 @@ namespace time_series {
 	  return lhs;
   }
 
-#ifndef __cpp_concepts
-  template <typename Duration, typename ElemType>
-#else
-  template<typename Duration, typename ElemType>
-#endif
+template <typename Duration, typename ElemType>
   Element<Duration, ElemType>& operator *= (Element<Duration, ElemType>& lhs, const Element<Duration, ElemType>& rhs) {
 	  lhs.value *= rhs.value;
 	  return lhs;
@@ -865,11 +710,7 @@ namespace time_series {
 	  return lhs;
   }
 
-#ifndef __cpp_concepts
-  template <typename Duration, typename ElemType>
-#else
-  template<typename Duration, typename ElemType>
-#endif
+template <typename Duration, typename ElemType>
   Element<Duration, ElemType>& operator /= (Element<Duration, ElemType>& lhs, const Element<Duration, ElemType>& rhs) {
 	  bool divider_is_zero {false};
 	  if constexpr (time_series::requirements::has_method_contains_zero_v<ElemType>) {
@@ -905,11 +746,7 @@ namespace time_series {
   }
 
 
-#ifndef __cpp_concepts
-  template <typename Duration, typename ElemType>
-#else
-  template<typename Duration, typename ElemType>
-#endif
+template <typename Duration, typename ElemType>
   std::ostream& operator << (std::ostream& os, const Element<Duration, ElemType>& element) {
 	  return os << element.timestamp << ' ' << element.value;
   }//!operator
@@ -942,11 +779,7 @@ namespace time_series {
  * */
 
 namespace std {
-#ifndef __cpp_concepts
-  template <typename Duration, typename ElemType>
-#else
-  template<typename Duration, typename ElemType>
-#endif
+template <typename Duration, typename ElemType>
   struct tuple_size<time_series::Element<Duration, ElemType>> : integral_constant<std::size_t, 2u> {};
 
 #ifndef __cpp_concepts

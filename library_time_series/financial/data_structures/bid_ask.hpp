@@ -29,17 +29,26 @@ namespace time_series::financial {
 	  struct Volume{};
 
 	  BidAsk () = default;
+	  BidAsk(BidAsk const&) = default;
+	  BidAsk(BidAsk &&) = default;
+	  BidAsk& operator = (BidAsk const&) = default;
+	  BidAsk& operator = (BidAsk &&) = default;
+
 	  BidAsk (std::initializer_list<Value<ValueType>> values);
 #ifndef __cpp_concepts
-	  template <typename Input, culib::requirements::ConveribleOrConstructibleFromTo<Input, ValueType> = true>
+	  template <typename Input,
+			  culib::requirements::ConveribleOrConstructibleFromTo<Input, Value<ValueType>> = true>
 #else
-	  template <typename Input> requires culib::requirements::ConveribleOrConstructibleFromTo<Input, ValueType>
+	  template <typename Input>
+			  requires culib::requirements::ConveribleOrConstructibleFromTo<Input, Value<ValueType>>
 #endif
 	  BidAsk(const Input &input);
 #ifndef __cpp_concepts
-	  template <typename Input, culib::requirements::ConveribleOrConstructibleFromTo<Input, ValueType> = true>
+	  template <typename Input,
+			  culib::requirements::ConveribleOrConstructibleFromTo<Input, Value<ValueType>> = true>
 #else
-	  template <typename Input> requires culib::requirements::ConveribleOrConstructibleFromTo<Input, ValueType>
+	  template <typename Input>
+			  requires culib::requirements::ConveribleOrConstructibleFromTo<Input, Value<ValueType>>
 #endif
 	  BidAsk& operator = (const Input &input);
 
@@ -87,30 +96,30 @@ namespace time_series::financial {
 
   template <typename ValueType>
 #ifndef __cpp_concepts
-  template <typename Input, culib::requirements::ConveribleOrConstructibleFromTo<Input, ValueType>>
+  template <typename Input,
+          culib::requirements::ConveribleOrConstructibleFromTo<Input, Value<ValueType>>>
 #else
-  template <typename Input> requires culib::requirements::ConveribleOrConstructibleFromTo<Input, ValueType>
+  template <typename Input>
+  requires culib::requirements::ConveribleOrConstructibleFromTo<Input, Value<ValueType>>
 #endif
-  BidAsk<ValueType>::BidAsk(const Input &input){
-	  bid = input;
-	  ask = input;
-	  middle = input;
-	  price = input;
-	  volume = input;
-  }
+  BidAsk<ValueType>::BidAsk(const Input &input)
+		  : bid (Value(input))
+		  , ask (Value(input))
+		  , middle (Value(input))
+		  , price (Value(input))
+		  , volume (Value(input))
+  {}
 
   template <typename ValueType>
 #ifndef __cpp_concepts
-  template <typename Input, culib::requirements::ConveribleOrConstructibleFromTo<Input, ValueType>>
+  template <typename Input,
+          culib::requirements::ConveribleOrConstructibleFromTo<Input, Value<ValueType>>>
 #else
-  template <typename Input> requires culib::requirements::ConveribleOrConstructibleFromTo<Input, ValueType>
+  template <typename Input>
+  requires culib::requirements::ConveribleOrConstructibleFromTo<Input, Value<ValueType>>
 #endif
   BidAsk<ValueType>& BidAsk<ValueType>::operator = (const Input &input) {
-	  bid = input;
-	  ask = input;
-	  middle = input;
-	  price = input;
-	  volume = input;
+	  *this = BidAsk(input);
 	  return *this;
   }
 

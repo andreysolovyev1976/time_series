@@ -4,12 +4,7 @@
 
 #include "typed_tests_list.h"
 
-template <typename Type, typename U>
-Type initWithValue (const U init_value) {
-	using T = typename Type::mapped_type;
-	T t = init_value;
-	return Type(t);
-}
+using namespace std::string_literals;
 
 template <typename T, typename U>
 void modifyValue (T& t, U value) {
@@ -33,34 +28,67 @@ class ElementFnApplication : public testing::Test {};
 TYPED_TEST_SUITE(ElementFnApplication, test_element);
 
 
+static int const init_value {10};
+
 TYPED_TEST (ElementFnApplication, ApplyFunctionInPlace) {
-	const int init_value {10};
-	TypeParam t1 = initWithValue<TypeParam>(init_value);
-	const int value = rand()%100;
-	t1.applyFunction(modifyValue<std::decay_t<decltype(t1.value)>, decltype(value)>, value);
-	ASSERT_EQ(t1, (value + init_value));
+	if constexpr (std::is_arithmetic_v<typename TypeParam::mapped_type>) {
+		TypeParam t1 (init_value);
+		const int value = rand()%100;
+		t1.applyFunction(modifyValue<std::decay_t<decltype(t1.value)>, decltype(value)>, value);
+		ASSERT_EQ(t1, (value + init_value));
+	}else if constexpr (std::is_same_v<std::string, typename TypeParam::mapped_type>) {
+		// do nothing
+	} else {
+		TypeParam t1 ("10"s);
+		const int value = rand()%100;
+		t1.applyFunction(modifyValue<std::decay_t<decltype(t1.value)>, decltype(value)>, value);
+		ASSERT_EQ(t1, (value + init_value));
+	}
 }
 
-TYPED_TEST (ElementFnApplication, ApplyFunctionInPlaceChaining) {
-	const int init_value {10};
-	TypeParam t1 = initWithValue<TypeParam>(init_value);
-	const int value = rand()%100;
-	t1
-	.applyFunction(modifyValuesChaining<std::decay_t<decltype(t1.value)>, decltype(value)>, value)
-	.applyFunction(modifyValuesChaining<std::decay_t<decltype(t1.value)>, decltype(value)>, value);
+TYPED_TEST (ElementFnApplication, ApplyFunctionInPlaceChaining)
+{
+	if constexpr (std::is_arithmetic_v<typename TypeParam::mapped_type>) {
+		TypeParam t1 (init_value);
+		const int value = rand()%100;
+		t1
+				.applyFunction(modifyValuesChaining<std::decay_t<decltype(t1.value)>, decltype(value)>, value)
+				.applyFunction(modifyValuesChaining<std::decay_t<decltype(t1.value)>, decltype(value)>, value);
 
-	ASSERT_EQ(t1, (value * 2 + init_value));
+		ASSERT_EQ(t1, (value*2 + init_value));
+	}else if constexpr (std::is_same_v<std::string, typename TypeParam::mapped_type>) {
+		// do nothing
+	} else {
+		TypeParam t1 ("10"s);
+		const int value = rand()%100;
+		t1
+				.applyFunction(modifyValuesChaining<std::decay_t<decltype(t1.value)>, decltype(value)>, value)
+				.applyFunction(modifyValuesChaining<std::decay_t<decltype(t1.value)>, decltype(value)>, value);
+
+		ASSERT_EQ(t1, (value*2 + init_value));
+	}
 }
 
 TYPED_TEST (ElementFnApplication, ApplyFunctionCreateNew) {
-	const int init_value {10};
-	TypeParam t1 = initWithValue<TypeParam>(init_value);
-	const int value = rand()%100;
+		if constexpr (std::is_arithmetic_v<typename TypeParam::mapped_type>) {
+			TypeParam t1(init_value);
+			const int value = rand()%100;
 
-	TypeParam t2 (t1.applyFunction(addValue<std::decay_t<decltype(t1.value)>, decltype(value)>, value));
-	ASSERT_EQ(t1, init_value);
-	ASSERT_EQ(t2, (value + init_value));
-}
+			TypeParam t2(t1.applyFunction(addValue<std::decay_t<decltype(t1.value)>, decltype(value)>, value));
+			ASSERT_EQ(t1, init_value);
+			ASSERT_EQ(t2, (value+init_value));
+		}else if constexpr (std::is_same_v<std::string, typename TypeParam::mapped_type>) {
+			// do nothing
+		} else {
+			TypeParam t1 ("10"s);
+			const int value = rand()%100;
+
+			TypeParam t2(t1.applyFunction(addValue<std::decay_t<decltype(t1.value)>, decltype(value)>, value));
+			ASSERT_EQ(t1, init_value);
+			ASSERT_EQ(t2, (value + init_value));
+		}
+	}
+
 
 TYPED_TEST (ElementFnApplication, ApplyFunctionInPlaceFailConst) {
 }

@@ -8,6 +8,7 @@
 //add_compile_definitions WRONG_TYPE_UPCAST_COMPILE_FAILURE
 //add_compile_definitions WRONG_TIMESTAMP_CAST_COMPILE_FAILURE
 //add_compile_definitions WRONG_ELEMENT_CTOR_COMPILE_FAILURE
+//add_compile_definitions WRONG_ELEMENT_COMPARE_COMPILE_FAILURE
 //add_compile_definitions WRONG_VALUE_CTOR_COMPILE_FAILURE
 
 

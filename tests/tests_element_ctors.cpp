@@ -5,6 +5,9 @@
 #include "typed_tests_list.h"
 #include <utility>
 
+using namespace std::string_literals;
+
+
 template<typename T>
 class ElementCtorsOk : public testing::Test {};
 TYPED_TEST_SUITE(ElementCtorsOk, test_value);
@@ -32,6 +35,23 @@ TYPED_TEST(ElementCtorsOk, CtorFromElemTypes) {
 	[[maybe_unused]] elem_ms_t<TypeParam> d_pair_rvalue(value_pair_t{});
 }
 
+TYPED_TEST(ElementCtorsOk, CtorFromString) {
+	if constexpr (std::is_arithmetic_v<TypeParam>
+	|| std::is_same_v<TypeParam, std::vector<int>>
+	|| std::is_same_v<TypeParam, UserDefined>
+	) {
+		// do nothing, as there are no ctors from string for the types above
+	}
+	else {
+		[[maybe_unused]] std::string initial_value{"10"};
+		[[maybe_unused]] elem_ms_t<TypeParam> d{TypeParam(initial_value)};
+
+		[[maybe_unused]] elem_ms_t<TypeParam> d1{TypeParam("10"s)};
+		[[maybe_unused]] elem_ms_t<TypeParam> d2{TypeParam("10")};
+	}
+}
+
+
 
 TEST (ElementCtorsNotOk, CtorsFailRequirements) {
 
@@ -45,6 +65,8 @@ TYPED_TEST(ElementCtorsOk, CopyCtor) {
 	ts_t ts;
 	elem_ms_t<TypeParam> d_value(ts, value);
 	auto copy_value = d_value;
+
+	//somehow gtest requires ostream operator for vector
 	if constexpr (!std::is_same_v<TypeParam, std::vector<int>>) {
 		ASSERT_EQ(copy_value, d_value);
 	}
@@ -54,6 +76,8 @@ TYPED_TEST(ElementCtorsOk, MoveCtor) {
 	ts_t ts;
 	elem_ms_t<TypeParam> d_value(ts, value);
 	auto move_value = std::move(d_value);
+
+	//somehow gtest requires ostream operator for vector
 	if constexpr (!std::is_same_v<TypeParam, std::vector<int>>) {
 		ASSERT_EQ(move_value, d_value);
 	}

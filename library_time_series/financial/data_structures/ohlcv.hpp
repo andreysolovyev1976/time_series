@@ -31,17 +31,26 @@ namespace time_series::financial {
 	  struct Volume{};
 
 	  OHLCV () = default;
+	  OHLCV(OHLCV const&) = default;
+	  OHLCV(OHLCV &&) = default;
+	  OHLCV& operator = (OHLCV const&) = default;
+	  OHLCV& operator = (OHLCV &&) = default;
+	  
 	  OHLCV (std::initializer_list<Value<ValueType>> values);
 #ifndef __cpp_concepts
-	  template <typename Input, culib::requirements::ConveribleOrConstructibleFromTo<Input, ValueType> = true>
+	  template <typename Input,
+			  culib::requirements::ConveribleOrConstructibleFromTo<Input, Value<ValueType>> = true>
 #else
-	  template <typename Input> requires culib::requirements::ConveribleOrConstructibleFromTo<Input, ValueType>
+	  template <typename Input>
+			  requires culib::requirements::ConveribleOrConstructibleFromTo<Input, Value<ValueType>>
 #endif
 	  OHLCV(const Input &input);
 #ifndef __cpp_concepts
-	  template <typename Input, culib::requirements::ConveribleOrConstructibleFromTo<Input, ValueType> = true>
+	  template <typename Input,
+			  culib::requirements::ConveribleOrConstructibleFromTo<Input, Value<ValueType>> = true>
 #else
-	  template <typename Input> requires culib::requirements::ConveribleOrConstructibleFromTo<Input, ValueType>
+	  template <typename Input>
+			  requires culib::requirements::ConveribleOrConstructibleFromTo<Input, Value<ValueType>>
 #endif
 	  OHLCV& operator = (const Input &input);
 
@@ -92,30 +101,30 @@ namespace time_series::financial {
 
   template <typename ValueType>
 #ifndef __cpp_concepts
-  template <typename Input, culib::requirements::ConveribleOrConstructibleFromTo<Input, ValueType>>
+  template <typename Input,
+          culib::requirements::ConveribleOrConstructibleFromTo<Input, Value<ValueType>>>
 #else
-  template <typename Input> requires culib::requirements::ConveribleOrConstructibleFromTo<Input, ValueType>
+  template <typename Input>
+  requires culib::requirements::ConveribleOrConstructibleFromTo<Input, Value<ValueType>>
 #endif
-  OHLCV<ValueType>::OHLCV(const Input &input){
-	  open = input;
-	  high = input;
-	  low = input;
-	  close = input;
-	  volume = input;
-  }
+  OHLCV<ValueType>::OHLCV(const Input &input)
+	  : open (Value(input))
+	  , high (Value(input))
+	  , low (Value(input))
+	  , close (Value(input))
+	  , volume (Value(input))
+{}
 
   template <typename ValueType>
 #ifndef __cpp_concepts
-  template <typename Input, culib::requirements::ConveribleOrConstructibleFromTo<Input, ValueType>>
+  template <typename Input,
+          culib::requirements::ConveribleOrConstructibleFromTo<Input, Value<ValueType>>>
 #else
-  template <typename Input> requires culib::requirements::ConveribleOrConstructibleFromTo<Input, ValueType>
+  template <typename Input>
+  requires culib::requirements::ConveribleOrConstructibleFromTo<Input, Value<ValueType>>
 #endif
   OHLCV<ValueType>& OHLCV<ValueType>::operator = (const Input &input) {
-	  open = input;
-	  high = input;
-	  low = input;
-	  close = input;
-	  volume = input;
+	  *this = OHLCV(input);
 	  return *this;
   }
 

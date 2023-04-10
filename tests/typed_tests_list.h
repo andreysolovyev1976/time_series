@@ -75,6 +75,7 @@ using test_value = testing::Types<
 using test_element = testing::Types<
 		  time_series::Element<culib::time::Microseconds, double>
 		, time_series::Element<culib::time::Microseconds, int>
+		, time_series::Element<culib::time::Microseconds, std::string>
 		, time_series::Element<culib::time::Microseconds, time_series::Value<time_series::value::traits::ValueTypeDefault>>
 		, time_series::Element<culib::time::Microseconds, time_series::Value<std::int64_t>>
 		, time_series::Element<culib::time::Microseconds, time_series::financial::SingleQuote<time_series::value::traits::ValueTypeDefault>>

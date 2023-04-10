@@ -33,16 +33,25 @@ namespace time_series {
 	  ValueType value {};
 
 	  Value() = default;
+	  Value(Value const&) = default;
+	  Value(Value &&) = default;
+	  Value& operator = (Value const&) = default;
+	  Value& operator = (Value &&) = default;
+
 #ifndef __cpp_concepts
-	  template <typename Input, culib::requirements::ConveribleOrConstructibleFromTo<Input, ValueType> = true>
+	  template <typename Input,
+			  culib::requirements::ConveribleOrConstructibleFromTo<Input, ValueType> = true>
 #else
-	  template <typename Input> requires culib::requirements::ConveribleOrConstructibleFromTo<Input, ValueType>
+	  template <typename Input>
+			  requires culib::requirements::ConveribleOrConstructibleFromTo<Input, ValueType>
 #endif
 	  Value(Input&& input);
 #ifndef __cpp_concepts
-	  template <typename Input, culib::requirements::ConveribleOrConstructibleFromTo<Input, ValueType> = true>
+	  template <typename Input,
+			  culib::requirements::ConveribleOrConstructibleFromTo<Input, ValueType> = true>
 #else
-	  template <typename Input> requires culib::requirements::ConveribleOrConstructibleFromTo<Input, ValueType>
+	  template <typename Input>
+			  requires culib::requirements::ConveribleOrConstructibleFromTo<Input, ValueType>
 #endif
 	  Value& operator = (Input&& input);
 
@@ -72,7 +81,8 @@ namespace time_series {
   template <typename Input> requires culib::requirements::ConveribleOrConstructibleFromTo<Input, ValueType>
 #endif
   Value<ValueType>& Value<ValueType>::operator = (Input&& input) {
-	  value = std::forward<Input>(input);
+	  Value _ (std::forward<Input>(input));
+	  std::swap(*this, _);
 	  return *this;
   }
   template <typename ValueType>
