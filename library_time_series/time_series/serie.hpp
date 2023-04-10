@@ -101,7 +101,9 @@ namespace time_series {
 	  requires time_series::requirements::IsCollisionAllowed<ElemType>
 #endif
 	  Serie<NewDuration, ElemType> upcastTo () const {
+#ifndef __cpp_concepts
 		  static_assert(sizeof...(ProtectionPack)==0u, "Do not specify template arguments for Serie.upcastTo() besides new Duration !");
+#endif
 
 		  using new_elem_t = Element<NewDuration, ElemType>;
 		  Serie<NewDuration, ElemType> new_serie;

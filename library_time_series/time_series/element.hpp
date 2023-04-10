@@ -74,11 +74,12 @@ namespace time_series {
 	  template <typename... ProtectionPack,
 			  typename DummyArg = mapped_type,
 			  time_series::requirements::HasMethod_ContainsZero<DummyArg> = true>
+	  bool containsZero () const;
 #else
-	  template <typename NewDuration>
-	  requires time_series::requirements::MaybeHasMethod_ContainsZero<mapped_type>
+	  bool containsZero () const
+	  requires time_series::requirements::HasMethod_ContainsZero<mapped_type>;
 #endif
-	bool containsZero () const;
+
 
 	  template <typename Fn, typename... Args>
 	  decltype(auto) applyFunction (Fn&& fn, Args&& ...args) &;
@@ -239,14 +240,18 @@ template <typename Duration, typename ElemType>
   template <typename... ProtectionPack,
 		  typename DummyArg,
 		  time_series::requirements::HasMethod_ContainsZero<DummyArg> R>
-#else
-  template <typename NewDuration>
-	  requires time_series::requirements::MaybeHasMethod_ContainsZero<Element<Duration, ElemType>::mapped_type>
-#endif
-  bool Element<Duration, ElemType>::containsZero () const {
+		    bool Element<Duration, ElemType>::containsZero () const
+			{
 	  static_assert(sizeof...(ProtectionPack)==0u, "Do not specify template arguments for Element.containsZero()!");
 	  		return value.containsZero();
 	  }
+#else
+  bool Element<Duration, ElemType>::containsZero () const
+  requires time_series::requirements::HasMethod_ContainsZero<typename Element<Duration, ElemType>::mapped_type>
+  {
+	  return value.containsZero();
+  }
+#endif
 
 template <typename Duration, typename ElemType>
   template <typename Fn, typename... Args>
