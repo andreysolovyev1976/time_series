@@ -36,6 +36,8 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char **argv) {
 // DONE element ctors copy and move
 // DONE value ctors basic
 // DONE value ctors copy and move
+// DONE check that const version of getImpl is required for structural bindings
+// DONE duration cast
 
 
 
@@ -47,10 +49,10 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char **argv) {
 // operator += should be made inside of a class
 // noexcept everywhere it is possible
 // series - make joins for the series
-// joins, make them in term of iterators
-// joins, make joins possible if any of arg is a tuple of args
-// joins, make them for pair of iterators
-// joins, make them for range
+// 		- joins, make them in term of iterators
+// 		- joins, make joins possible if any of arg is a tuple of args
+// 		- joins, make them for pair of iterators
+// 		- joins, make them for range
 // construct series from several series using one index
 // add own container using polymorphic allocator (if small then stack else heap), here first is stack then it required to create another monotonoc buffer fro heap, as chosen list (due to multithreading) requires to have cash-friendly environment. SO there are required two memeory resources for one container
 // add own unique_ptr / shrared_ptr on polymorphic allocator
@@ -60,6 +62,4 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char **argv) {
 // is it a floor or a ceiling for a timepoint?
 // think what to do with a timestamp when making arithmetic operations over Elements
 // add compile time test
-// DONE check that const version of getImpl is required for structural bindings
-// DONE duration cast
 

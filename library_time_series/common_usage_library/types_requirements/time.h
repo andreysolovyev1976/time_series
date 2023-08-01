@@ -82,7 +82,6 @@ namespace culib::requirements {
   using IsNotClock = std::enable_if_t<!is_clock_v<Clock>, bool>;
 
 
-
 #else
 
   template<class T>
